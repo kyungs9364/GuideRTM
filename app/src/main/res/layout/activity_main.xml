@@ -9,8 +9,107 @@
     android:paddingTop="@dimen/activity_vertical_margin"
     tools:context="com.example.guidertm.MainActivity">
 
-    <TextView
+
+    <LinearLayout
+        android:orientation="horizontal"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Hello World!" />
+        android:layout_alignParentTop="true"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:id="@+id/linearLayout"
+        android:weightSum="1">
+
+        <TextView
+            android:layout_width="85dp"
+            android:layout_height="wrap_content"
+            android:text="Start"
+            android:id="@+id/start"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true" />
+
+        <EditText
+            android:layout_width="312dp"
+            android:layout_height="wrap_content"
+            android:id="@+id/start_edit"
+            android:layout_alignParentTop="true"
+            android:layout_alignRight="@+id/linearLayout"
+            android:layout_alignEnd="@+id/linearLayout" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/linearLayout"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:id="@+id/linearLayout2">
+
+        <TextView
+            android:layout_width="85dp"
+            android:layout_height="wrap_content"
+            android:text="Destination"
+            android:id="@+id/Destination"
+            android:layout_below="@+id/linearLayout2"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true" />
+
+        <EditText
+            android:layout_width="312dp"
+            android:layout_height="wrap_content"
+            android:id="@+id/destination_edit"
+            android:layout_below="@+id/linearLayout2"
+            android:layout_alignParentRight="true"
+            android:layout_alignParentEnd="true" />
+
+
+    </LinearLayout>
+
+
+    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        android:layout_below="@+id/linearLayout2"
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:id="@+id/linearLayout3" >
+
+        <Button
+            style="?android:attr/buttonStyleSmall"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Search"
+            android:id="@+id/search"
+            android:layout_gravity="right"
+            android:textColor="#FFFFFF" />
+
+        <LinearLayout
+            android:orientation="horizontal"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="right">
+
+            <Button
+                style="?android:attr/buttonStyleSmall"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="VR service"
+                android:id="@+id/VR" />
+
+            <Button
+                style="?android:attr/buttonStyleSmall"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="ROAD service"
+                android:id="@+id/road" /> </LinearLayout>
+
+        <RelativeLayout
+            android:id="@+id/Tmap"
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent">
+        </RelativeLayout>
+
+    </LinearLayout>
+
 </RelativeLayout>
