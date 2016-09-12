@@ -147,7 +147,7 @@ public class MainActivity extends AppCompatActivity {
                 longitude_plic = location.getLongitude();
                 mOverlayview.setCurrentPoint(latitude_plic,longitude_plic);  // 현재위치 업데이트를 위해 mOverlayview에 값 전송
 
-                my_location.setText("현 위치");
+                my_location.setText("현재 위치");
                 mMapView.setCenterPoint(longitude_plic, latitude_plic);
                 mMapView.setLocationPoint(longitude_plic, latitude_plic);
                 mMapView.setTrackingMode(true);
