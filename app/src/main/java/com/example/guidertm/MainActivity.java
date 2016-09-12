@@ -6,7 +6,6 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
-import android.location.Address;
 import android.location.Geocoder;
 import android.location.Location;
 import android.location.LocationListener;
@@ -14,6 +13,7 @@ import android.location.LocationManager;
 import android.os.Bundle;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -26,9 +26,11 @@ import com.skp.Tmap.TMapPoint;
 import com.skp.Tmap.TMapPolyLine;
 import com.skp.Tmap.TMapView;
 
-import java.io.IOException;
+import org.w3c.dom.Document;
+
 import java.util.ArrayList;
-import java.util.List;
+import java.util.Date;
+import java.util.HashMap;
 import java.util.Locale;
 
 public class MainActivity extends AppCompatActivity {
@@ -52,16 +54,20 @@ public class MainActivity extends AppCompatActivity {
     class MyListenerClass implements View.OnClickListener {
         public void onClick(View v) {
             if (v.getId() == R.id.search) {
-                //Intent intent = new Intent(MainActivity.this,Listview.class);
-                //startActivity(intent);
                 findAllPoi();
                     }
             else if (v.getId() == R.id.VR)
             {
-                List<Address> des_location = null;
-                String end = my_destination.getText().toString().replace("[","").replace("]","").replace(")","").replace("(","").trim();
+                String end = my_destination.getText().toString();
                 Toast.makeText(getApplicationContext(), "도착지 : " + end, Toast.LENGTH_SHORT).show();
 
+                Intent intent = new Intent(MainActivity.this,CameraActivity.class);
+                intent.putExtra("latitude_id",String.valueOf(des_latitude_plic));  // CameraOverlayview 에 목적지값 전송 - cameraActivity 통해서 경유
+                intent.putExtra("longitude_id",String.valueOf(des_longitude_plic ));
+                startActivity(intent);
+
+                  /*
+                List<Address> des_location = null;
                 if (end == null || end.length() == 0) {
                     showToast("검색어가 입력되지 않았습니다.");
                     return;
@@ -75,35 +81,19 @@ public class MainActivity extends AppCompatActivity {
                     e.printStackTrace();
                 }
                 des_latitude_plic = des_location.get(0).getLatitude();
-                des_longitude_plic = des_location.get(0).getLongitude();
-
-                Intent intent = new Intent(MainActivity.this,CameraActivity.class);
-                intent.putExtra("latitude_id",String.valueOf(des_latitude_plic));  // CameraOverlayview 에 목적지값 전송 - cameraActivity 통해서 경유
-                intent.putExtra("longitude_id",String.valueOf(des_longitude_plic ));
-                startActivity(intent);
+                des_longitude_plic = des_location.get(0).getLongitude();*/
 
             }
             else if (v.getId() == R.id.road)
             {
-                List<Address> des_location = null;
-                String query = my_destination.getText().toString().replace("[","").replace("]","").replace(")","").replace("(","").trim();
+                String query = my_destination.getText().toString();
                 if (query == null || query.length() == 0) {
                     showToast("검색어가 입력되지 않았습니다.");
                     return;
                 }
 
-                try {    //  도착위치 값 지오코딩.
-                    des_location = coder.getFromLocationName(query, 5);
-                } catch (NumberFormatException e) {
-                    e.printStackTrace();
-                } catch (IOException e) {
-                    Toast.makeText(getApplicationContext(), "입출력오류 :" + e.getMessage() + "", Toast.LENGTH_SHORT).show();
-                    e.printStackTrace();
-                }
-                des_latitude_plic = des_location.get(0).getLatitude();
-                des_longitude_plic = des_location.get(0).getLongitude();
-
                 drawPedestrianPath();
+                //timeMachine();
             }
         }
     }
@@ -132,6 +122,12 @@ public class MainActivity extends AppCompatActivity {
         mContext = this;
         Intent intent = getIntent();
         my_destination.setText(intent.getStringExtra("des_info"));
+        Double la_point = intent.getDoubleExtra("point_la",0);
+        Double lo_point = intent.getDoubleExtra("point_lo",0);
+        des_latitude_plic = la_point;
+        des_longitude_plic = lo_point;
+
+
         mOverlayview = new CameraOverlayview(this);
         coder = new Geocoder(getApplicationContext(), Locale.KOREA);
 
@@ -147,7 +143,7 @@ public class MainActivity extends AppCompatActivity {
                 longitude_plic = location.getLongitude();
                 mOverlayview.setCurrentPoint(latitude_plic,longitude_plic);  // 현재위치 업데이트를 위해 mOverlayview에 값 전송
 
-                my_location.setText("현재 위치");
+                my_location.setText("현 위치");
                 mMapView.setCenterPoint(longitude_plic, latitude_plic);
                 mMapView.setLocationPoint(longitude_plic, latitude_plic);
                 mMapView.setTrackingMode(true);
@@ -192,13 +188,19 @@ public class MainActivity extends AppCompatActivity {
                     public void onFindAllPOI(ArrayList<TMapPOIItem> poiItem) {
                         Intent intent = new Intent(MainActivity.this,Listview.class);
                         ArrayList<String> search_list = new ArrayList<String>();
+                        ArrayList<String> point_list = new ArrayList<String>();
 
                         for (int i = 0; i < poiItem.size(); i++) {
                             TMapPOIItem  item = poiItem.get(i);
                             String[] address = new String[poiItem.size()];
+                            String[] point = new String[poiItem.size()];
                             address[i] = String.valueOf(item.getPOIName().toString());
+                            point[i] =  String.valueOf(item.getPOIPoint().toString());
                             search_list.add(address[i]);
+                            point_list.add(point[i]);
+
                             intent.putExtra("address",search_list);
+                            intent.putExtra("point",point_list);
                         }
                         startActivity(intent);
                         finish();
@@ -228,6 +230,27 @@ public class MainActivity extends AppCompatActivity {
             }
         });
     }
+
+    public void timeMachine() {
+        TMapData tmapdata = new TMapData();
+
+        final HashMap<String, String> pathInfo = new HashMap<String, String>();
+        pathInfo.put("rStName", "현 위치");
+        pathInfo.put("rStlat", Double.toString(latitude_plic));
+        pathInfo.put("rStlon", Double.toString(longitude_plic));
+        pathInfo.put("rGoName", "도착지");
+        pathInfo.put("rGolat", Double.toString(des_latitude_plic));
+        pathInfo.put("rGolon", Double.toString(des_longitude_plic));
+        pathInfo.put("type", "arrival");
+
+        final Date currentTime = new Date();
+        tmapdata.findTimeMachineCarPath(pathInfo,  currentTime, null, new TMapData.FindTimeMachineCarPathListenerCallback() {
+            @Override
+            public void onFindTimeMachineCarPath(Document doc) {
+                Log.d(TAG, "info =" + doc);
+            }
+            });
+        }
 
     private void showToast(String s) {
         Toast.makeText(getApplicationContext(), s, Toast.LENGTH_SHORT).show();
