@@ -27,8 +27,6 @@ import com.skp.Tmap.TMapView;
 import org.w3c.dom.Document;
 
 import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
 import java.util.Locale;
 
 public class MainActivity extends AppCompatActivity {
@@ -92,8 +90,9 @@ public class MainActivity extends AppCompatActivity {
                     return;
                 }
 
-                drawPedestrianPath();
+                //drawPedestrianPath();
                 //timeMachine();
+                naviGuide();
             }
         }
     }
@@ -224,39 +223,69 @@ public class MainActivity extends AppCompatActivity {
         final TMapPoint point2 = new TMapPoint(des_latitude_plic,des_longitude_plic);
 
 
-
-
         TMapData tmapdata = new TMapData();
         tmapdata.findPathDataWithType(TMapData.TMapPathType.PEDESTRIAN_PATH, point1, point2, new TMapData.FindPathDataListenerCallback() {
 
             public void onFindPathData(TMapPolyLine polyLine) {
                 polyLine.setLineColor(Color.BLUE);
+                polyLine.setLineWidth(10);
                 mMapView.addTMapPath(polyLine);
                 mMapView.zoomToTMapPoint ( point1,point2 );  // 자동 zoomlevel 조정
             }
         });
     }
 
-    public void timeMachine() {
+    public void naviGuide() {
+        final TMapPoint point1 = new TMapPoint(latitude_plic,longitude_plic);
+        final TMapPoint point2 = new TMapPoint(des_latitude_plic,des_longitude_plic);
+
         TMapData tmapdata = new TMapData();
 
-        final HashMap<String, String> pathInfo = new HashMap<String, String>();
-        pathInfo.put("rStName", "현 위치");
-        pathInfo.put("rStlat", Double.toString(latitude_plic));
-        pathInfo.put("rStlon", Double.toString(longitude_plic));
-        pathInfo.put("rGoName", "도착지");
-        pathInfo.put("rGolat", Double.toString(des_latitude_plic));
-        pathInfo.put("rGolon", Double.toString(des_longitude_plic));
-        pathInfo.put("type", "arrival");
-
-        final Date currentTime = new Date();
-        tmapdata.findTimeMachineCarPath(pathInfo,  currentTime, null, new TMapData.FindTimeMachineCarPathListenerCallback() {
+        tmapdata.findPathDataAll(point1, point2, new TMapData.FindPathDataAllListenerCallback() {
             @Override
-            public void onFindTimeMachineCarPath(Document doc) {
-                Log.d(TAG, "info =" + doc);
+            public void onFindPathDataAll(Document doc) {
+
+                Log.d(TAG, "INFO = " + doc);
+                //JsoupAsyncTask jsoupAsyncTask = new JsoupAsyncTask();
+                //jsoupAsyncTask.execute();
+
             }
-            });
+        });
+    }
+
+   /* private class JsoupAsyncTask extends AsyncTask<Void, Void, Void> {
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
         }
+
+        @Override
+        protected Void doInBackground(Void... params) {
+            try {
+                Document doc = Jsoup.connect(parsing).get();
+                Elements links = doc.select("div.list_content_wrap span.txt_section");
+
+                //htmlContentInStringFormat = links.text().trim() + "\n";
+
+                for (org.jsoup.nodes.Element link : links)
+                {
+
+                    htmlContentInStringFormat += (link.attr("abs:href")
+                            +link.text().trim() + "\n");
+                }
+
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            return null;
+        }
+        @Override
+        protected void onPostExecute(Void result) {
+            Toast.makeText(getApplicationContext() ,htmlContentInStringFormat , Toast.LENGTH_SHORT).show();
+        }
+    }
+}*/
 
     private void showToast(String s) {
         Toast.makeText(getApplicationContext(), s, Toast.LENGTH_SHORT).show();

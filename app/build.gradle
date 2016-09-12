@@ -24,4 +24,5 @@ dependencies {
     testCompile 'junit:junit:4.12'
     compile 'com.android.support:appcompat-v7:22.+'
     compile files('libs/com.skp.Tmap_1.0.43.jar')
+    compile files('libs/jsoup-1.9.2.jar')
 }
