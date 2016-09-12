@@ -50,8 +50,8 @@ public class Listview extends Activity {
                 {
                     Intent intent = new Intent(Listview.this,MainActivity.class);
                     intent.putExtra("des_info",address.get(position));
-                    String la_po = point.get(position).replace("Lat","").replace("Lon","").replace(" ",""); // 위도
-                    String lo_po = point.get(position).replace("Lat","").replace("Lon","").replace(" ",""); // 경도
+                    String la_po = point.get(position).replace("Lat","").replace("Lon","").trim(); // 위도
+                    String lo_po = point.get(position).replace("Lat","").replace("Lon","").trim(); // 경도
                     la_po = la_po.substring(0,10); // 0번부터 10번까지의 문자열 반환 (위도)
                     lo_po = lo_po.substring(10);   // 10번 이후부터 끝까지 문자열 반환 (경도)
                     intent.putExtra("point_la",Double.valueOf(la_po));

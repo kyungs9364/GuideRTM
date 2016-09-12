@@ -90,9 +90,8 @@ public class MainActivity extends AppCompatActivity {
                     return;
                 }
 
-                //drawPedestrianPath();
-                //timeMachine();
-                naviGuide();
+                drawPedestrianPath();
+                //naviGuide();
             }
         }
     }
@@ -109,7 +108,6 @@ public class MainActivity extends AppCompatActivity {
         mMapView.setMapType(TMapView.MAPTYPE_STANDARD);  // 지도 타입 표준
         mMapView.setIconVisibility(true);    // 현재위치 아이콘을 나타낼 것인지 표시
         mMapView.setZoomLevel(17);
-        boolean ZoomInEnable = true;
         mMapView.MapZoomIn();
         mMapView.MapZoomOut();
         my_location = (EditText) findViewById(R.id.start_edit);
@@ -126,6 +124,8 @@ public class MainActivity extends AppCompatActivity {
         Double lo_point = intent.getDoubleExtra("point_lo",0);
         des_latitude_plic = la_point;
         des_longitude_plic = lo_point;
+        Log.d(TAG, "des=" + String.valueOf( des_latitude_plic));
+        Log.d(TAG, "des=" + String.valueOf( des_longitude_plic));
 
 
         mOverlayview = new CameraOverlayview(this);
