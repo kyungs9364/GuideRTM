@@ -3,8 +3,6 @@ package com.example.guidertm;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.location.Geocoder;
 import android.location.Location;
@@ -59,6 +57,11 @@ public class MainActivity extends AppCompatActivity {
             else if (v.getId() == R.id.VR)
             {
                 String end = my_destination.getText().toString();
+
+                if (end == null || end.length() == 0) {
+                showToast("검색어가 입력되지 않았습니다.");
+                return;
+            }
                 Toast.makeText(getApplicationContext(), "도착지 : " + end, Toast.LENGTH_SHORT).show();
 
                 Intent intent = new Intent(MainActivity.this,CameraActivity.class);
@@ -68,10 +71,7 @@ public class MainActivity extends AppCompatActivity {
 
                   /*
                 List<Address> des_location = null;
-                if (end == null || end.length() == 0) {
-                    showToast("검색어가 입력되지 않았습니다.");
-                    return;
-                }
+
                 try {    //  도착위치 값 지오코딩.
                     des_location = coder.getFromLocationName(end, 5);
                 } catch (NumberFormatException e) {
@@ -106,14 +106,15 @@ public class MainActivity extends AppCompatActivity {
         mMapView = new TMapView(this);
         mapContainer.addView(mMapView);
         mMapView.setSKPMapApiKey("a9125b4b-89ae-37f1-9eb1-21dfdc5fb1d7");
-        mMapView.setLanguage(TMapView.LANGUAGE_KOREAN);
-        mMapView.setMapType(TMapView.MAPTYPE_STANDARD);
-        mMapView.setIconVisibility(true);
+        mMapView.setLanguage(TMapView.LANGUAGE_KOREAN);  // 지도 언어 설정
+        mMapView.setMapType(TMapView.MAPTYPE_STANDARD);  // 지도 타입 표준
+        mMapView.setIconVisibility(true);    // 현재위치 아이콘을 나타낼 것인지 표시
         mMapView.setZoomLevel(17);
+        boolean ZoomInEnable = true;
         mMapView.MapZoomIn();
         mMapView.MapZoomOut();
         my_location = (EditText) findViewById(R.id.start_edit);
-        my_location.setEnabled(false);
+        my_location.setEnabled(false);  // 입력 불가.
         my_destination = (EditText) findViewById(R.id.destination_edit); // 검색창
         my_destination.setEnabled(false);
         Search = (Button) findViewById(R.id.search); // 검색버튼
@@ -121,8 +122,8 @@ public class MainActivity extends AppCompatActivity {
         VR = (Button) findViewById(R.id.VR);  // VR버튼
         mContext = this;
         Intent intent = getIntent();
-        my_destination.setText(intent.getStringExtra("des_info"));
-        Double la_point = intent.getDoubleExtra("point_la",0);
+        my_destination.setText(intent.getStringExtra("des_info")); // listview 에서 돌아온 도착지 name
+        Double la_point = intent.getDoubleExtra("point_la",0);       // listview 에서 돌아온 위도, 경도
         Double lo_point = intent.getDoubleExtra("point_lo",0);
         des_latitude_plic = la_point;
         des_longitude_plic = lo_point;
@@ -131,8 +132,9 @@ public class MainActivity extends AppCompatActivity {
         mOverlayview = new CameraOverlayview(this);
         coder = new Geocoder(getApplicationContext(), Locale.KOREA);
 
-        Bitmap bitmap = BitmapFactory.decodeResource(mContext.getResources(),R.drawable.poi_star);
-        mMapView.setIcon(bitmap);
+        //Bitmap bitmap = BitmapFactory.decodeResource(mContext.getResources(),R.drawable.run);
+        //Bitmap.createScaledBitmap(bitmap, 100, 100, true);
+        //mMapView.setIcon(bitmap);
 
         LocationManager locationManager = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
 
@@ -169,9 +171,9 @@ public class MainActivity extends AppCompatActivity {
         roadservice.setOnClickListener(buttonListener);
         VR.setOnClickListener(buttonListener);
     }
-    public void findAllPoi() {
+    public void findAllPoi() {  // 검색 함수
 
-        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);  // 팝업창을 띄워주기 위해 생성
         builder.setTitle("Guide road Search part,,");
 
         final EditText input = new EditText(this);
@@ -211,15 +213,18 @@ public class MainActivity extends AppCompatActivity {
         builder.setNegativeButton("취소", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
-                dialog.cancel();
+                dialog.cancel();  // 취소시 팝업창 닫기
             }
         });
         builder.show();
     }
-    public void drawPedestrianPath()
+    public void drawPedestrianPath()   // 길찾기 함수
     {
-        TMapPoint point1 = new TMapPoint(latitude_plic,longitude_plic);
-        TMapPoint point2 = new TMapPoint(des_latitude_plic,des_longitude_plic);
+        final TMapPoint point1 = new TMapPoint(latitude_plic,longitude_plic);
+        final TMapPoint point2 = new TMapPoint(des_latitude_plic,des_longitude_plic);
+
+
+
 
         TMapData tmapdata = new TMapData();
         tmapdata.findPathDataWithType(TMapData.TMapPathType.PEDESTRIAN_PATH, point1, point2, new TMapData.FindPathDataListenerCallback() {
@@ -227,6 +232,7 @@ public class MainActivity extends AppCompatActivity {
             public void onFindPathData(TMapPolyLine polyLine) {
                 polyLine.setLineColor(Color.BLUE);
                 mMapView.addTMapPath(polyLine);
+                mMapView.zoomToTMapPoint ( point1,point2 );  // 자동 zoomlevel 조정
             }
         });
     }
