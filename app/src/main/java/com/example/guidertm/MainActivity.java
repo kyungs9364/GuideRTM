@@ -25,6 +25,8 @@ import com.skp.Tmap.TMapPolyLine;
 import com.skp.Tmap.TMapView;
 
 import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.Node;
 
 import java.util.ArrayList;
 import java.util.Locale;
@@ -91,7 +93,7 @@ public class MainActivity extends AppCompatActivity {
                 }
 
                 drawPedestrianPath();
-                //naviGuide();
+                naviGuide();
             }
         }
     }
@@ -241,17 +243,34 @@ public class MainActivity extends AppCompatActivity {
 
         TMapData tmapdata = new TMapData();
 
-        tmapdata.findPathDataAll(point1, point2, new TMapData.FindPathDataAllListenerCallback() {
+        tmapdata.findPathDataAllType(TMapData.TMapPathType.PEDESTRIAN_PATH,point1, point2, new TMapData.FindPathDataAllListenerCallback(){
             @Override
             public void onFindPathDataAll(Document doc) {
-
-                Log.d(TAG, "INFO = " + doc);
-                //JsoupAsyncTask jsoupAsyncTask = new JsoupAsyncTask();
-                //jsoupAsyncTask.execute();
+                doc.getDocumentElement().normalize();//dom tree가 xml문서의 구조대로 완성
+                Element root = doc.getDocumentElement();//루트 노드 가져오기
+                getNode(root);
 
             }
         });
     }
+
+    public static void getNode(Node n) {
+
+        for (Node ch = n.getFirstChild(); ch != null; ch = ch.getNextSibling()) {
+            if (ch.getNodeType() == Node.ELEMENT_NODE) {
+
+                System.out.println(ch.getNodeName());
+
+                getNode(ch);
+
+            } else if (ch.getNodeType() == Node.TEXT_NODE && ch.getNodeValue().trim().length() != 0) {
+
+                System.out.println(ch.getNodeValue());
+
+            }
+        }
+    }
+
 
    /* private class JsoupAsyncTask extends AsyncTask<Void, Void, Void> {
 
