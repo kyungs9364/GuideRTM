@@ -48,6 +48,7 @@ public class MainActivity extends AppCompatActivity {
     public static double longitude_plic ;
     public static double des_latitude_plic ;
     public static double des_longitude_plic ;
+    public static TMapPoint point2;
 
     class MyListenerClass implements View.OnClickListener {
         public void onClick(View v) {
@@ -144,6 +145,11 @@ public class MainActivity extends AppCompatActivity {
 
                 latitude_plic = location.getLatitude();
                 longitude_plic = location.getLongitude();
+                Log.d(TAG, "qwe2 = " + String.valueOf(point2));
+                if(point2 != null)
+                {
+                    drawPedestrianPath();
+                }
                 mOverlayview.setCurrentPoint(latitude_plic,longitude_plic);  // 현재위치 업데이트를 위해 mOverlayview에 값 전송
 
                 my_location.setText("현 위치");
@@ -167,6 +173,7 @@ public class MainActivity extends AppCompatActivity {
 
         locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 5000, 3, locationListener);
         locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 5000, 3, locationListener);
+
         MyListenerClass buttonListener = new MyListenerClass();
         Search.setOnClickListener(buttonListener);
         roadservice.setOnClickListener(buttonListener);
@@ -222,7 +229,7 @@ public class MainActivity extends AppCompatActivity {
     public void drawPedestrianPath()   // 길찾기 함수
     {
         final TMapPoint point1 = new TMapPoint(latitude_plic,longitude_plic);
-        final TMapPoint point2 = new TMapPoint(des_latitude_plic,des_longitude_plic);
+        /*final TMapPoint*/ point2 = new TMapPoint(des_latitude_plic,des_longitude_plic);
 
 
         TMapData tmapdata = new TMapData();
@@ -231,7 +238,11 @@ public class MainActivity extends AppCompatActivity {
             public void onFindPathData(TMapPolyLine polyLine) {
                 polyLine.setLineColor(Color.BLUE);
                 polyLine.setLineWidth(10);
+                double Distance = polyLine.getDistance();
+                Log.d(TAG, "qwe = " + String.valueOf(Distance));
+
                 mMapView.addTMapPath(polyLine);
+
                 mMapView.zoomToTMapPoint ( point1,point2 );  // 자동 zoomlevel 조정
             }
         });
