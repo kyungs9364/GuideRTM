@@ -259,7 +259,6 @@ public class MainActivity extends AppCompatActivity {
 
                 mMapView.addTMapPath(polyLine);
 
-                mMapView.zoomToTMapPoint ( point1,point2 );  // 자동 zoomlevel 조정
             }
         });
     }
@@ -267,6 +266,8 @@ public class MainActivity extends AppCompatActivity {
     public void naviGuide() {
         TMapPoint point1 = new TMapPoint(latitude_plic, longitude_plic);
         TMapPoint point2 = new TMapPoint(des_latitude_plic, des_longitude_plic);
+        mMapView.zoomToTMapPoint ( point1,point2 );  // 자동 zoomlevel 조정
+
         TMapData tmapdata = new TMapData();
         final List<NodeData> nodeDatas=new ArrayList<NodeData>();
 
