@@ -8,6 +8,8 @@ import android.view.Display;
 import android.view.ViewGroup;
 import android.view.WindowManager;
 
+import java.util.ArrayList;
+
 /**
  * Created by 경석 on 2016-09-08.
  */
@@ -18,22 +20,23 @@ public class CameraActivity extends Activity {
     CameraOverlayview mOverlayview=null;
     public static String latitude_ds;
     public static String longitude_ds;
-
+    ArrayList<NodeData> node;
     //LocationManager GpslocationManager;
     //LocationListener GpslocationListener;
 
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         mOverlayview=new CameraOverlayview(this);
-
-
         Intent intent = getIntent();
         latitude_ds = intent.getStringExtra("latitude_id");
         longitude_ds = intent.getStringExtra("longitude_id");
         // latitude_st = intent.getStringExtra("st_latitude_id");
         // longitude_st = intent.getStringExtra("st_longitude_id");
-
+        node = (ArrayList<NodeData>) intent.getSerializableExtra("node");
         //Toast.makeText(getApplicationContext(), ""+latitude_st+","+longitude_st+"", Toast.LENGTH_SHORT).show();
+
+        mOverlayview.setdata(node.get(0).nodeType);
+
 
         //mOverlayview.setCurrentPoint(Double.parseDouble(latitude_st),Double.parseDouble(longitude_st));  // 현재위치 값 overlayview 전송
         mOverlayview.setDestinationPoint(Double.parseDouble(latitude_ds), Double.parseDouble(longitude_ds));  // 목적지 값 overlayview 전송
@@ -60,7 +63,6 @@ public class CameraActivity extends Activity {
                 height));
 
         /*GpslocationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);//위치 관리자 객체 구하기
-
         GpslocationListener = new LocationListener() {//리스너 정의
             @Override
             public void onLocationChanged(Location location) { //위치 업데이트시 리스너 호출
@@ -69,21 +71,16 @@ public class CameraActivity extends Activity {
                 //변경되는 location값 받는 메소드
                 latitude = location.getLatitude();
                 longitude = location.getLongitude();
-
                 Log.d(TAG, "latitude=" + String.valueOf(latitude));
                 Log.d(TAG, "longitude=" + String.valueOf(longitude));
-
                 mOverlayview.setCurrentPoint(latitude, longitude);
             }
-
             @Override
             public void onStatusChanged(String provider, int status, Bundle extras) {
             }
-
             @Override
             public void onProviderEnabled(String provider) {
             }
-
             @Override
             public void onProviderDisabled(String provider) {
             }

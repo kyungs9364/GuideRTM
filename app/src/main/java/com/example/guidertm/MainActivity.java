@@ -28,6 +28,7 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 
+import java.io.Serializable;
 import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.List;
@@ -52,6 +53,8 @@ public class MainActivity extends AppCompatActivity {
     public static double des_latitude_plic ;
     public static double des_longitude_plic ;
     public static TMapPoint point2;
+    public static  double Ddistance;
+    public static List<NodeData> nodeDatas=new ArrayList<NodeData>();
 
     class MyListenerClass implements View.OnClickListener {
         public void onClick(View v) {
@@ -71,6 +74,7 @@ public class MainActivity extends AppCompatActivity {
                 Intent intent = new Intent(MainActivity.this,CameraActivity.class);
                 intent.putExtra("latitude_id",String.valueOf(des_latitude_plic));  // CameraOverlayview 에 목적지값 전송 - cameraActivity 통해서 경유
                 intent.putExtra("longitude_id",String.valueOf(des_longitude_plic ));
+                intent.putExtra("node",(Serializable)nodeDatas);
                 startActivity(intent);
 
                   /*
@@ -153,7 +157,7 @@ public class MainActivity extends AppCompatActivity {
                 {
                     drawPedestrianPath();
                 }
-                mOverlayview.setCurrentPoint(latitude_plic,longitude_plic);  // 현재위치 업데이트를 위해 mOverlayview에 값 전송
+                mOverlayview.setCurrentPoint(latitude_plic,longitude_plic,Ddistance);  // 현재위치 업데이트를 위해 mOverlayview에 값 전송
 
                 my_location.setText("현 위치");
                 mMapView.setCenterPoint(longitude_plic, latitude_plic);
@@ -241,9 +245,9 @@ public class MainActivity extends AppCompatActivity {
             public void onFindPathData(TMapPolyLine polyLine) {
                 polyLine.setLineColor(Color.BLUE);
                 polyLine.setLineWidth(10);
-                double Ddistance = polyLine.getDistance();
+                Ddistance = polyLine.getDistance();
 
-                if (Ddistance < 1000.0)
+               /* if (Ddistance < 1000.0)
                 {
                     String distance = longDouble2String(0,Ddistance);
                     Distance = distance + "m";
@@ -255,7 +259,7 @@ public class MainActivity extends AppCompatActivity {
                     String fdistance = longDouble2String(1,fDistance);
                     Distance = fdistance + "km";
                     Log.d(TAG, "km = " + Distance);
-                }
+                }*/
 
                 mMapView.addTMapPath(polyLine);
 
@@ -266,53 +270,38 @@ public class MainActivity extends AppCompatActivity {
     public void naviGuide() {
         TMapPoint point1 = new TMapPoint(latitude_plic, longitude_plic);
         TMapPoint point2 = new TMapPoint(des_latitude_plic, des_longitude_plic);
+        TMapData tmapdata = new TMapData();
         mMapView.zoomToTMapPoint ( point1,point2 );  // 자동 zoomlevel 조정
 
-        TMapData tmapdata = new TMapData();
-        final List<NodeData> nodeDatas=new ArrayList<NodeData>();
 
         tmapdata.findPathDataAllType(TMapData.TMapPathType.PEDESTRIAN_PATH,point1, point2, new TMapData.FindPathDataAllListenerCallback(){
             @Override
             public void onFindPathDataAll(Document doc) {
                 doc.getDocumentElement().normalize();
                 Element root = doc.getDocumentElement();
-
                 int length = root.getElementsByTagName("Placemark").getLength();
                 for(int i=0; i<length; i++) {
                     String a="";
                     Node placemark = root.getElementsByTagName("Placemark").item(i);
                     Node tmapindex = ((Element)placemark).getElementsByTagName("tmap:index").item(0);
                     String index=tmapindex.getTextContent();
-                    //Log.e("PARSER", "tmap Index =" + tmapindex.getTextContent());
                     Node nodeType = ((Element)placemark).getElementsByTagName("tmap:nodeType").item(0);
-                    //Log.e("PARSER", "nodeType =" + nodeType.getTextContent());
                     String nodetype=nodeType.getTextContent();
                     Node coordinate = ((Element)placemark).getElementsByTagName("coordinates").item(0);
-                    //Log.e("PARSER", "coordinate =" + coordinate.getTextContent());
                     String coordinates=coordinate.getTextContent();
                     if(nodeType.getTextContent().equals("POINT")) {
                         Node turnType
                                 = ((Element) placemark).getElementsByTagName("tmap:turnType").item(0);
                         a = Turntype(turnType.getTextContent());
-                        //Log.e("PARSER", "point 지점에서 =" + Turntype(a));
                         nodeDatas.add(new NodeData(index,nodetype,coordinates,a));
                     }
                     else nodeDatas.add(new NodeData(index, nodetype, coordinates));
+
                 }
-
-                Log.d("NODE","index :"+nodeDatas.get(0).index);
-                Log.d("NODE","nodetype :"+nodeDatas.get(0).nodeType);
-                Log.d("NODE","coordinate :"+nodeDatas.get(0).coordinate);
-                Log.d("NODE","turntype :"+nodeDatas.get(0).turntype);
-
-
-                Log.d("NODE","index :"+nodeDatas.get(1).index);
-                Log.d("NODE","nodetype :"+nodeDatas.get(1).nodeType);
-                Log.d("NODE","coordinate :"+nodeDatas.get(1).coordinate);
-                Log.d("NODE","turntype :"+nodeDatas.get(1).turntype);
             }
         });
     }
+
 
     public String Turntype(String c)
     {
