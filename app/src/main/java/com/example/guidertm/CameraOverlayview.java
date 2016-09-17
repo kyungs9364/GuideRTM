@@ -42,6 +42,9 @@ public class CameraOverlayview extends View implements SensorEventListener {
     float mLowPassY;
     float mLowPassZ;
     public static String nodetype;
+    public static String index;
+    public static String coordinate;
+    public static String turntype;
     public static double sta_latitude;
     public static double sta_longitude;
     public static double des_latitude;
@@ -60,10 +63,9 @@ public class CameraOverlayview extends View implements SensorEventListener {
     float mYCompassDegree;
     float mRCompassDegree;
 
+
     // CameraActivity mContext;
     // MainActivity mainActivity;
-
-
 
 
     public CameraOverlayview(Context context) {
@@ -291,6 +293,7 @@ public class CameraOverlayview extends View implements SensorEventListener {
         this.distance=distance;
         Log.d(TAG, "sta_la=" + String.valueOf(sta_latitude));  // 값이 들어가있나 확인용
         Log.d(TAG, "sta_lo=" + String.valueOf(sta_longitude));  // 동일
+        Log.d(TAG, "distance=" + String.valueOf(distance));
     }
 
     public void setDestinationPoint(double latitude_ds, double longitude_ds)//도착지 좌표 정보 얻기
@@ -308,9 +311,15 @@ public class CameraOverlayview extends View implements SensorEventListener {
         mHeight = height;
     }
 
-    public void setdata(String nodetype)
+    public void setdata(String index,String nodetype,String coordinate,String turntype)
     {
+        this.index=index;
         this.nodetype=nodetype;
+        this.coordinate=coordinate;
+        this.turntype=turntype;
+        Log.e("Node",this.index);
         Log.e("Node",this.nodetype);
+        Log.e("Node",this.coordinate);
+        Log.e("Node",this.turntype);
     }
 }

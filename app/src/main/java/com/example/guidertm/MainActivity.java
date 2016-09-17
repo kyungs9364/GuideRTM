@@ -29,7 +29,6 @@ import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 
 import java.io.Serializable;
-import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
@@ -45,9 +44,10 @@ public class MainActivity extends AppCompatActivity {
     Button VR;
     Button Search;
     Button roadservice;
-    Context mContext;
+    public static Context mContext;  // 타 액티비티에서 변수or함수를 사용가능하게함
     Geocoder coder;
     CameraOverlayview mOverlayview;
+    //CameraActivity mCameraActivity;
     public static double latitude_plic ;
     public static double longitude_plic ;
     public static double des_latitude_plic ;
@@ -69,7 +69,8 @@ public class MainActivity extends AppCompatActivity {
                 showToast("검색어가 입력되지 않았습니다.");
                 return;
             }
-                Toast.makeText(getApplicationContext(), "도착지 : " + end, Toast.LENGTH_SHORT).show();
+                //Toast.makeText(getApplicationContext(), "도착지 : " + end, Toast.LENGTH_SHORT).show();
+
 
                 Intent intent = new Intent(MainActivity.this,CameraActivity.class);
                 intent.putExtra("latitude_id",String.valueOf(des_latitude_plic));  // CameraOverlayview 에 목적지값 전송 - cameraActivity 통해서 경유
@@ -127,7 +128,7 @@ public class MainActivity extends AppCompatActivity {
         Search = (Button) findViewById(R.id.search); // 검색버튼
         roadservice = (Button) findViewById(R.id.road); // 길찾기버튼
         VR = (Button) findViewById(R.id.VR);  // VR버튼
-        mContext = this;
+        mContext = this;  // 타 액티비티에서 접근 가능하게 함.
         Intent intent = getIntent();
         my_destination.setText(intent.getStringExtra("des_info")); // listview 에서 돌아온 도착지 name
         Double la_point = intent.getDoubleExtra("point_la",0);       // listview 에서 돌아온 위도, 경도
@@ -139,6 +140,7 @@ public class MainActivity extends AppCompatActivity {
 
 
         mOverlayview = new CameraOverlayview(this);
+        //mCameraActivity = new CameraActivity(this);
         coder = new Geocoder(getApplicationContext(), Locale.KOREA);
 
         //Bitmap bitmap = BitmapFactory.decodeResource(mContext.getResources(),R.drawable.run);
@@ -152,12 +154,13 @@ public class MainActivity extends AppCompatActivity {
 
                 latitude_plic = location.getLatitude();
                 longitude_plic = location.getLongitude();
-                Log.d(TAG, "qwe2 = " + String.valueOf(point2));
+                //Log.d(TAG, "qwe2 = " + String.valueOf(point2));
                 if(point2 != null)
                 {
                     drawPedestrianPath();
                 }
                 mOverlayview.setCurrentPoint(latitude_plic,longitude_plic,Ddistance);  // 현재위치 업데이트를 위해 mOverlayview에 값 전송
+                //mCameraActivity.setCurrent(latitude_plic,longitude_plic);
 
                 my_location.setText("현 위치");
                 mMapView.setCenterPoint(longitude_plic, latitude_plic);
@@ -236,7 +239,7 @@ public class MainActivity extends AppCompatActivity {
     public void drawPedestrianPath()   // 길찾기 함수
     {
         final TMapPoint point1 = new TMapPoint(latitude_plic,longitude_plic);
-        /*final TMapPoint*/ point2 = new TMapPoint(des_latitude_plic,des_longitude_plic);
+        point2 = new TMapPoint(des_latitude_plic,des_longitude_plic);
 
 
         TMapData tmapdata = new TMapData();
@@ -290,12 +293,11 @@ public class MainActivity extends AppCompatActivity {
                     Node coordinate = ((Element)placemark).getElementsByTagName("coordinates").item(0);
                     String coordinates=coordinate.getTextContent();
                     if(nodeType.getTextContent().equals("POINT")) {
-                        Node turnType
-                                = ((Element) placemark).getElementsByTagName("tmap:turnType").item(0);
+                        Node turnType = ((Element) placemark).getElementsByTagName("tmap:turnType").item(0);
                         a = Turntype(turnType.getTextContent());
                         nodeDatas.add(new NodeData(index,nodetype,coordinates,a));
                     }
-                    else nodeDatas.add(new NodeData(index, nodetype, coordinates));
+                    else nodeDatas.add(new NodeData(index, nodetype, coordinates,a));
 
                 }
             }
@@ -341,28 +343,12 @@ public class MainActivity extends AppCompatActivity {
         return c;
     }
 
-    /*public static void getNode(Node n) {
-
-        for (Node ch = n.getFirstChild(); ch != null; ch = ch.getNextSibling()) {
-            if (ch.getNodeType() == Node.ELEMENT_NODE) {
-
-                System.out.println(ch.getNodeName());
-
-                getNode(ch);
-
-            } else if (ch.getNodeType() == Node.TEXT_NODE && ch.getNodeValue().trim().length() != 0) {
-
-                System.out.println(ch.getNodeValue());
-
-            }
-        }
-    }*/
-    public static String longDouble2String(int size, double value) {   // 소수점 이하 자리를 짜르는 함수
+    /*public static String longDouble2String(int size, double value) {   // 소수점 이하 자리를 짜르는 함수
         NumberFormat nf = NumberFormat.getNumberInstance();
         nf.setMaximumFractionDigits(size);
         nf.setGroupingUsed(false);
         return nf.format(value);
-    }
+    }*/
 
     private void showToast(String s) {
         Toast.makeText(getApplicationContext(), s, Toast.LENGTH_SHORT).show();
