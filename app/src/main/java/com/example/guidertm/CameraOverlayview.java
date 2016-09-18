@@ -43,7 +43,8 @@ public class CameraOverlayview extends View implements SensorEventListener {
     float mLowPassZ;
     public static String nodetype;
     public static String index;
-    public static String coordinate;
+    public static Double nodelan;
+    public static Double nodelon;
     public static String turntype;
     public static double sta_latitude;
     public static double sta_longitude;
@@ -58,7 +59,7 @@ public class CameraOverlayview extends View implements SensorEventListener {
     int mShadowXMargin;
     int mShadowYMargin;
     Paint mShadowPaint;
-    int mVisibleDistance=10;
+    int mVisibleDistance = 10;
     float mXCompassDegree;
     float mYCompassDegree;
     float mRCompassDegree;
@@ -88,22 +89,30 @@ public class CameraOverlayview extends View implements SensorEventListener {
 
 
     private void drawGrid(double tAx, double tAy, double tBx, double tBy,
-                          Canvas pCanvas, Paint pPaint,double distance) {
-
-
-
+                          Canvas pCanvas, Paint pPaint, double distance) {
 
         // TODO Auto-generated method stub
 
+        Paint paint = new Paint();
+        paint.setColor(Color.BLACK);
+        paint.setTextSize(25);
         // 현재 위치와 랜드마크의 위치를 계산하는 공식
         double mXDegree = (double) (Math.atan2((double) (tBy - tAy)
-                ,(double) (tBx - tAx)) * 180.0 / Math.PI);
+                , (double) (tBx - tAx)) * 180.0 / Math.PI);
         float mYDegree = mYCompassDegree; // 기기의 기울임각도
         float mRDegree = mRCompassDegree;
 
         mBitmap = BitmapFactory.decodeResource(getResources(), R.drawable.kok);
         mBitmap = Bitmap.createScaledBitmap(mBitmap, mWidth / 8, mHeight / 4, true);
-        pCanvas.drawBitmap(mBitmap, (mWidth*3/7), (mHeight*3/5), null);
+        pCanvas.drawBitmap(mBitmap, (mWidth * 3 / 7), (mHeight * 3 / 5), null);
+        //pCanvas.drawText(turntype,1000,1000,paint);
+        if(turntype != null)
+        {
+            pCanvas.drawText(turntype, (mWidth * 4 / 7), (mHeight * 2 / 5), mShadowPaint);
+            //Toast.makeText(getApplicationContext(), "10m 후에 "+ turntype, Toast.LENGTH_SHORT).show(); getApplicationContext()에서 오류!
+            Log.d(TAG, "10m 이후에 " + turntype);
+        }
+
 
         // 4/4분면을 고려하여 0~360도가 나오게 설정
         if (tBx > tAx && tBy > tAy) {
@@ -134,17 +143,19 @@ public class CameraOverlayview extends View implements SensorEventListener {
             if (mYDegree > -180 && mYDegree < 5) {
                 if (mRDegree > -100 && mRDegree < -60) {
 
-                    if (mXDegree >= 340 && mXDegree <= 360){
+                    if (mXDegree >= 340 && mXDegree <= 360) {
                         mX = (float) mWidth
-                                - (float) ((mXDegree - 340) * ((float) mWidth / 40));}
-                    else
-                    {mX = (float) mWidth
-                            - (float) ((mXDegree) * ((float) mWidth / 40));}
+                                - (float) ((mXDegree - 340) * ((float) mWidth / 40));
+                    } else {
+                        mX = (float) mWidth
+                                - (float) ((mXDegree) * ((float) mWidth / 40));
+                    }
 
                     // icon의  핸드폰 디스플레이 위치값(값이 변경될때마다 흔들림)
 
-                    if(mYDegree < 0)
-                    {mYDegree = -(mYDegree);} // mY의 계산값이 -가 되지 않게 하기 위함(-가 될시 아이콘이 디스플레이를 벗어남)
+                    if (mYDegree < 0) {
+                        mYDegree = -(mYDegree);
+                    } // mY의 계산값이 -가 되지 않게 하기 위함(-가 될시 아이콘이 디스플레이를 벗어남)
 
                     mY = 240;   // 핸드폰디스플레이에 보여지는 아이콘과 거리값을 위한 세로값 고정.
 
@@ -177,7 +188,7 @@ public class CameraOverlayview extends View implements SensorEventListener {
                                             + mShadowYMargin, mShadowPaint);
 
                             pCanvas.drawText(distance + "m",
-                                    mX - pPaint.measureText(distance + "m") /2, mY
+                                    mX - pPaint.measureText(distance + "m") / 2, mY
                                             + iconHeight / 2 + 60, pPaint);
 
                         } else if (distance >= 1000) {
@@ -215,7 +226,7 @@ public class CameraOverlayview extends View implements SensorEventListener {
             pitchAngle = sensorEvent.values[1];
             rollAnlge = sensorEvent.values[2];
 
-            mXCompassDegree = lowPass(headingAngle,  mXCompassDegree );
+            mXCompassDegree = lowPass(headingAngle, mXCompassDegree);
             mYCompassDegree = lowPass(pitchAngle, mYCompassDegree);
             mRCompassDegree = lowPass(rollAnlge, mRCompassDegree);
 
@@ -245,22 +256,24 @@ public class CameraOverlayview extends View implements SensorEventListener {
         sensorManager.registerListener(this, sensorManager.getDefaultSensor(accelerometerSensor), SensorManager.SENSOR_DELAY_NORMAL);
 
     }
+
     public void onDraw(Canvas canvas) {
 
         canvas.save();
-        canvas.rotate(180, mWidth/2 , mHeight/2 );//화면 돌리기
+        canvas.rotate(180, mWidth / 2, mHeight / 2);//화면 돌리기
 
         getLocation(canvas);
 
         canvas.restore();
     }
 
-    Handler mHandler=new Handler(){
-        public void handleMessage(Message msg){
+    Handler mHandler = new Handler() {
+        public void handleMessage(Message msg) {
             invalidate();
             mHandler.sendEmptyMessageDelayed(0, 10);
         }
     };
+
     private void initPaints() {
         // TODO Auto-generated method stub
         mShadowXMargin = 2;
@@ -275,22 +288,22 @@ public class CameraOverlayview extends View implements SensorEventListener {
         mShadowPaint.setTextSize(25);
     }
 
-    public void getLocation(Canvas canvas)
-    {
-        double tAx,tAy,tBx,tBy;
-        tAx=sta_longitude;//현위치 경도좌표
-        tAy=sta_latitude;//현위치 위도좌표
-        tBx= des_longitude;//임의 경도좌표
-        tBy= des_latitude;//임의 위도 좌표
+    public void getLocation(Canvas canvas) {
+        double tAx, tAy, tBx, tBy;
+        tAx = sta_longitude;//현위치 경도좌표
+        tAy = sta_latitude;//현위치 위도좌표
+        tBx = des_longitude;//임의 경도좌표
+        tBy = des_latitude;//임의 위도 좌표
         //drawGrid(tAx,tAy,tBx,tBy,canvas,mPaint);//이미지 그려주기
         drawGrid(tAx, tAy, tBx, tBy, canvas, mPaint, distance);
 
     }
-    public void setCurrentPoint(double latitude_st, double longitude_st,double distance)//현위치 좌표 정보 얻기
+
+    public void setCurrentPoint(double latitude_st, double longitude_st, double distance)//현위치 좌표 정보 얻기
     {
-        this.sta_latitude=latitude_st;
-        this.sta_longitude=longitude_st;
-        this.distance=distance;
+        this.sta_latitude = latitude_st;
+        this.sta_longitude = longitude_st;
+        this.distance = distance;
         Log.d(TAG, "sta_la=" + String.valueOf(sta_latitude));  // 값이 들어가있나 확인용
         Log.d(TAG, "sta_lo=" + String.valueOf(sta_longitude));  // 동일
         Log.d(TAG, "distance=" + String.valueOf(distance));
@@ -298,8 +311,8 @@ public class CameraOverlayview extends View implements SensorEventListener {
 
     public void setDestinationPoint(double latitude_ds, double longitude_ds)//도착지 좌표 정보 얻기
     {
-        this.des_latitude=latitude_ds;
-        this.des_longitude=longitude_ds;
+        this.des_latitude = latitude_ds;
+        this.des_longitude = longitude_ds;
         Log.d(TAG, "des_la=" + String.valueOf(des_latitude));  // 값이 들어가있나 확인용
         Log.d(TAG, "des_lo=" + String.valueOf(des_longitude));  // 동일
     }
@@ -311,15 +324,16 @@ public class CameraOverlayview extends View implements SensorEventListener {
         mHeight = height;
     }
 
-    public void setdata(String index,String nodetype,String coordinate,String turntype)
-    {
-        this.index=index;
-        this.nodetype=nodetype;
-        this.coordinate=coordinate;
-        this.turntype=turntype;
-        Log.e("Node",this.index);
-        Log.e("Node",this.nodetype);
-        Log.e("Node",this.coordinate);
-        Log.e("Node",this.turntype);
+    public void setdata(String index, String nodetype, Double nodelan, Double nodelon, String turntype) {
+        this.index = index;
+        this.nodetype = nodetype;
+        this.nodelan = nodelan;
+        this.nodelon = nodelon;
+        this.turntype = turntype;
+        Log.e("Node", "index=" + this.index);
+        Log.e("Node", "nodetype=" + this.nodetype);
+        Log.e("Node", "nodelon=" + String.valueOf(this.nodelon));
+        Log.e("Node", "nodelan=" + String.valueOf(this.nodelan));
+        Log.e("Node", "turntype=" + this.turntype);
     }
 }

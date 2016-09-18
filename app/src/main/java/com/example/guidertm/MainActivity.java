@@ -47,7 +47,7 @@ public class MainActivity extends AppCompatActivity {
     public static Context mContext;  // 타 액티비티에서 변수or함수를 사용가능하게함
     Geocoder coder;
     CameraOverlayview mOverlayview;
-    //CameraActivity mCameraActivity;
+    CameraActivity mCameraActivity;
     public static double latitude_plic ;
     public static double longitude_plic ;
     public static double des_latitude_plic ;
@@ -140,7 +140,7 @@ public class MainActivity extends AppCompatActivity {
 
 
         mOverlayview = new CameraOverlayview(this);
-        //mCameraActivity = new CameraActivity(this);
+        mCameraActivity = new CameraActivity();
         coder = new Geocoder(getApplicationContext(), Locale.KOREA);
 
         //Bitmap bitmap = BitmapFactory.decodeResource(mContext.getResources(),R.drawable.run);
@@ -160,7 +160,7 @@ public class MainActivity extends AppCompatActivity {
                     drawPedestrianPath();
                 }
                 mOverlayview.setCurrentPoint(latitude_plic,longitude_plic,Ddistance);  // 현재위치 업데이트를 위해 mOverlayview에 값 전송
-                //mCameraActivity.setCurrent(latitude_plic,longitude_plic);
+                mCameraActivity.setCurrent(latitude_plic,longitude_plic);
 
                 my_location.setText("현 위치");
                 mMapView.setCenterPoint(longitude_plic, latitude_plic);

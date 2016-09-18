@@ -3,18 +3,19 @@ package com.example.guidertm;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.location.Location;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Display;
 import android.view.ViewGroup;
 import android.view.WindowManager;
-import android.widget.Toast;
 
 import java.util.ArrayList;
 
 /**
  * Created by 경석 on 2016-09-08.
  */
+
 public class CameraActivity extends Activity {
 
     String TAG="PAAR";
@@ -26,14 +27,6 @@ public class CameraActivity extends Activity {
     public static double Slongitude;
     ArrayList<NodeData> node;
 
-    /*public CameraActivity(Context context) {
-
-    }*/
-
-
-    //LocationManager GpslocationManager;
-    //LocationListener GpslocationListener;
-
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         mOverlayview=new CameraOverlayview(this);
@@ -42,29 +35,58 @@ public class CameraActivity extends Activity {
         longitude_ds = intent.getStringExtra("longitude_id");
         node = (ArrayList<NodeData>) intent.getSerializableExtra("node");
 
-        Slatitude = ((MainActivity) MainActivity.mContext).latitude_plic;  // 현재위치는 가져왔는데, 실시간 변경이 안됨..;
-        Slongitude = ((MainActivity) MainActivity.mContext).longitude_plic;
+        //Slatitude = ((MainActivity) MainActivity.mContext).latitude_plic;  // 현재위치는 가져왔는데, 실시간 변경이 안됨..;
+        //Slongitude = ((MainActivity) MainActivity.mContext).longitude_plic;
 
+        check(1);  // 출발지의 정보는 보내지 않아도 됨으로 check(1)로 설정
 
-        Log.d(TAG, "Linfo = " + Slatitude);
-        Log.d(TAG, "Linfo = " + Slongitude);
-
-        //Toast.makeText(getApplicationContext(), ""+latitude_st+","+longitude_st+"", Toast.LENGTH_SHORT).show();
-
-        for(int i=0; i < node.size(); i++)
-        {
-            Log.d(TAG, "Ninfo = " + node.get(i).index);
-            Log.d(TAG, "Ninfo = " + node.get(i).nodeType);
-            Log.d(TAG, "Ninfo = " + node.get(i).coordinate);
-            Log.d(TAG, "Ninfo = " + node.get(i).turntype);
-        }
-        Toast.makeText(getApplicationContext(), node.get(0).nodeType +"\n"+ node.get(0).coordinate +"\n"+ node.get(0).turntype, Toast.LENGTH_SHORT).show();
-
-        mOverlayview.setdata(node.get(0).index,node.get(0).nodeType,node.get(0).coordinate,node.get(0).turntype);
-
+        //Toast.makeText(getApplicationContext(), node.get(0).nodeType +"\n"+ node.get(0).coordinate +"\n"+ node.get(0).turntype, Toast.LENGTH_SHORT).show();
 
         //mOverlayview.setCurrentPoint(Double.parseDouble(latitude_st),Double.parseDouble(longitude_st));  // 현재위치 값 overlayview 전송
         mOverlayview.setDestinationPoint(Double.parseDouble(latitude_ds), Double.parseDouble(longitude_ds));  // 목적지 값 overlayview 전송
+    }
+
+
+
+    public void check(int a)
+    {
+        if(a>node.size())
+            return ;
+        else {
+            if(node.get(a).nodeType.equals("POINT")) {
+                String[] data = node.get(a).coordinate.split(",");
+                Double nodelon = Double.parseDouble(data[0]);
+                Double nodelan = Double.parseDouble(data[1]);
+                Log.e("NODE", "nodelon=" + nodelon);
+                Log.e("NODE","lon="+Slongitude);
+                Log.e("NODE", "nodelan="+ nodelan);
+                Log.e("NODE","lan="+Slatitude);
+
+                Location locationA = new Location("Point A");
+                Location locationB = new Location("Point B");
+                locationA.setLongitude(Slongitude);
+                locationA.setLatitude(Slatitude);
+                locationB.setLongitude(nodelon);
+                locationB.setLatitude(nodelan);
+                int distance = (int) locationA.distanceTo(locationB);
+                Log.d(TAG, "AtoB =  " + distance);
+
+                if(distance <= 10) // 10m(오차범위) 이내가 되면 노드정보를 overlayview에 전송
+                {
+                    mOverlayview.setdata(node.get(a).index, node.get(a).nodeType, Double.parseDouble(data[1]), Double.parseDouble(data[0]), node.get(a).turntype);
+                    //Toast.makeText(getApplicationContext(), node.get(a).turntype , Toast.LENGTH_LONG).show();
+                    check(a + 1);
+                }
+
+                /*if (nodelan - 0.0001 < Slatitude && Slatitude < nodelan + 0.0001 && nodelon - 0.0001 < Slongitude && Slongitude < nodelon + 0.0001) {
+                    mOverlayview.setdata(node.get(a).index, node.get(a).nodeType, Double.parseDouble(data[1]), Double.parseDouble(data[0]), node.get(a).turntype);
+                    //Toast.makeText(getApplicationContext(), node.get(a).turntype , Toast.LENGTH_LONG).show();
+                    check(a + 1);
+                }*/
+            }
+            else
+                check(a+1);
+        }
     }
 
 
@@ -119,8 +141,8 @@ public class CameraActivity extends Activity {
     {
         this.Slatitude =latitude_st;
         this.Slongitude =longitude_st;
-        Log.d(TAG, "sta_la=" + String.valueOf(Slatitude));  // 값이 들어가있나 확인용
-        Log.d(TAG, "sta_lo=" + String.valueOf(Slongitude));  // 동일
+        Log.d(TAG, "cameraactivity sta_la=" + String.valueOf(Slatitude));  // 값이 들어가있나 확인용
+        Log.d(TAG, "cameraactivity sta_lo=" + String.valueOf(Slongitude));  // 동일
     }
 
     public void onPause() {
