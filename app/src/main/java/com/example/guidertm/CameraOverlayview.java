@@ -59,6 +59,7 @@ public class CameraOverlayview extends View implements SensorEventListener {
     int mShadowXMargin;
     int mShadowYMargin;
     Paint mShadowPaint;
+    Paint mTextPaint;
     int mVisibleDistance = 10;
     float mXCompassDegree;
     float mYCompassDegree;
@@ -106,11 +107,14 @@ public class CameraOverlayview extends View implements SensorEventListener {
         mBitmap = Bitmap.createScaledBitmap(mBitmap, mWidth / 8, mHeight / 4, true);
         pCanvas.drawBitmap(mBitmap, (mWidth * 3 / 7), (mHeight * 3 / 5), null);
         //pCanvas.drawText(turntype,1000,1000,paint);
+
+        mTextPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
+        mTextPaint.setColor(Color.WHITE);
+        mTextPaint.setTextSize(35);
         if(turntype != null)
         {
-            pCanvas.drawText(turntype, (mWidth * 4 / 7), (mHeight * 2 / 5), mShadowPaint);
+            pCanvas.drawText(turntype, (mWidth * 5 / 11), (mHeight * 2 / 5), mTextPaint);
             //Toast.makeText(getApplicationContext(), "10m 후에 "+ turntype, Toast.LENGTH_SHORT).show(); getApplicationContext()에서 오류!
-            Log.d(TAG, "10m 이후에 " + turntype);
         }
 
 

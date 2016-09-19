@@ -25,6 +25,7 @@ public class CameraActivity extends Activity {
     public static String longitude_ds;
     public static double Slatitude;
     public static double Slongitude;
+    public static int count;
     ArrayList<NodeData> node;
 
     protected void onCreate(Bundle savedInstanceState) {
@@ -46,8 +47,6 @@ public class CameraActivity extends Activity {
         //mOverlayview.setCurrentPoint(Double.parseDouble(latitude_st),Double.parseDouble(longitude_st));  // 현재위치 값 overlayview 전송
         mOverlayview.setDestinationPoint(Double.parseDouble(latitude_ds), Double.parseDouble(longitude_ds));  // 목적지 값 overlayview 전송
     }
-
-
 
     public void check(int a)
     {
@@ -72,17 +71,17 @@ public class CameraActivity extends Activity {
                 int distance = (int) locationA.distanceTo(locationB);
                 Log.d(TAG, "AtoB =  " + distance);
 
-                if(distance <= 10) // 10m(오차범위) 이내가 되면 노드정보를 overlayview에 전송
+                count = a;
+
+                if(distance < 10) // 10m(오차범위) 이내가 되면 노드정보를 overlayview에 전송
                 {
                     mOverlayview.setdata(node.get(a).index, node.get(a).nodeType, Double.parseDouble(data[1]), Double.parseDouble(data[0]), node.get(a).turntype);
-                    //Toast.makeText(getApplicationContext(), node.get(a).turntype , Toast.LENGTH_LONG).show();
                     check(a + 1);
-                    Log.e("NODE","check a" + a);
+                    //Log.e("NODE","check a" + a);
                 }
                 else {
-                    Log.e("NODE", "10m 이내가 아니란말입니다!");
-                    //check 함수를 일정시간마다 불러올것이 필요.
-
+                    RequestThread thread = new RequestThread();
+                    thread.start(); //check 함수를 일정시간마다 불러옴
                 }
 
                 /*if (nodelan - 0.0001 < Slatitude && Slatitude < nodelan + 0.0001 && nodelon - 0.0001 < Slongitude && Slongitude < nodelon + 0.0001) {
@@ -93,8 +92,6 @@ public class CameraActivity extends Activity {
             }
             else {
                 check(a + 1);
-                Log.e("NODE","pass");
-                Log.e("NODE","check else" + a);
             }
         }
     }
@@ -147,6 +144,20 @@ public class CameraActivity extends Activity {
         //(서비스제공자의 상수값, 업데이트간격,기기 움직이는 미터 단위의 최소거리, 알림을 받을 locationListener)
     }
 
+    class RequestThread extends  Thread
+    {
+        public  void run()
+        {
+            try
+            {
+                Thread.sleep(3000);   // 3초 뒤에 실행
+                check(count);
+            }catch (Exception e)
+            {
+                e.printStackTrace();
+            }
+        }
+    }
     public void setCurrent(double latitude_st, double longitude_st)//현위치 좌표 정보 얻기
     {
         this.Slatitude =latitude_st;
