@@ -36,6 +36,7 @@ public class CameraActivity extends Activity {
         longitude_ds = intent.getStringExtra("longitude_id");
         node = (ArrayList<NodeData>) intent.getSerializableExtra("node");
 
+
         //Slatitude = ((MainActivity) MainActivity.mContext).latitude_plic;  // 현재위치는 가져왔는데, 실시간 변경이 안됨..;
         //Slongitude = ((MainActivity) MainActivity.mContext).longitude_plic;
 
@@ -81,7 +82,7 @@ public class CameraActivity extends Activity {
                 }
                 else {
                     RequestThread thread = new RequestThread();
-                    thread.start(); //check 함수를 일정시간마다 불러옴
+                    thread.start(); //check 함수를 일정시간마다 불러옴  -> destory 시에도 계속 실행중, destory시 종료필요
                 }
 
                 /*if (nodelan - 0.0001 < Slatitude && Slatitude < nodelan + 0.0001 && nodelon - 0.0001 < Slongitude && Slongitude < nodelon + 0.0001) {
@@ -175,6 +176,7 @@ public class CameraActivity extends Activity {
 
     protected void onDestroy() {
         super.onDestroy();
+        //thread.interrupt();
         latitude_ds = null;
         longitude_ds = null;
     }

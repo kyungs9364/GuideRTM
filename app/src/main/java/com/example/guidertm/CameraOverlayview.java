@@ -115,6 +115,14 @@ public class CameraOverlayview extends View implements SensorEventListener {
         {
             pCanvas.drawText(turntype, (mWidth * 5 / 11), (mHeight * 2 / 5), mTextPaint);
             //Toast.makeText(getApplicationContext(), "10m 후에 "+ turntype, Toast.LENGTH_SHORT).show(); getApplicationContext()에서 오류!
+            if(turntype == "좌회전") {
+                mBitmap = BitmapFactory.decodeResource(getResources(), R.drawable.reft);
+                pCanvas.drawBitmap(mBitmap, (mWidth * 3 / 7), (mHeight * 3 / 5), null);
+            }
+            else if(turntype == "우회전") {
+                mBitmap = BitmapFactory.decodeResource(getResources(), R.drawable.right);
+                pCanvas.drawBitmap(mBitmap, (mWidth * 3 / 7), (mHeight * 3 / 5), null);
+            }
         }
 
 
