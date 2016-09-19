@@ -330,10 +330,10 @@ public class CameraOverlayview extends View implements SensorEventListener {
         this.nodelan = nodelan;
         this.nodelon = nodelon;
         this.turntype = turntype;
-        Log.e("Node", "index=" + this.index);
-        Log.e("Node", "nodetype=" + this.nodetype);
-        Log.e("Node", "nodelon=" + String.valueOf(this.nodelon));
-        Log.e("Node", "nodelan=" + String.valueOf(this.nodelan));
-        Log.e("Node", "turntype=" + this.turntype);
+        Log.e("Node", "index2=" + this.index);
+        Log.e("Node", "nodetype2=" + this.nodetype);
+        Log.e("Node", "nodelon2=" + String.valueOf(this.nodelon));
+        Log.e("Node", "nodelan2=" + String.valueOf(this.nodelan));
+        Log.e("Node", "turntype2=" + this.turntype);
     }
 }

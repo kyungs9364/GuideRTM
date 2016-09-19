@@ -40,6 +40,7 @@ public class CameraActivity extends Activity {
 
         check(1);  // 출발지의 정보는 보내지 않아도 됨으로 check(1)로 설정
 
+
         //Toast.makeText(getApplicationContext(), node.get(0).nodeType +"\n"+ node.get(0).coordinate +"\n"+ node.get(0).turntype, Toast.LENGTH_SHORT).show();
 
         //mOverlayview.setCurrentPoint(Double.parseDouble(latitude_st),Double.parseDouble(longitude_st));  // 현재위치 값 overlayview 전송
@@ -76,6 +77,12 @@ public class CameraActivity extends Activity {
                     mOverlayview.setdata(node.get(a).index, node.get(a).nodeType, Double.parseDouble(data[1]), Double.parseDouble(data[0]), node.get(a).turntype);
                     //Toast.makeText(getApplicationContext(), node.get(a).turntype , Toast.LENGTH_LONG).show();
                     check(a + 1);
+                    Log.e("NODE","check a" + a);
+                }
+                else {
+                    Log.e("NODE", "10m 이내가 아니란말입니다!");
+                    //check 함수를 일정시간마다 불러올것이 필요.
+
                 }
 
                 /*if (nodelan - 0.0001 < Slatitude && Slatitude < nodelan + 0.0001 && nodelon - 0.0001 < Slongitude && Slongitude < nodelon + 0.0001) {
@@ -84,8 +91,11 @@ public class CameraActivity extends Activity {
                     check(a + 1);
                 }*/
             }
-            else
-                check(a+1);
+            else {
+                check(a + 1);
+                Log.e("NODE","pass");
+                Log.e("NODE","check else" + a);
+            }
         }
     }
 
