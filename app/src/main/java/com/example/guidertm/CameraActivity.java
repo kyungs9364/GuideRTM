@@ -86,7 +86,7 @@ public class CameraActivity extends Activity {
                 }
                 else {
                     thread = new RequestThread();
-                    thread.start(); //check 함수를 일정시간마다 불러옴  -> destory 시에도 계속 실행중, destory시 종료필요
+                    thread.start(); //check 함수를 일정시간마다 불러옴
 
                 }
 
@@ -155,9 +155,9 @@ public class CameraActivity extends Activity {
         public  void run() {
             while (!stopflag) {
                 try {
-                    Thread.sleep(5000);   // 5초 뒤에 실행
+                    Thread.sleep(3000);   // 3초 뒤에 실행
                     check(count);
-                    break;
+                    break;  // 중복적 호출을 방지하기 위해 break;
                 } catch (Exception e) {
                     e.printStackTrace();
                 }

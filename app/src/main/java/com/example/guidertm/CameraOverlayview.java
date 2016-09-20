@@ -68,6 +68,9 @@ public class CameraOverlayview extends View implements SensorEventListener {
     float mYCompassDegree;
     float mRCompassDegree;
 
+    RequestThread thread;
+    public static boolean street ; // 화살표 스위칭을 위해 선언
+
 
     // CameraActivity mContext;
     // MainActivity mainActivity;
@@ -88,10 +91,10 @@ public class CameraOverlayview extends View implements SensorEventListener {
                 R.drawable.place);
         mPalaceIconBitmap = Bitmap.createScaledBitmap(mPalaceIconBitmap, 100,
                 100, true);
-        LeftIcon = BitmapFactory.decodeResource(getResources(), R.drawable.reft);
-        LeftIcon=Bitmap.createScaledBitmap(LeftIcon,100,100,true);
-        RigftIcon = BitmapFactory.decodeResource(getResources(), R.drawable.right);
-        RigftIcon=Bitmap.createScaledBitmap(RigftIcon,100,100,true);
+        //LeftIcon = BitmapFactory.decodeResource(getResources(), R.drawable.reft);
+        //LeftIcon=Bitmap.createScaledBitmap(LeftIcon,mWidth / 8, mHeight / 4,true);
+        // RigftIcon = BitmapFactory.decodeResource(getResources(), R.drawable.right);
+        // RigftIcon=Bitmap.createScaledBitmap(RigftIcon,mWidth / 8, mHeight / 4,true);
 
     }
 
@@ -110,23 +113,36 @@ public class CameraOverlayview extends View implements SensorEventListener {
         float mYDegree = mYCompassDegree; // 기기의 기울임각도
         float mRDegree = mRCompassDegree;
 
-        mBitmap = BitmapFactory.decodeResource(getResources(), R.drawable.kok);
-        mBitmap = Bitmap.createScaledBitmap(mBitmap, mWidth / 8, mHeight / 4, true);
-        pCanvas.drawBitmap(mBitmap, (mWidth * 3 / 7), (mHeight * 3 / 5), null);
-        //pCanvas.drawText(turntype,1000,1000,paint);
-
         mTextPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
         mTextPaint.setColor(Color.WHITE);
         mTextPaint.setTextSize(35);
-        if(turntype != null)
+
+        if(turntype == null || street == true) {
+            mBitmap = BitmapFactory.decodeResource(getResources(), R.drawable.kok);
+            mBitmap = Bitmap.createScaledBitmap(mBitmap, mWidth / 8, mHeight / 4, true);
+            pCanvas.drawBitmap(mBitmap, (mWidth * 3 / 7), (mHeight * 3 / 5), null);
+        }
+        else if(turntype != null)
         {
             if(turntype.equals("좌회전")) {
-                pCanvas.drawBitmap(LeftIcon, (mWidth * 3 / 7), (mHeight * 3 / 5), null);
-                pCanvas.drawText(nodeDistace + "후에" + turntype, (mWidth * 5 / 11), (mHeight * 2 / 5), mTextPaint);
+                mBitmap = BitmapFactory.decodeResource(getResources(), R.drawable.reft);
+                mBitmap = Bitmap.createScaledBitmap(mBitmap, mWidth / 8, mHeight / 4, true);
+                pCanvas.drawBitmap(mBitmap, (mWidth * 3 / 7), (mHeight * 3 / 5), null);
+                //pCanvas.drawBitmap(LeftIcon, (mWidth * 3 / 7), (mHeight * 3 / 5), null);
+                pCanvas.drawText(nodeDistace + "m 후에 " + turntype, (mWidth * 5 / 12), (mHeight * 2 / 5), mTextPaint);
+
+                thread = new RequestThread();
+                thread.start();
             }
             else if(turntype.equals("우회전")) {
-                pCanvas.drawBitmap(RigftIcon, (mWidth * 3 / 7), (mHeight * 3 / 5), null);
-                pCanvas.drawText(nodeDistace+"후에"+turntype, (mWidth * 5 / 11), (mHeight * 2 / 5), mTextPaint);
+                mBitmap = BitmapFactory.decodeResource(getResources(), R.drawable.right);
+                mBitmap = Bitmap.createScaledBitmap(mBitmap, mWidth / 8, mHeight / 4, true);
+                pCanvas.drawBitmap(mBitmap, (mWidth * 3 / 7), (mHeight * 3 / 5), null);
+                //pCanvas.drawBitmap(RigftIcon, (mWidth * 3 / 7), (mHeight * 3 / 5), null);
+                pCanvas.drawText(nodeDistace+"m 후에 " +turntype, (mWidth * 5 / 12), (mHeight * 2 / 5), mTextPaint);
+
+                thread = new RequestThread();
+                thread.start();
             }
         }
 
@@ -354,5 +370,16 @@ public class CameraOverlayview extends View implements SensorEventListener {
         Log.e("Node", "nodelan2=" + String.valueOf(this.nodelan));
         Log.e("Node", "turntype2=" + this.turntype);
         Log.e("Node", "distatncee2=" + this.nodeDistace);
+    }
+    class RequestThread extends  Thread
+    {
+        public  void run() {
+                try {
+                    Thread.sleep(5000);   // 3초 뒤에 실행
+                    street = true;
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+        }
     }
 }
