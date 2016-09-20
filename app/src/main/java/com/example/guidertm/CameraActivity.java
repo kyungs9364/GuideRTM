@@ -27,6 +27,8 @@ public class CameraActivity extends Activity {
     public static double Slongitude;
     public static int count;
     ArrayList<NodeData> node;
+    RequestThread thread;
+    private boolean stopflag=false;
 
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -58,10 +60,10 @@ public class CameraActivity extends Activity {
                 String[] data = node.get(a).coordinate.split(",");
                 Double nodelon = Double.parseDouble(data[0]);
                 Double nodelan = Double.parseDouble(data[1]);
-                Log.e("NODE", "nodelon=" + nodelon);
-                Log.e("NODE","lon="+Slongitude);
-                Log.e("NODE", "nodelan="+ nodelan);
-                Log.e("NODE","lan="+Slatitude);
+                //Log.e("NODE", "nodelon=" + nodelon);
+                //Log.e("NODE","lon="+Slongitude);
+                //.e("NODE", "nodelan="+ nodelan);
+               // Log.e("NODE","lan="+Slatitude);
 
                 Location locationA = new Location("Point A");
                 Location locationB = new Location("Point B");
@@ -72,17 +74,20 @@ public class CameraActivity extends Activity {
                 int distance = (int) locationA.distanceTo(locationB);
                 Log.d(TAG, "AtoB =  " + distance);
 
+
                 count = a;
 
                 if(distance < 10) // 10m(오차범위) 이내가 되면 노드정보를 overlayview에 전송
                 {
-                    mOverlayview.setdata(node.get(a).index, node.get(a).nodeType, Double.parseDouble(data[1]), Double.parseDouble(data[0]), node.get(a).turntype);
+                    mOverlayview.setdata(node.get(a).index, node.get(a).nodeType, Double.parseDouble(data[1]), Double.parseDouble(data[0]), node.get(a).turntype,distance);
                     check(a + 1);
+
                     //Log.e("NODE","check a" + a);
                 }
                 else {
-                    RequestThread thread = new RequestThread();
+                    thread = new RequestThread();
                     thread.start(); //check 함수를 일정시간마다 불러옴  -> destory 시에도 계속 실행중, destory시 종료필요
+
                 }
 
                 /*if (nodelan - 0.0001 < Slatitude && Slatitude < nodelan + 0.0001 && nodelon - 0.0001 < Slongitude && Slongitude < nodelon + 0.0001) {
@@ -91,7 +96,7 @@ public class CameraActivity extends Activity {
                     check(a + 1);
                 }*/
             }
-            else {
+            else if(node.get(a).nodeType.equals("LINE")) {
                 check(a + 1);
             }
         }
@@ -147,18 +152,19 @@ public class CameraActivity extends Activity {
 
     class RequestThread extends  Thread
     {
-        public  void run()
-        {
-            try
-            {
-                Thread.sleep(3000);   // 3초 뒤에 실행
-                check(count);
-            }catch (Exception e)
-            {
-                e.printStackTrace();
+        public  void run() {
+            while (!stopflag) {
+                try {
+                    Thread.sleep(5000);   // 5초 뒤에 실행
+                    check(count);
+                    break;
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
             }
         }
     }
+
     public void setCurrent(double latitude_st, double longitude_st)//현위치 좌표 정보 얻기
     {
         this.Slatitude =latitude_st;
@@ -179,5 +185,6 @@ public class CameraActivity extends Activity {
         //thread.interrupt();
         latitude_ds = null;
         longitude_ds = null;
+        stopflag=true;
     }
 }

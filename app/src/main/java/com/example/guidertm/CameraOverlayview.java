@@ -53,6 +53,9 @@ public class CameraOverlayview extends View implements SensorEventListener {
     public static double distance;
     Bitmap mPalaceIconBitmap;
     Bitmap mBitmap;
+    public static int nodeDistace;
+    Bitmap LeftIcon;
+    Bitmap RigftIcon;
     public static int mWidth;
     public static int mHeight;
     Paint mPaint;
@@ -85,6 +88,10 @@ public class CameraOverlayview extends View implements SensorEventListener {
                 R.drawable.place);
         mPalaceIconBitmap = Bitmap.createScaledBitmap(mPalaceIconBitmap, 100,
                 100, true);
+        LeftIcon = BitmapFactory.decodeResource(getResources(), R.drawable.reft);
+        LeftIcon=Bitmap.createScaledBitmap(LeftIcon,100,100,true);
+        RigftIcon = BitmapFactory.decodeResource(getResources(), R.drawable.right);
+        RigftIcon=Bitmap.createScaledBitmap(RigftIcon,100,100,true);
 
     }
 
@@ -113,15 +120,13 @@ public class CameraOverlayview extends View implements SensorEventListener {
         mTextPaint.setTextSize(35);
         if(turntype != null)
         {
-            pCanvas.drawText(turntype, (mWidth * 5 / 11), (mHeight * 2 / 5), mTextPaint);
-            //Toast.makeText(getApplicationContext(), "10m 후에 "+ turntype, Toast.LENGTH_SHORT).show(); getApplicationContext()에서 오류!
-            if(turntype == "좌회전") {
-                mBitmap = BitmapFactory.decodeResource(getResources(), R.drawable.reft);
-                pCanvas.drawBitmap(mBitmap, (mWidth * 3 / 7), (mHeight * 3 / 5), null);
+            if(turntype.equals("좌회전")) {
+                pCanvas.drawBitmap(LeftIcon, (mWidth * 3 / 7), (mHeight * 3 / 5), null);
+                pCanvas.drawText(nodeDistace + "후에" + turntype, (mWidth * 5 / 11), (mHeight * 2 / 5), mTextPaint);
             }
-            else if(turntype == "우회전") {
-                mBitmap = BitmapFactory.decodeResource(getResources(), R.drawable.right);
-                pCanvas.drawBitmap(mBitmap, (mWidth * 3 / 7), (mHeight * 3 / 5), null);
+            else if(turntype.equals("우회전")) {
+                pCanvas.drawBitmap(RigftIcon, (mWidth * 3 / 7), (mHeight * 3 / 5), null);
+                pCanvas.drawText(nodeDistace+"후에"+turntype, (mWidth * 5 / 11), (mHeight * 2 / 5), mTextPaint);
             }
         }
 
@@ -336,16 +341,18 @@ public class CameraOverlayview extends View implements SensorEventListener {
         mHeight = height;
     }
 
-    public void setdata(String index, String nodetype, Double nodelan, Double nodelon, String turntype) {
+    public void setdata(String index, String nodetype, Double nodelan, Double nodelon, String turntype, int distance) {
         this.index = index;
         this.nodetype = nodetype;
         this.nodelan = nodelan;
         this.nodelon = nodelon;
         this.turntype = turntype;
+        this.nodeDistace=distance;
         Log.e("Node", "index2=" + this.index);
         Log.e("Node", "nodetype2=" + this.nodetype);
         Log.e("Node", "nodelon2=" + String.valueOf(this.nodelon));
         Log.e("Node", "nodelan2=" + String.valueOf(this.nodelan));
         Log.e("Node", "turntype2=" + this.turntype);
+        Log.e("Node", "distatncee2=" + this.nodeDistace);
     }
 }
