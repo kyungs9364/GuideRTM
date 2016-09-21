@@ -53,7 +53,8 @@ public class CameraOverlayview extends View implements SensorEventListener {
     public static double distance;
     Bitmap mPalaceIconBitmap;
     Bitmap mBitmap;
-    public static int nodeDistace;
+    public static int nodeDistace; // 실시간 x
+    public static int nodeAtoB; // 실시간 거리 체크
     Bitmap LeftIcon;
     Bitmap RigftIcon;
     public static int mWidth;
@@ -69,7 +70,7 @@ public class CameraOverlayview extends View implements SensorEventListener {
     float mRCompassDegree;
 
     RequestThread thread;
-    public static boolean street ; // 화살표 스위칭을 위해 선언
+    public static String arrowchange; // 화살표 스위칭을 위해 선언
 
 
     // CameraActivity mContext;
@@ -117,14 +118,14 @@ public class CameraOverlayview extends View implements SensorEventListener {
         mTextPaint.setColor(Color.WHITE);
         mTextPaint.setTextSize(35);
 
-        if(turntype == null || street == true) {
+
+        if(turntype == null || arrowchange==turntype) {
             mBitmap = BitmapFactory.decodeResource(getResources(), R.drawable.kok);
             mBitmap = Bitmap.createScaledBitmap(mBitmap, mWidth / 8, mHeight / 4, true);
             pCanvas.drawBitmap(mBitmap, (mWidth * 3 / 7), (mHeight * 3 / 5), null);
-            pCanvas.drawText("Point 까지 " + nodeDistace + " m " , (mWidth * 5 / 12), (mHeight * 2 / 5), mTextPaint);
-
+            pCanvas.drawText("Point 까지 " + nodeAtoB + " m " , (mWidth * 5 / 12), (mHeight * 2 / 5), mTextPaint);
         }
-        else if(turntype != null)
+        else if(turntype != null && arrowchange!=turntype)
         {
             if(turntype.equals("좌회전")) {
                 mBitmap = BitmapFactory.decodeResource(getResources(), R.drawable.reft);
@@ -374,17 +375,18 @@ public class CameraOverlayview extends View implements SensorEventListener {
         Log.e("Node", "distatncee2=" + this.nodeDistace);
     }
 
-    public void setAtoB(int distance)
+    public void setAtoB(int distance)   // 실시간 거리 변경을 위해 선언
     {
-        this.nodeDistace=distance;
-        Log.e("Node", "a->b=" + this.nodeDistace);
+        this.nodeAtoB=distance;
+        Log.e("Node", "a->b=" + this.nodeAtoB);
     }
     class RequestThread extends  Thread
     {
         public  void run() {
                 try {
                     Thread.sleep(5000);   // 3초 뒤에 실행
-                    street = true;
+                    arrowchange = turntype;
+
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
