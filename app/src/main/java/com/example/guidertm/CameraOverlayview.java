@@ -121,6 +121,8 @@ public class CameraOverlayview extends View implements SensorEventListener {
             mBitmap = BitmapFactory.decodeResource(getResources(), R.drawable.kok);
             mBitmap = Bitmap.createScaledBitmap(mBitmap, mWidth / 8, mHeight / 4, true);
             pCanvas.drawBitmap(mBitmap, (mWidth * 3 / 7), (mHeight * 3 / 5), null);
+            pCanvas.drawText("Point 까지 " + nodeDistace + " m " , (mWidth * 5 / 12), (mHeight * 2 / 5), mTextPaint);
+
         }
         else if(turntype != null)
         {
@@ -370,6 +372,12 @@ public class CameraOverlayview extends View implements SensorEventListener {
         Log.e("Node", "nodelan2=" + String.valueOf(this.nodelan));
         Log.e("Node", "turntype2=" + this.turntype);
         Log.e("Node", "distatncee2=" + this.nodeDistace);
+    }
+
+    public void setAtoB(int distance)
+    {
+        this.nodeDistace=distance;
+        Log.e("Node", "a->b=" + this.nodeDistace);
     }
     class RequestThread extends  Thread
     {

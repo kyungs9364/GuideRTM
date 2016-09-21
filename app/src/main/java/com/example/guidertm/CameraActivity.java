@@ -26,6 +26,7 @@ public class CameraActivity extends Activity {
     public static double Slatitude;
     public static double Slongitude;
     public static int count;
+    public static int distance;
     ArrayList<NodeData> node;
     RequestThread thread;
     private boolean stopflag=false;
@@ -71,7 +72,7 @@ public class CameraActivity extends Activity {
                 locationA.setLatitude(Slatitude);
                 locationB.setLongitude(nodelon);
                 locationB.setLatitude(nodelan);
-                int distance = (int) locationA.distanceTo(locationB);
+                distance = (int) locationA.distanceTo(locationB);
                 Log.d(TAG, "AtoB =  " + distance);
 
 
@@ -157,6 +158,7 @@ public class CameraActivity extends Activity {
                 try {
                     Thread.sleep(3000);   // 3초 뒤에 실행
                     check(count);
+                    mOverlayview.setAtoB(distance);
                     break;  // 중복적 호출을 방지하기 위해 break;
                 } catch (Exception e) {
                     e.printStackTrace();
