@@ -101,7 +101,7 @@ public class CameraOverlayview extends View implements SensorEventListener {
 
 
     private void drawGrid(double tAx, double tAy, double tBx, double tBy,
-                          Canvas pCanvas, Paint pPaint, double distance) {
+                          Canvas pCanvas, Paint pPaint, double Ddistance) {
 
         // TODO Auto-generated method stub
 
@@ -174,7 +174,7 @@ public class CameraOverlayview extends View implements SensorEventListener {
         float mX = 0;
         float mY = 0;
 
-        //Log.d(TAG, "mXDegree=" + String.valueOf(mXDegree));  // 동일
+        Log.d(TAG, "mXDegree=" + String.valueOf(mXDegree));  // 동일
         if (mXDegree >= 340 && mXDegree <= 360 || (mXDegree >= 0 && mXDegree <= 40)) {
             if (mYDegree > -180 && mYDegree < 5) {
                 if (mRDegree > -100 && mRDegree < -60) {
@@ -211,6 +211,7 @@ public class CameraOverlayview extends View implements SensorEventListener {
                     iconHeight = tIconBitmap.getHeight();
 
 
+                    int distance = (new Double(Ddistance)).intValue(); // int로 형변환.
                     pCanvas.drawBitmap(tIconBitmap, mX - (iconWidth / 2), mY - (iconHeight / 2), pPaint);
                     // 거리는 1000미터 이하와 초과로 나누어 m, Km로 출력
                     if (distance <= mVisibleDistance * 1000) {
@@ -340,8 +341,8 @@ public class CameraOverlayview extends View implements SensorEventListener {
         this.sta_latitude = latitude_st;
         this.sta_longitude = longitude_st;
         this.distance = distance;
-        Log.d(TAG, "sta_la=" + String.valueOf(sta_latitude));  // 값이 들어가있나 확인용
-        Log.d(TAG, "sta_lo=" + String.valueOf(sta_longitude));  // 동일
+        //Log.d(TAG, "sta_la=" + String.valueOf(sta_latitude));  // 값이 들어가있나 확인용
+        //Log.d(TAG, "sta_lo=" + String.valueOf(sta_longitude));  // 동일
         Log.d(TAG, "distance=" + String.valueOf(distance));
     }
 
@@ -378,7 +379,6 @@ public class CameraOverlayview extends View implements SensorEventListener {
     public void setAtoB(int distance)   // 실시간 거리 변경을 위해 선언
     {
         this.nodeAtoB=distance;
-        Log.e("Node", "a->b=" + this.nodeAtoB);
     }
     class RequestThread extends  Thread
     {

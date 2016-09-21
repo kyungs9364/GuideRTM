@@ -249,6 +249,7 @@ public class MainActivity extends AppCompatActivity {
                 polyLine.setLineColor(Color.BLUE);
                 polyLine.setLineWidth(10);
                 Ddistance = polyLine.getDistance();
+                Log.d(TAG, " main_distance " + Ddistance);
 
                /* if (Ddistance < 1000.0)
                 {
