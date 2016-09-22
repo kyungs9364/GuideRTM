@@ -15,6 +15,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.Toast;
 
@@ -44,6 +45,7 @@ public class MainActivity extends AppCompatActivity {
     Button VR;
     Button Search;
     Button roadservice;
+    ImageView update;
     public static Context mContext;  // 타 액티비티에서 변수or함수를 사용가능하게함
     Geocoder coder;
     CameraOverlayview mOverlayview;
@@ -104,6 +106,19 @@ public class MainActivity extends AppCompatActivity {
                 drawPedestrianPath();
                 naviGuide();
             }
+            else if (v.getId() == R.id.update)
+            {
+                if(point2 != null)
+                {
+                    drawPedestrianPath();
+                    naviGuide();
+                }
+                else
+                {
+                    showToast("길찾기를 진행해 주십시오.");
+                }
+
+            }
         }
     }
 
@@ -114,7 +129,7 @@ public class MainActivity extends AppCompatActivity {
 
         mMapView = new TMapView(this);
         mapContainer.addView(mMapView);
-        mMapView.setSKPMapApiKey("a9125b4b-89ae-37f1-9eb1-21dfdc5fb1d7");
+        mMapView.setSKPMapApiKey("c8e531e6-e9cf-3f33-81d8-809a113a8adb");
         mMapView.setLanguage(TMapView.LANGUAGE_KOREAN);  // 지도 언어 설정
         mMapView.setMapType(TMapView.MAPTYPE_STANDARD);  // 지도 타입 표준
         mMapView.setIconVisibility(true);    // 현재위치 아이콘을 나타낼 것인지 표시
@@ -128,6 +143,7 @@ public class MainActivity extends AppCompatActivity {
         Search = (Button) findViewById(R.id.search); // 검색버튼
         roadservice = (Button) findViewById(R.id.road); // 길찾기버튼
         VR = (Button) findViewById(R.id.VR);  // VR버튼
+        update = (ImageView)findViewById(R.id.update);
         mContext = this;  // 타 액티비티에서 접근 가능하게 함.
         Intent intent = getIntent();
         my_destination.setText(intent.getStringExtra("des_info")); // listview 에서 돌아온 도착지 name
@@ -154,11 +170,7 @@ public class MainActivity extends AppCompatActivity {
 
                 latitude_plic = location.getLatitude();
                 longitude_plic = location.getLongitude();
-                //Log.d(TAG, "qwe2 = " + String.valueOf(point2));
-                if(point2 != null)
-                {
-                    drawPedestrianPath();
-                }
+
                 mOverlayview.setCurrentPoint(latitude_plic,longitude_plic,Ddistance);  // 현재위치 업데이트를 위해 mOverlayview에 값 전송
                 mCameraActivity.setCurrent(latitude_plic,longitude_plic);
 
@@ -181,13 +193,14 @@ public class MainActivity extends AppCompatActivity {
             }
         };
 
-        locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 2000, 3, locationListener);
-        locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 2000, 3, locationListener);
+        locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 2000, 10, locationListener);
+        locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 2000, 10, locationListener);
 
         MyListenerClass buttonListener = new MyListenerClass();
         Search.setOnClickListener(buttonListener);
         roadservice.setOnClickListener(buttonListener);
         VR.setOnClickListener(buttonListener);
+        update.setOnClickListener(buttonListener);
     }
     public void findAllPoi() {  // 검색 함수
 
@@ -241,6 +254,8 @@ public class MainActivity extends AppCompatActivity {
         final TMapPoint point1 = new TMapPoint(latitude_plic,longitude_plic);
         point2 = new TMapPoint(des_latitude_plic,des_longitude_plic);
 
+        Log.d(TAG, "point location= " + point1 + point2);
+
 
         TMapData tmapdata = new TMapData();
         tmapdata.findPathDataWithType(TMapData.TMapPathType.PEDESTRIAN_PATH, point1, point2, new TMapData.FindPathDataListenerCallback() {
@@ -275,7 +290,11 @@ public class MainActivity extends AppCompatActivity {
         TMapPoint point1 = new TMapPoint(latitude_plic, longitude_plic);
         TMapPoint point2 = new TMapPoint(des_latitude_plic, des_longitude_plic);
         TMapData tmapdata = new TMapData();
+
         mMapView.zoomToTMapPoint ( point1,point2 );  // 자동 zoomlevel 조정
+        mMapView.setCenterPoint(longitude_plic, latitude_plic);
+
+        Log.d(TAG, "point location2= " + point1 + point2);
 
 
         tmapdata.findPathDataAllType(TMapData.TMapPathType.PEDESTRIAN_PATH,point1, point2, new TMapData.FindPathDataAllListenerCallback(){
