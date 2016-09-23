@@ -92,6 +92,8 @@ public class CameraOverlayview extends View implements SensorEventListener {
                 R.drawable.place);
         mPalaceIconBitmap = Bitmap.createScaledBitmap(mPalaceIconBitmap, 100,
                 100, true);
+
+
     }
 
 
@@ -126,6 +128,7 @@ public class CameraOverlayview extends View implements SensorEventListener {
                 mBitmap = BitmapFactory.decodeResource(getResources(), R.drawable.left);
                 mBitmap = Bitmap.createScaledBitmap(mBitmap, mWidth / 8, mHeight / 4, true);
                 pCanvas.drawBitmap(mBitmap, (mWidth * 3 / 7), (mHeight * 3 / 5), null);
+                //pCanvas.drawBitmap(LeftIcon, (mWidth * 3 / 7), (mHeight * 3 / 5), null);
                 pCanvas.drawText(nodeDistace + "m 후에 " + turntype, (mWidth * 5 / 12), (mHeight * 2 / 5), mTextPaint);
 
                 thread = new RequestThread();
@@ -135,6 +138,7 @@ public class CameraOverlayview extends View implements SensorEventListener {
                 mBitmap = BitmapFactory.decodeResource(getResources(), R.drawable.right);
                 mBitmap = Bitmap.createScaledBitmap(mBitmap, mWidth / 8, mHeight / 4, true);
                 pCanvas.drawBitmap(mBitmap, (mWidth * 3 / 7), (mHeight * 3 / 5), null);
+                //pCanvas.drawBitmap(RigftIcon, (mWidth * 3 / 7), (mHeight * 3 / 5), null);
                 pCanvas.drawText(nodeDistace+"m 후에 " +turntype, (mWidth * 5 / 12), (mHeight * 2 / 5), mTextPaint);
 
                 thread = new RequestThread();
@@ -144,7 +148,7 @@ public class CameraOverlayview extends View implements SensorEventListener {
 
 
         // 4/4분면을 고려하여 0~360도가 나오게 설정
-        if (tBx > tAx && tBy > tAy) {
+        /*if (tBx > tAx && tBy > tAy) {
             ;
         } else if (tBx < tAx && tBy > tAy) {
             mXDegree += 180;
@@ -152,7 +156,7 @@ public class CameraOverlayview extends View implements SensorEventListener {
             mXDegree += 180;
         } else if (tBx > tAx && tBy < tAy) {
             mXDegree += 360;
-        }
+        }*/
 
         // 두 위치간의 각도에 현재 스마트폰이 동쪽기준 바라보고 있는 방향 만큼 더해줌
         // 360도(한바퀴)가 넘었으면 한바퀴 회전한것이기에 360를 빼줌
@@ -167,27 +171,21 @@ public class CameraOverlayview extends View implements SensorEventListener {
         float mX = 0;
         float mY = 0;
 
-        Log.d(TAG, "mXDegree=" + String.valueOf(mXDegree));  // 동일
-        if (mXDegree >= 340 && mXDegree <= 360 || (mXDegree >= 0 && mXDegree <= 40)) {
-            if (mYDegree > -180 && mYDegree < 5) {
-                if (mRDegree > -100 && mRDegree < -60) {
+        Log.d(TAG, "rrrrrmXDegree=" + String.valueOf(mXDegree));
+       // 동일
+        if (mXDegree >165 && mXDegree <195) {
+            if (mRDegree > -90 && mRDegree < -75) {
 
-                    if (mXDegree >= 340 && mXDegree <= 360) {
-                        mX = (float) mWidth
-                                - (float) ((mXDegree - 340) * ((float) mWidth / 40));
-                    } else {
-                        mX = (float) mWidth
-                                - (float) ((mXDegree) * ((float) mWidth / 40));
-                    }
+                mX = (float) mWidth
+                        - (float) ((mXDegree - 165) * ((float) mWidth / 20));
 
-                    // icon의  핸드폰 디스플레이 위치값(값이 변경될때마다 흔들림)
+                mRDegree = -(mRDegree);
 
-                    if (mYDegree < 0) {
-                        mYDegree = -(mYDegree);
-                    } // mY의 계산값이 -가 되지 않게 하기 위함(-가 될시 아이콘이 디스플레이를 벗어남)
+                mY = (mRDegree * ((float) mHeight / 180));
 
-                    mY = 240;   // 핸드폰디스플레이에 보여지는 아이콘과 거리값을 위한 세로값 고정.
-
+                // icon의  핸드폰 디스플레이 위치값(값이 변경될때마다 흔들림)
+            }
+        }
                     // icon의  핸드폰 디스플레이 위치값(값이 변경될때마다 흔들림)
                     // 두 위치간의 거리를 계산함
                     /*Location locationA = new Location("Point A");
@@ -239,9 +237,6 @@ public class CameraOverlayview extends View implements SensorEventListener {
 
                         }
                     }
-                }
-            }
-        }
         mHandler.sendEmptyMessageDelayed(0, 10);
     }
 
@@ -256,9 +251,17 @@ public class CameraOverlayview extends View implements SensorEventListener {
             pitchAngle = sensorEvent.values[1];
             rollAnlge = sensorEvent.values[2];
 
+            Log.d(TAG, "head=" + String.valueOf(headingAngle));
+            Log.d(TAG, "roll=" + String.valueOf(rollAnlge));
+
+
             mXCompassDegree = lowPass(headingAngle, mXCompassDegree);
             mYCompassDegree = lowPass(pitchAngle, mYCompassDegree);
             mRCompassDegree = lowPass(rollAnlge, mRCompassDegree);
+
+            Log.d(TAG, "mXDegree=" + String.valueOf(mXCompassDegree));
+            Log.d(TAG, "mYD=" + String.valueOf(mYCompassDegree));
+
 
         } else if (sensorEvent.sensor.getType() == Sensor.TYPE_ACCELEROMETER) {
             xAxis = sensorEvent.values[0];
@@ -373,13 +376,12 @@ public class CameraOverlayview extends View implements SensorEventListener {
     {
         this.nodeAtoB=distance;
     }
-            class RequestThread extends  Thread
-            {
-                public  void run() {
+    class RequestThread extends  Thread
+    {
+        public  void run() {
                 try {
                     Thread.sleep(5000);   // 3초 뒤에 실행
                     arrowchange = turntype;
-                    Log.d(TAG, "확인");  // 동일
 
                 } catch (Exception e) {
                     e.printStackTrace();
