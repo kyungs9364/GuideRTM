@@ -92,11 +92,6 @@ public class CameraOverlayview extends View implements SensorEventListener {
                 R.drawable.place);
         mPalaceIconBitmap = Bitmap.createScaledBitmap(mPalaceIconBitmap, 100,
                 100, true);
-        //LeftIcon = BitmapFactory.decodeResource(getResources(), R.drawable.reft);
-        //LeftIcon=Bitmap.createScaledBitmap(LeftIcon,mWidth / 8, mHeight / 4,true);
-        // RigftIcon = BitmapFactory.decodeResource(getResources(), R.drawable.right);
-        // RigftIcon=Bitmap.createScaledBitmap(RigftIcon,mWidth / 8, mHeight / 4,true);
-
     }
 
 
@@ -120,7 +115,7 @@ public class CameraOverlayview extends View implements SensorEventListener {
 
 
         if(turntype == null || arrowchange==turntype) {
-            mBitmap = BitmapFactory.decodeResource(getResources(), R.drawable.kok);
+            mBitmap = BitmapFactory.decodeResource(getResources(), R.drawable.dd);
             mBitmap = Bitmap.createScaledBitmap(mBitmap, mWidth / 8, mHeight / 4, true);
             pCanvas.drawBitmap(mBitmap, (mWidth * 3 / 7), (mHeight * 3 / 5), null);
             pCanvas.drawText("Point 까지 " + nodeAtoB + " m " , (mWidth * 5 / 12), (mHeight * 2 / 5), mTextPaint);
@@ -128,10 +123,9 @@ public class CameraOverlayview extends View implements SensorEventListener {
         else if(turntype != null && arrowchange!=turntype)
         {
             if(turntype.equals("좌회전")) {
-                mBitmap = BitmapFactory.decodeResource(getResources(), R.drawable.reft);
+                mBitmap = BitmapFactory.decodeResource(getResources(), R.drawable.left);
                 mBitmap = Bitmap.createScaledBitmap(mBitmap, mWidth / 8, mHeight / 4, true);
                 pCanvas.drawBitmap(mBitmap, (mWidth * 3 / 7), (mHeight * 3 / 5), null);
-                //pCanvas.drawBitmap(LeftIcon, (mWidth * 3 / 7), (mHeight * 3 / 5), null);
                 pCanvas.drawText(nodeDistace + "m 후에 " + turntype, (mWidth * 5 / 12), (mHeight * 2 / 5), mTextPaint);
 
                 thread = new RequestThread();
@@ -141,7 +135,6 @@ public class CameraOverlayview extends View implements SensorEventListener {
                 mBitmap = BitmapFactory.decodeResource(getResources(), R.drawable.right);
                 mBitmap = Bitmap.createScaledBitmap(mBitmap, mWidth / 8, mHeight / 4, true);
                 pCanvas.drawBitmap(mBitmap, (mWidth * 3 / 7), (mHeight * 3 / 5), null);
-                //pCanvas.drawBitmap(RigftIcon, (mWidth * 3 / 7), (mHeight * 3 / 5), null);
                 pCanvas.drawText(nodeDistace+"m 후에 " +turntype, (mWidth * 5 / 12), (mHeight * 2 / 5), mTextPaint);
 
                 thread = new RequestThread();
