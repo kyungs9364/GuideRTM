@@ -254,6 +254,9 @@ public class MainActivity extends AppCompatActivity {
         final TMapPoint point1 = new TMapPoint(latitude_plic,longitude_plic);
         point2 = new TMapPoint(des_latitude_plic,des_longitude_plic);
 
+        Log.d(TAG, "point location= " + point1 + point2);
+
+
         TMapData tmapdata = new TMapData();
         tmapdata.findPathDataWithType(TMapData.TMapPathType.PEDESTRIAN_PATH, point1, point2, new TMapData.FindPathDataListenerCallback() {
 
@@ -290,6 +293,8 @@ public class MainActivity extends AppCompatActivity {
 
         mMapView.zoomToTMapPoint ( point1,point2 );  // 자동 zoomlevel 조정
         mMapView.setCenterPoint(longitude_plic, latitude_plic);
+
+        Log.d(TAG, "point location2= " + point1 + point2);
 
 
         tmapdata.findPathDataAllType(TMapData.TMapPathType.PEDESTRIAN_PATH,point1, point2, new TMapData.FindPathDataAllListenerCallback(){
@@ -371,7 +376,6 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
-        nodeDatas.clear();
     }
 
     @Override

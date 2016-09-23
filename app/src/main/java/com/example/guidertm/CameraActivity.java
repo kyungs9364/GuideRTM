@@ -38,15 +38,10 @@ public class CameraActivity extends Activity {
         latitude_ds = intent.getStringExtra("latitude_id");
         longitude_ds = intent.getStringExtra("longitude_id");
         node = (ArrayList<NodeData>) intent.getSerializableExtra("node");
-
-
-        //Slatitude = ((MainActivity) MainActivity.mContext).latitude_plic;  // 현재위치는 가져왔는데, 실시간 변경이 안됨..;
-        //Slongitude = ((MainActivity) MainActivity.mContext).longitude_plic;
-
+        Log.d(TAG,"Node"+node.get(2).coordinate);
+        Log.d(TAG,"Node"+node.get(2).turntype);
         check(1);  // 출발지의 정보는 보내지 않아도 됨으로 check(1)로 설정
 
-
-        //mOverlayview.setCurrentPoint(Double.parseDouble(latitude_st),Double.parseDouble(longitude_st));  // 현재위치 값 overlayview 전송
         mOverlayview.setDestinationPoint(Double.parseDouble(latitude_ds), Double.parseDouble(longitude_ds));  // 목적지 값 overlayview 전송
     }
 
@@ -59,8 +54,9 @@ public class CameraActivity extends Activity {
                 String[] data = node.get(a).coordinate.split(",");
                 Double nodelon = Double.parseDouble(data[0]);
                 Double nodelan = Double.parseDouble(data[1]);
-                //Log.e("NODE", "nodelon=" + nodelon);
-                //Log.e("NODE","lon="+Slongitude);
+                Log.e("NODE","a="+a);
+                Log.e("NODE", "nodelon=" + nodelon);
+                Log.e("NODE","lon="+Slongitude);
                 //.e("NODE", "nodelan="+ nodelan);
                // Log.e("NODE","lan="+Slatitude);
 
@@ -78,7 +74,7 @@ public class CameraActivity extends Activity {
 
                 if(distance < 90) // 10m(오차범위) 이내가 되면 노드정보를 overlayview에 전송
                 {
-                    mOverlayview.setdata(node.get(a).index, node.get(a).nodeType, Double.parseDouble(data[1]), Double.parseDouble(data[0]), node.get(a).turntype,distance);
+                    mOverlayview.setdata(node.get(a).index, node.get(a).nodeType, nodelan, nodelon, node.get(a).turntype,distance);
                     check(a + 1);
 
                     //Log.e("NODE","check a" + a);
@@ -88,7 +84,6 @@ public class CameraActivity extends Activity {
                     thread.start(); //check 함수를 일정시간마다 불러옴
 
                 }
-
                 /*if (nodelan - 0.0001 < Slatitude && Slatitude < nodelan + 0.0001 && nodelon - 0.0001 < Slongitude && Slongitude < nodelon + 0.0001) {
                     mOverlayview.setdata(node.get(a).index, node.get(a).nodeType, Double.parseDouble(data[1]), Double.parseDouble(data[0]), node.get(a).turntype);
                     //Toast.makeText(getApplicationContext(), node.get(a).turntype , Toast.LENGTH_LONG).show();
@@ -178,6 +173,9 @@ public class CameraActivity extends Activity {
             mCameraPreview.camera.startPreview();
         }
         super.onPause();
+    }
+    public void onStop(){
+        super.onStop();
     }
 
     protected void onDestroy() {
