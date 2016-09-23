@@ -380,12 +380,13 @@ public class CameraOverlayview extends View implements SensorEventListener {
     {
         this.nodeAtoB=distance;
     }
-    class RequestThread extends  Thread
-    {
-        public  void run() {
+            class RequestThread extends  Thread
+            {
+                public  void run() {
                 try {
                     Thread.sleep(5000);   // 3초 뒤에 실행
                     arrowchange = turntype;
+                    Log.d(TAG, "확인");  // 동일
 
                 } catch (Exception e) {
                     e.printStackTrace();
