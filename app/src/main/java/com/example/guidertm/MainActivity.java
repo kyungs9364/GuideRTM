@@ -58,6 +58,7 @@ public class MainActivity extends AppCompatActivity {
     public static  double Ddistance;
     public static List<NodeData> nodeDatas=new ArrayList<NodeData>();
 
+
     class MyListenerClass implements View.OnClickListener {
         public void onClick(View v) {
             if (v.getId() == R.id.search) {
@@ -65,14 +66,6 @@ public class MainActivity extends AppCompatActivity {
                     }
             else if (v.getId() == R.id.VR)
             {
-                String end = my_destination.getText().toString();
-
-                if (end == null || end.length() == 0) {
-                showToast("검색어가 입력되지 않았습니다.");
-                return;
-            }
-                //Toast.makeText(getApplicationContext(), "도착지 : " + end, Toast.LENGTH_SHORT).show();
-
 
                 Intent intent = new Intent(MainActivity.this,CameraActivity.class);
                 intent.putExtra("latitude_id",String.valueOf(des_latitude_plic));  // CameraOverlayview 에 목적지값 전송 - cameraActivity 통해서 경유
@@ -102,7 +95,7 @@ public class MainActivity extends AppCompatActivity {
                     showToast("검색어가 입력되지 않았습니다.");
                     return;
                 }
-
+                VR.setEnabled(true);
                 drawPedestrianPath();
                 naviGuide();
             }
@@ -110,6 +103,7 @@ public class MainActivity extends AppCompatActivity {
             {
                 if(point2 != null)
                 {
+                    VR.setEnabled(true);
                     drawPedestrianPath();
                     naviGuide();
                 }
@@ -143,6 +137,8 @@ public class MainActivity extends AppCompatActivity {
         Search = (Button) findViewById(R.id.search); // 검색버튼
         roadservice = (Button) findViewById(R.id.road); // 길찾기버튼
         VR = (Button) findViewById(R.id.VR);  // VR버튼
+        VR.setEnabled(false);
+
         update = (ImageView)findViewById(R.id.update);
         mContext = this;  // 타 액티비티에서 접근 가능하게 함.
         Intent intent = getIntent();
@@ -377,6 +373,7 @@ public class MainActivity extends AppCompatActivity {
     protected void onResume() {
         super.onResume();
         nodeDatas.clear();
+        VR.setEnabled(false);
     }
 
     @Override

@@ -131,7 +131,7 @@ public class CameraOverlayview extends View implements SensorEventListener {
                 //pCanvas.drawBitmap(LeftIcon, (mWidth * 3 / 7), (mHeight * 3 / 5), null);
                 pCanvas.drawText(nodeDistace + "m 후에 " + turntype, (mWidth * 5 / 12), (mHeight * 2 / 5), mTextPaint);
 
-                if (thread == null)
+                if (thread == null) // thread 가 null 일 경우만 실행
                 {
                     thread = new RequestThread();
                     thread.start();
@@ -144,7 +144,7 @@ public class CameraOverlayview extends View implements SensorEventListener {
                 //pCanvas.drawBitmap(RigftIcon, (mWidth * 3 / 7), (mHeight * 3 / 5), null);
                 pCanvas.drawText(nodeDistace+"m 후에 " +turntype, (mWidth * 5 / 12), (mHeight * 2 / 5), mTextPaint);
 
-                if (thread == null)
+                if (thread == null) // thread 가 null 일 경우만 실행
                 {
                     thread = new RequestThread();
                     thread.start();
@@ -386,10 +386,9 @@ public class CameraOverlayview extends View implements SensorEventListener {
     {
         public  void run() {
             try {
-                Thread.sleep(5000);   // 3초 뒤에 실행
+                Thread.sleep(5000);   // 5초 뒤에 실행
                 arrowchange = turntype;
-                Log.e("Node", "확인");
-                thread = null;
+                thread = null; // 5초뒤에 thread 를 null 로 바꿔준다. (데이터 중복 현상 제거)
 
             } catch (Exception e) {
                 e.printStackTrace();
