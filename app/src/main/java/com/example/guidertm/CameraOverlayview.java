@@ -144,9 +144,11 @@ public class CameraOverlayview extends View implements SensorEventListener {
                 //pCanvas.drawBitmap(RigftIcon, (mWidth * 3 / 7), (mHeight * 3 / 5), null);
                 pCanvas.drawText(nodeDistace+"m 후에 " +turntype, (mWidth * 5 / 12), (mHeight * 2 / 5), mTextPaint);
 
-                thread = new RequestThread();
-                thread.start();
-
+                if (thread == null)
+                {
+                    thread = new RequestThread();
+                    thread.start();
+                }
             }
         }
 
@@ -387,6 +389,7 @@ public class CameraOverlayview extends View implements SensorEventListener {
                 Thread.sleep(5000);   // 3초 뒤에 실행
                 arrowchange = turntype;
                 Log.e("Node", "확인");
+                thread = null;
 
             } catch (Exception e) {
                 e.printStackTrace();
