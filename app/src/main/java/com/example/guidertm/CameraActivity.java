@@ -70,7 +70,7 @@ public class CameraActivity extends Activity {
 
                 count = a;
 
-                if(distance < 90) // 10m(오차범위) 이내가 되면 노드정보를 overlayview에 전송
+                if(distance < 10) // 10m(오차범위) 이내가 되면 노드정보를 overlayview에 전송
                 {
                     mOverlayview.setdata(node.get(a).index, node.get(a).nodeType, nodelan, nodelon, node.get(a).turntype,distance);
                     check(a + 1);
@@ -171,6 +171,7 @@ public class CameraActivity extends Activity {
             mCameraPreview.camera.startPreview();
         }
         super.onPause();
+        mOverlayview.sensorManager.unregisterListener(mOverlayview);
     }
     public void onStop(){
         super.onStop();
@@ -182,5 +183,6 @@ public class CameraActivity extends Activity {
         latitude_ds = null;
         longitude_ds = null;
         stopflag=true;
+        mOverlayview.sensorManager.unregisterListener(mOverlayview);
     }
 }
