@@ -100,6 +100,10 @@ public class MainActivity extends AppCompatActivity {
                     showToast("검색어가 입력되지 않았습니다.");
                     return;
                 }
+                if(nodeDatas!=null)
+                {
+                    nodeDatas.clear();
+                }
 
                 drawPedestrianPath();
                 naviGuide();
@@ -357,7 +361,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
-        nodeDatas.clear();
+        //nodeDatas.clear();
     }
 
     @Override
