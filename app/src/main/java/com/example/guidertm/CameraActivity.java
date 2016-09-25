@@ -30,6 +30,7 @@ public class CameraActivity extends Activity {
     ArrayList<NodeData> node;
     RequestThread thread;
     private boolean stopflag=false;
+    int i=0;
 
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -67,17 +68,28 @@ public class CameraActivity extends Activity {
                 distance = (int) locationA.distanceTo(locationB);
                 Log.d(TAG, "AtoB =  " + distance);
 
+                if(i==0)
+                {
+                    mOverlayview.setnode(nodelan,nodelon);
+                    i++;
+                }
 
                 count = a;
 
-                if(distance < 90) // 10m(오차범위) 이내가 되면 노드정보를 overlayview에 전송
+                //mOverlayview.setdata(null,null,nodelan,nodelon,null,0);
+
+                if(distance < 10) // 10m(오차범위) 이내가 되면 노드정보를 overlayview에 전송
                 {
                     mOverlayview.setdata(node.get(a).index, node.get(a).nodeType, nodelan, nodelon, node.get(a).turntype,distance);
-                    check(a + 1);
-
+                    if(distance<2)
+                    {
+                        i=0;
+                        check(a + 1);
+                    }
                     //Log.e("NODE","check a" + a);
                 }
-                else {
+                else{
+
                     thread = new RequestThread();
                     thread.start(); //check 함수를 일정시간마다 불러옴
 
@@ -161,7 +173,7 @@ public class CameraActivity extends Activity {
     public void setCurrent(double latitude_st, double longitude_st)//현위치 좌표 정보 얻기
     {
         this.Slatitude =latitude_st;
-        this.Slongitude =longitude_st;
+        this.Slongitude = longitude_st;
         Log.d(TAG, "cameraactivity sta_la=" + String.valueOf(Slatitude));  // 값이 들어가있나 확인용
         Log.d(TAG, "cameraactivity sta_lo=" + String.valueOf(Slongitude));  // 동일
     }
@@ -171,9 +183,6 @@ public class CameraActivity extends Activity {
             mCameraPreview.camera.startPreview();
         }
         super.onPause();
-    }
-    public void onStop(){
-        super.onStop();
     }
 
     protected void onDestroy() {
