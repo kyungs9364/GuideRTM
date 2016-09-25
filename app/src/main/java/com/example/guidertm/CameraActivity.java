@@ -38,8 +38,6 @@ public class CameraActivity extends Activity {
         latitude_ds = intent.getStringExtra("latitude_id");
         longitude_ds = intent.getStringExtra("longitude_id");
         node = (ArrayList<NodeData>) intent.getSerializableExtra("node");
-        Log.d(TAG,"Node"+node.get(2).coordinate);
-        Log.d(TAG,"Node"+node.get(2).turntype);
         check(1);  // 출발지의 정보는 보내지 않아도 됨으로 check(1)로 설정
 
         mOverlayview.setDestinationPoint(Double.parseDouble(latitude_ds), Double.parseDouble(longitude_ds));  // 목적지 값 overlayview 전송
