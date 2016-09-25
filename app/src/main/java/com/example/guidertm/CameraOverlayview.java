@@ -116,12 +116,53 @@ public class CameraOverlayview extends View implements SensorEventListener {
         mTextPaint.setTextSize(35);
 
 
-        if(turntype == null || arrowchange==turntype) {
-            mBitmap = BitmapFactory.decodeResource(getResources(), R.drawable.dd);
-            mBitmap = Bitmap.createScaledBitmap(mBitmap, mWidth / 8, mHeight / 4, true);
-            pCanvas.drawBitmap(mBitmap, (mWidth * 3 / 7), (mHeight * 3 / 5), null);
-            pCanvas.drawText("Point 까지 " + nodeAtoB + " m " , (mWidth * 5 / 12), (mHeight * 2 / 5), mTextPaint);
+        double degree = Math.atan2((nodelan - tAy),(nodelon-tAx))*180.0/Math.PI;
+        // 360도(한바퀴)가 넘었으면 한바퀴 회전한것이기에 360를 빼줌
+
+        if (degree + mXCompassDegree < 360) {
+            degree += mXCompassDegree;
+        } else if (degree + mXCompassDegree >= 360) {
+            degree = degree + mXCompassDegree - 360;
         }
+
+        if(degree<0)
+        {
+            degree+=360;
+        }
+
+        Log.d(TAG,"DDDDDDD="+degree);
+
+        if(turntype == null || arrowchange==turntype) {
+            if (degree > 165 && degree < 195) {
+                mBitmap = BitmapFactory.decodeResource(getResources(), R.drawable.dd);
+                mBitmap = Bitmap.createScaledBitmap(mBitmap, mWidth / 8, mHeight / 4, true);
+                pCanvas.drawBitmap(mBitmap, (mWidth * 3 / 7), (mHeight * 3 / 5), null);
+                pCanvas.drawText("Point 까지 " + nodeAtoB + " m ", (mWidth * 5 / 12), (mHeight * 2 / 5), mTextPaint);
+            } else if (degree > 135 && degree <= 165) {
+                pCanvas.drawText("조금 우측으로 Point 까지 " + nodeAtoB + " m ", (mWidth * 5 / 12), (mHeight * 2 / 5), mTextPaint);
+            } else if (degree > 105 && degree <= 135) {
+                pCanvas.drawText("조금 더 우측으로 Point 까지 " + nodeAtoB + " m ", (mWidth * 5 / 12), (mHeight * 2 / 5), mTextPaint);
+            } else if (degree > 75 && degree <= 105) {
+                pCanvas.drawText("많이 우측으로 Point 까지 " + nodeAtoB + " m ", (mWidth * 5 / 12), (mHeight * 2 / 5), mTextPaint);
+            } else if (degree > 45 && degree <= 75) {
+                pCanvas.drawText("더 많이 우측으로 Point 까지 " + nodeAtoB + " m ", (mWidth * 5 / 12), (mHeight * 2 / 5), mTextPaint);
+            } else if (degree > 15 && degree <= 45) {
+                pCanvas.drawText("더더 많이 우측으로 Point 까지 " + nodeAtoB + " m ", (mWidth * 5 / 12), (mHeight * 2 / 5), mTextPaint);
+            } else if (degree >= 0 && degree <= 15 || degree <= 360 && degree >= 345) {
+                pCanvas.drawText("뒤돌아서 Point 까지 " + nodeAtoB + " m ", (mWidth * 5 / 12), (mHeight * 2 / 5), mTextPaint);
+            } else if (degree >= 195 && degree < 225) {
+                pCanvas.drawText("조금 좌측으로 Point 까지 " + nodeAtoB + " m ", (mWidth * 5 / 12), (mHeight * 2 / 5), mTextPaint);
+            } else if (degree >= 225 && degree < 255) {
+                pCanvas.drawText("조금 더 좌측으로 Point 까지 " + nodeAtoB + " m ", (mWidth * 5 / 12), (mHeight * 2 / 5), mTextPaint);
+            } else if (degree >= 255 && degree < 285) {
+                pCanvas.drawText("많이 좌측으로 Point 까지 " + nodeAtoB + " m ", (mWidth * 5 / 12), (mHeight * 2 / 5), mTextPaint);
+            } else if (degree >= 285 && degree < 315) {
+                pCanvas.drawText("더 많이 좌측으로 Point 까지 " + nodeAtoB + " m ", (mWidth * 5 / 12), (mHeight * 2 / 5), mTextPaint);
+            } else if (degree >= 315 && degree < 345) {
+                pCanvas.drawText("더더 많이 좌측으로 Point 까지 " + nodeAtoB + " m ", (mWidth * 5 / 12), (mHeight * 2 / 5), mTextPaint);
+            }
+        }
+
         else if(turntype != null && arrowchange!=turntype)
         {
             if(turntype.equals("좌회전")) {
@@ -131,8 +172,11 @@ public class CameraOverlayview extends View implements SensorEventListener {
                 //pCanvas.drawBitmap(LeftIcon, (mWidth * 3 / 7), (mHeight * 3 / 5), null);
                 pCanvas.drawText(nodeDistace + "m 후에 " + turntype, (mWidth * 5 / 12), (mHeight * 2 / 5), mTextPaint);
 
-                thread = new RequestThread();
-                thread.start();
+                if (thread == null) // thread 가 null 일 경우만 실행
+                {
+                    thread = new RequestThread();
+                    thread.start();
+                }
             }
             else if(turntype.equals("우회전")) {
                 mBitmap = BitmapFactory.decodeResource(getResources(), R.drawable.right);
@@ -141,8 +185,11 @@ public class CameraOverlayview extends View implements SensorEventListener {
                 //pCanvas.drawBitmap(RigftIcon, (mWidth * 3 / 7), (mHeight * 3 / 5), null);
                 pCanvas.drawText(nodeDistace+"m 후에 " +turntype, (mWidth * 5 / 12), (mHeight * 2 / 5), mTextPaint);
 
-                thread = new RequestThread();
-                thread.start();
+                if (thread == null) // thread 가 null 일 경우만 실행
+                {
+                    thread = new RequestThread();
+                    thread.start();
+                }
             }
         }
 
@@ -157,6 +204,7 @@ public class CameraOverlayview extends View implements SensorEventListener {
         } else if (tBx > tAx && tBy < tAy) {
             mXDegree += 360;
         }*/
+        Log.d(TAG,"mmmmmmmmmxdefirst"+mXDegree);
 
         // 두 위치간의 각도에 현재 스마트폰이 동쪽기준 바라보고 있는 방향 만큼 더해줌
         // 360도(한바퀴)가 넘었으면 한바퀴 회전한것이기에 360를 빼줌
@@ -171,8 +219,8 @@ public class CameraOverlayview extends View implements SensorEventListener {
         float mX = 0;
         float mY = 0;
 
-        Log.d(TAG, "rrrrrmXDegree=" + String.valueOf(mXDegree));
-       // 동일
+        Log.d(TAG, "mmmmmmmmmmxdegere=" + String.valueOf(mXDegree));
+        // 동일
         if (mXDegree >165 && mXDegree <195) {
             if (mRDegree > -90 && mRDegree < -75) {
 
@@ -181,62 +229,53 @@ public class CameraOverlayview extends View implements SensorEventListener {
 
                 mRDegree = -(mRDegree);
 
-                mY = (mRDegree * ((float) mHeight / 180));
+                mY = (mRDegree * ((float) mHeight / 360));
 
-                // icon의  핸드폰 디스플레이 위치값(값이 변경될때마다 흔들림)
+
+
+                Bitmap tIconBitmap = mPalaceIconBitmap;
+                int iconWidth, iconHeight;
+                iconWidth = tIconBitmap.getWidth();
+                iconHeight = tIconBitmap.getHeight();
+
+
+                int distance = (new Double(Ddistance)).intValue(); // int로 형변환.
+                pCanvas.drawBitmap(tIconBitmap, mX - (iconWidth / 2), mY - (iconHeight / 2), pPaint);
+                // 거리는 1000미터 이하와 초과로 나누어 m, Km로 출력
+                if (distance <= mVisibleDistance * 1000) {
+                    if (distance < 1000) {
+                        pCanvas.drawBitmap(tIconBitmap, mX - (iconWidth / 2), mY
+                                - (iconHeight / 2), pPaint);
+
+                        pCanvas.drawText(distance + "m",
+                                mX - pPaint.measureText(distance + "m") / 2
+                                        + mShadowXMargin, mY + iconHeight / 2 + 60
+                                        + mShadowYMargin, mShadowPaint);
+
+                        pCanvas.drawText(distance + "m",
+                                mX - pPaint.measureText(distance + "m") / 2, mY
+                                        + iconHeight / 2 + 60, pPaint);
+
+                    } else if (distance >= 1000) {
+                        float fDistance = (float) distance / 1000;
+                        fDistance = (float) Math.round(fDistance * 10) / 10;
+
+                        pCanvas.drawBitmap(tIconBitmap, mX - (iconWidth / 2), mY
+                                - (iconHeight / 2), pPaint);
+
+                        pCanvas.drawText(fDistance + "Km",
+                                mX - pPaint.measureText(fDistance + "Km") / 2
+                                        + mShadowXMargin, mY + iconHeight / 2 + 60
+                                        + mShadowYMargin, mShadowPaint);
+
+                        pCanvas.drawText(fDistance + "Km",
+                                mX - pPaint.measureText(fDistance + "Km") / 2, mY
+                                        + iconHeight / 2 + 60, pPaint);
+
+                    }
+                }
             }
         }
-                    // icon의  핸드폰 디스플레이 위치값(값이 변경될때마다 흔들림)
-                    // 두 위치간의 거리를 계산함
-                    /*Location locationA = new Location("Point A");
-                    Location locationB = new Location("Point B");
-                    locationA.setLongitude(tAx);
-                    locationA.setLatitude(tAy);
-                    locationB.setLongitude(tBx);
-                    locationB.setLatitude(tBy);
-                    int distance = (int) locationA.distanceTo(locationB);*/
-
-                    Bitmap tIconBitmap = mPalaceIconBitmap;
-                    int iconWidth, iconHeight;
-                    iconWidth = tIconBitmap.getWidth();
-                    iconHeight = tIconBitmap.getHeight();
-
-
-                    int distance = (new Double(Ddistance)).intValue(); // int로 형변환.
-                    pCanvas.drawBitmap(tIconBitmap, mX - (iconWidth / 2), mY - (iconHeight / 2), pPaint);
-                    // 거리는 1000미터 이하와 초과로 나누어 m, Km로 출력
-                    if (distance <= mVisibleDistance * 1000) {
-                        if (distance < 1000) {
-                            pCanvas.drawBitmap(tIconBitmap, mX - (iconWidth / 2), mY
-                                    - (iconHeight / 2), pPaint);
-
-                            pCanvas.drawText(distance + "m",
-                                    mX - pPaint.measureText(distance + "m") / 2
-                                            + mShadowXMargin, mY + iconHeight / 2 + 60
-                                            + mShadowYMargin, mShadowPaint);
-
-                            pCanvas.drawText(distance + "m",
-                                    mX - pPaint.measureText(distance + "m") / 2, mY
-                                            + iconHeight / 2 + 60, pPaint);
-
-                        } else if (distance >= 1000) {
-                            float fDistance = (float) distance / 1000;
-                            fDistance = (float) Math.round(fDistance * 10) / 10;
-
-                            pCanvas.drawBitmap(tIconBitmap, mX - (iconWidth / 2), mY
-                                    - (iconHeight / 2), pPaint);
-
-                            pCanvas.drawText(fDistance + "Km",
-                                    mX - pPaint.measureText(fDistance + "Km") / 2
-                                            + mShadowXMargin, mY + iconHeight / 2 + 60
-                                            + mShadowYMargin, mShadowPaint);
-
-                            pCanvas.drawText(fDistance + "Km",
-                                    mX - pPaint.measureText(fDistance + "Km") / 2, mY
-                                            + iconHeight / 2 + 60, pPaint);
-
-                        }
-                    }
         mHandler.sendEmptyMessageDelayed(0, 10);
     }
 
@@ -259,7 +298,7 @@ public class CameraOverlayview extends View implements SensorEventListener {
             mYCompassDegree = lowPass(pitchAngle, mYCompassDegree);
             mRCompassDegree = lowPass(rollAnlge, mRCompassDegree);
 
-            Log.d(TAG, "mXDegree=" + String.valueOf(mXCompassDegree));
+            Log.d(TAG, "mmmmmmmmmxcompass=" + String.valueOf(mXCompassDegree));
             Log.d(TAG, "mYD=" + String.valueOf(mYCompassDegree));
 
 
@@ -379,13 +418,14 @@ public class CameraOverlayview extends View implements SensorEventListener {
     class RequestThread extends  Thread
     {
         public  void run() {
-                try {
-                    Thread.sleep(5000);   // 3초 뒤에 실행
-                    arrowchange = turntype;
+            try {
+                Thread.sleep(5000);   // 5초 뒤에 실행
+                arrowchange = turntype;
+                thread = null; // 5초뒤에 thread 를 null 로 바꿔준다. (데이터 중복 현상 제거)
 
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
         }
     }
 }
