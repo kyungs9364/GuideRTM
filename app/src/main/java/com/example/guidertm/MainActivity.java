@@ -96,6 +96,9 @@ public class MainActivity extends AppCompatActivity {
                     return;
                 }
                 VR.setEnabled(true);
+                if(nodeDatas != null)
+                    nodeDatas.clear();
+
                 drawPedestrianPath();
                 naviGuide();
             }
@@ -372,8 +375,6 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
-        nodeDatas.clear();
-        VR.setEnabled(false);
     }
 
     @Override
