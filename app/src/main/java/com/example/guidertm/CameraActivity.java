@@ -56,7 +56,7 @@ public class CameraActivity extends Activity {
                 Log.e("NODE", "nodelon=" + nodelon);
                 Log.e("NODE","lon="+Slongitude);
                 //.e("NODE", "nodelan="+ nodelan);
-               // Log.e("NODE","lan="+Slatitude);
+                // Log.e("NODE","lan="+Slatitude);
 
                 Location locationA = new Location("Point A");
                 Location locationB = new Location("Point B");
@@ -70,7 +70,7 @@ public class CameraActivity extends Activity {
 
                 count = a;
 
-                if(distance < 10) // 10m(오차범위) 이내가 되면 노드정보를 overlayview에 전송
+                if(distance < 90) // 10m(오차범위) 이내가 되면 노드정보를 overlayview에 전송
                 {
                     mOverlayview.setdata(node.get(a).index, node.get(a).nodeType, nodelan, nodelon, node.get(a).turntype,distance);
                     check(a + 1);
