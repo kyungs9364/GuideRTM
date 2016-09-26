@@ -57,7 +57,7 @@ public class CameraActivity extends Activity {
                 Log.e("NODE", "nodelon=" + nodelon);
                 Log.e("NODE","lon="+Slongitude);
                 //.e("NODE", "nodelan="+ nodelan);
-               // Log.e("NODE","lan="+Slatitude);
+                // Log.e("NODE","lan="+Slatitude);
 
                 Location locationA = new Location("Point A");
                 Location locationB = new Location("Point B");
@@ -181,6 +181,7 @@ public class CameraActivity extends Activity {
             mCameraPreview.camera.startPreview();
         }
         super.onPause();
+        mOverlayview.sensorManager.unregisterListener(mOverlayview);
     }
     public void onStop(){
         super.onStop();
@@ -192,5 +193,6 @@ public class CameraActivity extends Activity {
         latitude_ds = null;
         longitude_ds = null;
         stopflag=true;
+        mOverlayview.sensorManager.unregisterListener(mOverlayview);
     }
 }
