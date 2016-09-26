@@ -30,6 +30,7 @@ public class CameraActivity extends Activity {
     ArrayList<NodeData> node;
     RequestThread thread;
     private boolean stopflag=false;
+    int i=0;
 
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -68,14 +69,22 @@ public class CameraActivity extends Activity {
                 Log.d(TAG, "AtoB =  " + distance);
 
 
+                if(i == 0) {
+                    mOverlayview.setnode(nodelan, nodelon);
+                    i++;
+                }
+
                 count = a;
 
                 if(distance < 10) // 10m(오차범위) 이내가 되면 노드정보를 overlayview에 전송
                 {
                     mOverlayview.setdata(node.get(a).index, node.get(a).nodeType, nodelan, nodelon, node.get(a).turntype,distance);
-                    check(a + 1);
 
-                    //Log.e("NODE","check a" + a);
+                    if (distance < 3)
+                    {
+                        i=0;
+                        check(a + 1);
+                    }
                 }
                 else {
                     thread = new RequestThread();

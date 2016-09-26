@@ -45,6 +45,8 @@ public class CameraOverlayview extends View implements SensorEventListener {
     public static String index;
     public static Double nodelan;
     public static Double nodelon;
+    public static Double nodelan_arrow;
+    public static Double nodelon_arrow;
     public static String turntype;
     public static double sta_latitude;
     public static double sta_longitude;
@@ -115,13 +117,78 @@ public class CameraOverlayview extends View implements SensorEventListener {
         mTextPaint.setColor(Color.WHITE);
         mTextPaint.setTextSize(35);
 
+        double degree = (double) (Math.atan2((double) (nodelan_arrow - tAy)
+                             , (double) (nodelon_arrow - tAx)) * 180.0 / Math.PI);
+
+        if(degree<0)
+        {
+            degree+=360;
+        }
+
+        if (degree + mXCompassDegree < 360) {
+            degree += mXCompassDegree;
+        } else if (degree + mXCompassDegree >= 360) {
+            degree = degree + mXCompassDegree - 360;
+        }
+
+        mBitmap = BitmapFactory.decodeResource(getResources(), R.drawable.dd);
+        mBitmap = Bitmap.createScaledBitmap(mBitmap, mWidth / 8, mHeight / 4, true);
+
+          Log.d(TAG,"DDDD="+degree);
+
 
         if(turntype == null || arrowchange==turntype) {
-            mBitmap = BitmapFactory.decodeResource(getResources(), R.drawable.dd);
-            mBitmap = Bitmap.createScaledBitmap(mBitmap, mWidth / 8, mHeight / 4, true);
-            pCanvas.drawBitmap(mBitmap, (mWidth * 3 / 7), (mHeight * 3 / 5), null);
-            pCanvas.drawText("Point 까지 " + nodeAtoB + " m " , (mWidth * 5 / 12), (mHeight * 2 / 5), mTextPaint);
+            if (degree > 165 && degree < 195)
+            {
+                pCanvas.drawBitmap(mBitmap, (mWidth * 3 / 7), (mHeight * 3 / 5), null);
+                pCanvas.drawText("Point 까지 " + nodeAtoB + " m ", (mWidth * 5 / 12), (mHeight * 2 / 5), mTextPaint);
+            }
+            else if (degree >= 195 && degree < 225)
+            {
+                pCanvas.drawText("조금 좌측 Point 까지 " + nodeAtoB + " m ", (mWidth * 5 / 12), (mHeight * 2 / 5), mTextPaint);
+            }
+            else if (degree >= 225 && degree < 255)
+            {
+                pCanvas.drawText("조금 더 좌측 Point 까지 " + nodeAtoB + " m ", (mWidth * 5 / 12), (mHeight * 2 / 5), mTextPaint);
+            }
+            else if (degree >= 255 && degree < 285)
+            {
+                pCanvas.drawText("많이 좌측 Point 까지 " + nodeAtoB + " m ", (mWidth * 5 / 12), (mHeight * 2 / 5), mTextPaint);
+            }
+            else if (degree >= 285 && degree < 315)
+            {
+                pCanvas.drawText("더 많이 좌측 Point 까지 " + nodeAtoB + " m ", (mWidth * 5 / 12), (mHeight * 2 / 5), mTextPaint);
+            }
+            else if (degree >= 315 && degree < 345)
+            {
+                pCanvas.drawText("더더 많이 좌측 Point 까지 " + nodeAtoB + " m ", (mWidth * 5 / 12), (mHeight * 2 / 5), mTextPaint);
+            }
+            else if (degree >= 345 && degree <= 360 || degree >= 0 && degree <= 15)
+            {
+                pCanvas.drawText("뒤돌아서 Point 까지 " + nodeAtoB + " m ", (mWidth * 5 / 12), (mHeight * 2 / 5), mTextPaint);
+            }
+            else if (degree > 135 && degree <= 165)
+            {
+                pCanvas.drawText("조금 우측 Point 까지 " + nodeAtoB + " m ", (mWidth * 5 / 12), (mHeight * 2 / 5), mTextPaint);
+            }
+            else if (degree > 105 && degree <= 135)
+            {
+                pCanvas.drawText("조금 더 우측 Point 까지 " + nodeAtoB + " m ", (mWidth * 5 / 12), (mHeight * 2 / 5), mTextPaint);
+            }
+            else if (degree > 75 && degree <= 105)
+            {
+                pCanvas.drawText("많이 좌측 Point 까지 " + nodeAtoB + " m ", (mWidth * 5 / 12), (mHeight * 2 / 5), mTextPaint);
+            }
+            else if (degree > 45 && degree <= 75)
+            {
+                pCanvas.drawText("더 많이 좌측 Point 까지 " + nodeAtoB + " m ", (mWidth * 5 / 12), (mHeight * 2 / 5), mTextPaint);
+            }
+            else if (degree > 15 && degree <= 45)
+            {
+                pCanvas.drawText("더더 많이 좌측 Point 까지 " + nodeAtoB + " m ", (mWidth * 5 / 12), (mHeight * 2 / 5), mTextPaint);
+            }
         }
+
         else if(turntype != null && arrowchange!=turntype)
         {
             if(turntype.equals("좌회전")) {
@@ -377,7 +444,11 @@ public class CameraOverlayview extends View implements SensorEventListener {
         Log.e("Node", "turntype2=" + this.turntype);
         Log.e("Node", "distatncee2=" + this.nodeDistace);
     }
-
+    public void setnode(Double nodelan, Double nodelon)   // 실시간 거리 변경을 위해 선언
+    {
+        this.nodelan_arrow = nodelan;
+        this.nodelon_arrow = nodelon;
+    }
     public void setAtoB(int distance)   // 실시간 거리 변경을 위해 선언
     {
         this.nodeAtoB=distance;
