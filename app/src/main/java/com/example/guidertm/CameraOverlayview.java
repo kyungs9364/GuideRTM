@@ -119,7 +119,6 @@ public class CameraOverlayview extends View implements SensorEventListener {
 
         double degree = (double) (Math.atan2((double) (nodelan_arrow - tAy)
                              , (double) (nodelon_arrow - tAx)) * 180.0 / Math.PI);
-
         if(degree<0)
         {
             degree+=360;

@@ -69,7 +69,8 @@ public class CameraActivity extends Activity {
                 Log.d(TAG, "AtoB =  " + distance);
 
 
-                if(i == 0) {
+                if(i == 0)
+                {
                     mOverlayview.setnode(nodelan, nodelon);
                     i++;
                 }
