@@ -55,6 +55,8 @@ public class MainActivity extends AppCompatActivity {
     public static TMapPoint point2;
     public static  double Ddistance;
     public static List<NodeData> nodeDatas=new ArrayList<NodeData>();
+    LocationManager locationManager;
+    LocationListener locationListener;
 
     class MyListenerClass implements View.OnClickListener {
         public void onClick(View v) {
@@ -118,7 +120,7 @@ public class MainActivity extends AppCompatActivity {
 
         mMapView = new TMapView(this);
         mapContainer.addView(mMapView);
-        mMapView.setSKPMapApiKey("a9125b4b-89ae-37f1-9eb1-21dfdc5fb1d7");
+        mMapView.setSKPMapApiKey("ad15017d-7001-3dc4-98f9-908bddb21fd8");
         mMapView.setLanguage(TMapView.LANGUAGE_KOREAN);  // 지도 언어 설정
         mMapView.setMapType(TMapView.MAPTYPE_STANDARD);  // 지도 타입 표준
         mMapView.setIconVisibility(true);    // 현재위치 아이콘을 나타낼 것인지 표시
@@ -139,10 +141,11 @@ public class MainActivity extends AppCompatActivity {
         Double lo_point = intent.getDoubleExtra("point_lo",0);
         des_latitude_plic = la_point;
         des_longitude_plic = lo_point;
-        Log.d(TAG, "des=" + String.valueOf( des_latitude_plic));
-        Log.d(TAG, "des=" + String.valueOf( des_longitude_plic));
+        Log.d(TAG, "des=" + String.valueOf(des_latitude_plic));
+        Log.d(TAG, "des=" + String.valueOf(des_longitude_plic));
 
         chkGpsService();
+
 
         mOverlayview = new CameraOverlayview(this);
         mCameraActivity = new CameraActivity();
@@ -151,10 +154,9 @@ public class MainActivity extends AppCompatActivity {
         //Bitmap bitmap = BitmapFactory.decodeResource(mContext.getResources(),R.drawable.run);
         //Bitmap.createScaledBitmap(bitmap, 100, 100, true);
         //mMapView.setIcon(bitmap);
+        locationManager = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
 
-        LocationManager locationManager = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
-
-        LocationListener locationListener = new LocationListener() {
+         locationListener = new LocationListener() {
             public void onLocationChanged(Location location) {
 
                 latitude_plic = location.getLatitude();
@@ -408,6 +410,8 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
+        locationManager.removeUpdates(locationListener);
+
     }
 
 }

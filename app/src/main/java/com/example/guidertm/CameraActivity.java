@@ -3,6 +3,7 @@ package com.example.guidertm;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.hardware.SensorManager;
 import android.location.Location;
 import android.os.Bundle;
 import android.util.Log;
@@ -126,6 +127,8 @@ public class CameraActivity extends Activity {
         addContentView(mOverlayview, new ViewGroup.LayoutParams((int) width,
                 height));
 
+        mOverlayview.resumesensor();
+
         /*GpslocationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);//위치 관리자 객체 구하기
         GpslocationListener = new LocationListener() {//리스너 정의
             @Override
@@ -191,5 +194,8 @@ public class CameraActivity extends Activity {
         latitude_ds = null;
         longitude_ds = null;
         stopflag=true;
+        mOverlayview.viewDestory();
+        //LocationManager.removeUpdates(mGpsLocationListener);
+        //mNetworkLocationManager.removeUpdates(mNetworkLocationListener);
     }
 }

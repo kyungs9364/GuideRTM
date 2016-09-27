@@ -74,8 +74,8 @@ public class CameraOverlayview extends View implements SensorEventListener {
     public CameraOverlayview(Context context) {
         super(context);
         initBitamaps();
-        initSensor(context);
         initPaints();
+        initSensor(context);
     }
 
     private void initBitamaps() {
@@ -344,9 +344,12 @@ public class CameraOverlayview extends View implements SensorEventListener {
         sensorManager = (SensorManager) context.getSystemService(Context.SENSOR_SERVICE);
         orientationSensor = Sensor.TYPE_ORIENTATION;
         accelerometerSensor = Sensor.TYPE_ACCELEROMETER;
+    }
+
+    public void resumesensor()
+    {
         sensorManager.registerListener(this, sensorManager.getDefaultSensor(orientationSensor), SensorManager.SENSOR_DELAY_NORMAL);
         sensorManager.registerListener(this, sensorManager.getDefaultSensor(accelerometerSensor), SensorManager.SENSOR_DELAY_NORMAL);
-
     }
 
     public void onDraw(Canvas canvas) {
@@ -457,4 +460,10 @@ public class CameraOverlayview extends View implements SensorEventListener {
                 }
         }
     }
+
+    // 카메라 액티비티가 소멸될때 센서 리스너를 해제
+    public void viewDestory() {
+        sensorManager.unregisterListener(this);
+    }
+
 }
