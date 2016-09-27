@@ -3,7 +3,6 @@ package com.example.guidertm;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
-import android.hardware.SensorManager;
 import android.location.Location;
 import android.os.Bundle;
 import android.util.Log;
@@ -69,28 +68,26 @@ public class CameraActivity extends Activity {
                 distance = (int) locationA.distanceTo(locationB);
                 Log.d(TAG, "AtoB =  " + distance);
 
-                if(i==0)
+
+                if(i == 0)
                 {
-                    mOverlayview.setnode(nodelan,nodelon);
+                    mOverlayview.setnode(nodelan, nodelon);
                     i++;
                 }
 
                 count = a;
 
-                //mOverlayview.setdata(null,null,nodelan,nodelon,null,0);
-
                 if(distance < 10) // 10m(오차범위) 이내가 되면 노드정보를 overlayview에 전송
                 {
                     mOverlayview.setdata(node.get(a).index, node.get(a).nodeType, nodelan, nodelon, node.get(a).turntype,distance);
-                    if(distance<2)
+
+                    if (distance < 3)
                     {
                         i=0;
                         check(a + 1);
                     }
-                    //Log.e("NODE","check a" + a);
                 }
-                else{
-
+                else {
                     thread = new RequestThread();
                     thread.start(); //check 함수를 일정시간마다 불러옴
 
@@ -128,7 +125,6 @@ public class CameraActivity extends Activity {
                 height));
 
         mOverlayview.resumesensor();
-
         /*GpslocationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);//위치 관리자 객체 구하기
         GpslocationListener = new LocationListener() {//리스너 정의
             @Override
@@ -176,7 +172,7 @@ public class CameraActivity extends Activity {
     public void setCurrent(double latitude_st, double longitude_st)//현위치 좌표 정보 얻기
     {
         this.Slatitude =latitude_st;
-        this.Slongitude = longitude_st;
+        this.Slongitude =longitude_st;
         Log.d(TAG, "cameraactivity sta_la=" + String.valueOf(Slatitude));  // 값이 들어가있나 확인용
         Log.d(TAG, "cameraactivity sta_lo=" + String.valueOf(Slongitude));  // 동일
     }
@@ -187,6 +183,9 @@ public class CameraActivity extends Activity {
         }
         super.onPause();
     }
+    public void onStop(){
+        super.onStop();
+    }
 
     protected void onDestroy() {
         super.onDestroy();
@@ -195,7 +194,5 @@ public class CameraActivity extends Activity {
         longitude_ds = null;
         stopflag=true;
         mOverlayview.viewDestory();
-        //LocationManager.removeUpdates(mGpsLocationListener);
-        //mNetworkLocationManager.removeUpdates(mNetworkLocationListener);
     }
 }

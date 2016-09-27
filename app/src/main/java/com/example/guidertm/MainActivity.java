@@ -62,15 +62,15 @@ public class MainActivity extends AppCompatActivity {
         public void onClick(View v) {
             if (v.getId() == R.id.search) {
                 findAllPoi();
-                    }
+            }
             else if (v.getId() == R.id.VR)
             {
                 String end = my_destination.getText().toString();
 
                 if (end == null || end.length() == 0) {
-                showToast("검색어가 입력되지 않았습니다.");
-                return;
-            }
+                    showToast("검색어가 입력되지 않았습니다.");
+                    return;
+                }
                 //Toast.makeText(getApplicationContext(), "도착지 : " + end, Toast.LENGTH_SHORT).show();
 
 
@@ -141,11 +141,10 @@ public class MainActivity extends AppCompatActivity {
         Double lo_point = intent.getDoubleExtra("point_lo",0);
         des_latitude_plic = la_point;
         des_longitude_plic = lo_point;
-        Log.d(TAG, "des=" + String.valueOf(des_latitude_plic));
-        Log.d(TAG, "des=" + String.valueOf(des_longitude_plic));
+        Log.d(TAG, "des=" + String.valueOf( des_latitude_plic));
+        Log.d(TAG, "des=" + String.valueOf( des_longitude_plic));
 
         chkGpsService();
-
 
         mOverlayview = new CameraOverlayview(this);
         mCameraActivity = new CameraActivity();
@@ -154,9 +153,10 @@ public class MainActivity extends AppCompatActivity {
         //Bitmap bitmap = BitmapFactory.decodeResource(mContext.getResources(),R.drawable.run);
         //Bitmap.createScaledBitmap(bitmap, 100, 100, true);
         //mMapView.setIcon(bitmap);
+
         locationManager = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
 
-         locationListener = new LocationListener() {
+        locationListener = new LocationListener() {
             public void onLocationChanged(Location location) {
 
                 latitude_plic = location.getLatitude();
@@ -303,8 +303,7 @@ public class MainActivity extends AppCompatActivity {
                     if(nodeType.getTextContent().equals("POINT")) {
                         Node turnType = ((Element) placemark).getElementsByTagName("tmap:turnType").item(0);
                         a = Turntype(turnType.getTextContent());
-                        nodeDatas.add(new NodeData(index, nodetype, coordinates, a));
-                        Log.d(TAG,"DDD"+nodeDatas.get(0).turntype);
+                        nodeDatas.add(new NodeData(index,nodetype,coordinates,a));
                     }
                     else nodeDatas.add(new NodeData(index, nodetype, coordinates,a));
 
@@ -313,8 +312,7 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
-
-    private boolean chkGpsService() {
+    public boolean chkGpsService() {
 
         String gps = android.provider.Settings.Secure.getString(getContentResolver(), android.provider.Settings.Secure.LOCATION_PROVIDERS_ALLOWED);
 
@@ -347,7 +345,6 @@ public class MainActivity extends AppCompatActivity {
             return true;
         }
     }
-
 
     public String Turntype(String c)
     {
@@ -400,6 +397,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
+        //nodeDatas.clear();
     }
 
     @Override
@@ -411,8 +409,6 @@ public class MainActivity extends AppCompatActivity {
     protected void onDestroy() {
         super.onDestroy();
         locationManager.removeUpdates(locationListener);
-
     }
 
 }
-
