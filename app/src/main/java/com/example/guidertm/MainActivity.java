@@ -8,7 +8,10 @@ import android.location.Geocoder;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.Bundle;
+import android.provider.Settings;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
@@ -145,6 +148,7 @@ public class MainActivity extends AppCompatActivity {
         Log.d(TAG, "des=" + String.valueOf( des_longitude_plic));
 
         chkGpsService();
+        isNetworkState(this);
 
         mOverlayview = new CameraOverlayview(this);
         mCameraActivity = new CameraActivity();
@@ -285,27 +289,26 @@ public class MainActivity extends AppCompatActivity {
         mMapView.zoomToTMapPoint ( point1,point2 );  // 자동 zoomlevel 조정
 
 
-        tmapdata.findPathDataAllType(TMapData.TMapPathType.PEDESTRIAN_PATH,point1, point2, new TMapData.FindPathDataAllListenerCallback(){
+        tmapdata.findPathDataAllType(TMapData.TMapPathType.PEDESTRIAN_PATH, point1, point2, new TMapData.FindPathDataAllListenerCallback() {
             @Override
             public void onFindPathDataAll(Document doc) {
                 doc.getDocumentElement().normalize();
                 Element root = doc.getDocumentElement();
                 int length = root.getElementsByTagName("Placemark").getLength();
-                for(int i=0; i<length; i++) {
-                    String a="";
+                for (int i = 0; i < length; i++) {
+                    String a = "";
                     Node placemark = root.getElementsByTagName("Placemark").item(i);
-                    Node tmapindex = ((Element)placemark).getElementsByTagName("tmap:index").item(0);
-                    String index=tmapindex.getTextContent();
-                    Node nodeType = ((Element)placemark).getElementsByTagName("tmap:nodeType").item(0);
-                    String nodetype=nodeType.getTextContent();
-                    Node coordinate = ((Element)placemark).getElementsByTagName("coordinates").item(0);
-                    String coordinates=coordinate.getTextContent();
-                    if(nodeType.getTextContent().equals("POINT")) {
+                    Node tmapindex = ((Element) placemark).getElementsByTagName("tmap:index").item(0);
+                    String index = tmapindex.getTextContent();
+                    Node nodeType = ((Element) placemark).getElementsByTagName("tmap:nodeType").item(0);
+                    String nodetype = nodeType.getTextContent();
+                    Node coordinate = ((Element) placemark).getElementsByTagName("coordinates").item(0);
+                    String coordinates = coordinate.getTextContent();
+                    if (nodeType.getTextContent().equals("POINT")) {
                         Node turnType = ((Element) placemark).getElementsByTagName("tmap:turnType").item(0);
                         a = Turntype(turnType.getTextContent());
-                        nodeDatas.add(new NodeData(index,nodetype,coordinates,a));
-                    }
-                    else nodeDatas.add(new NodeData(index, nodetype, coordinates,a));
+                        nodeDatas.add(new NodeData(index, nodetype, coordinates, a));
+                    } else nodeDatas.add(new NodeData(index, nodetype, coordinates, a));
 
                 }
             }
@@ -346,6 +349,46 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+
+    public  boolean isNetworkState(Context context) {
+        ConnectivityManager manager =
+                (ConnectivityManager)context.getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo mobile = manager.getNetworkInfo(ConnectivityManager.TYPE_MOBILE);
+        NetworkInfo wifi = manager.getNetworkInfo(ConnectivityManager.TYPE_WIFI);
+        NetworkInfo lte_4g = manager.getNetworkInfo(ConnectivityManager.TYPE_WIMAX);
+        boolean blte_4g = false;
+
+        if(lte_4g != null)
+            blte_4g = lte_4g.isConnected();
+        if( mobile != null ) {
+            if (mobile.isConnected() || wifi.isConnected() || blte_4g)
+                return true;
+        } else {
+            if ( wifi.isConnected() || blte_4g )
+                return true;
+        }
+
+        AlertDialog.Builder dlg = new AlertDialog.Builder(context);
+        dlg.setTitle("네트워크 오류");
+        dlg.setMessage("네트워크 연결 후 사용 가능합니다.\n 네트워크 연결을 설정 하시겠습니까?");
+
+
+        dlg.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int which) {
+                // network설정 화면으로 이동
+                Intent intent = new Intent(Settings.ACTION_WIFI_SETTINGS);
+                intent.addCategory(Intent.CATEGORY_DEFAULT);
+                startActivity(intent);
+            }
+        })
+                .setNegativeButton("No", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+                        return;
+                    }
+                }).create().show();
+
+        return false;
+    }
     public String Turntype(String c)
     {
         switch (c)
