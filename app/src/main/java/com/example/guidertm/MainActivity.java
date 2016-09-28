@@ -1,23 +1,33 @@
 package com.example.guidertm;
 
+import android.Manifest;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.location.Geocoder;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
+import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.Toast;
 
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.location.LocationRequest;
+import com.google.android.gms.location.LocationServices;
 import com.skp.Tmap.TMapData;
 import com.skp.Tmap.TMapPOIItem;
 import com.skp.Tmap.TMapPoint;
@@ -31,9 +41,9 @@ import org.w3c.dom.Node;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Locale;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements GoogleApiClient.OnConnectionFailedListener,
+        GoogleApiClient.ConnectionCallbacks {
 
     String TAG="PAAR";
     String Distance;
@@ -44,6 +54,7 @@ public class MainActivity extends AppCompatActivity {
     Button VR;
     Button Search;
     Button roadservice;
+    ImageView update;
     public static Context mContext;  // 타 액티비티에서 변수or함수를 사용가능하게함
     Geocoder coder;
     CameraOverlayview mOverlayview;
@@ -55,20 +66,24 @@ public class MainActivity extends AppCompatActivity {
     public static TMapPoint point2;
     public static  double Ddistance;
     public static List<NodeData> nodeDatas=new ArrayList<NodeData>();
+    LocationManager locationManager;
+    LocationListener locationListener;
+    GoogleApiClient mApiClient;
+
 
     class MyListenerClass implements View.OnClickListener {
         public void onClick(View v) {
             if (v.getId() == R.id.search) {
                 findAllPoi();
-                    }
+            }
             else if (v.getId() == R.id.VR)
             {
                 String end = my_destination.getText().toString();
 
                 if (end == null || end.length() == 0) {
-                showToast("검색어가 입력되지 않았습니다.");
-                return;
-            }
+                    showToast("검색어가 입력되지 않았습니다.");
+                    return;
+                }
                 //Toast.makeText(getApplicationContext(), "도착지 : " + end, Toast.LENGTH_SHORT).show();
 
 
@@ -80,7 +95,6 @@ public class MainActivity extends AppCompatActivity {
 
                   /*
                 List<Address> des_location = null;
-
                 try {    //  도착위치 값 지오코딩.
                     des_location = coder.getFromLocationName(end, 5);
                 } catch (NumberFormatException e) {
@@ -108,6 +122,15 @@ public class MainActivity extends AppCompatActivity {
                 drawPedestrianPath();
                 naviGuide();
             }
+            else if (v.getId() == R.id.update) {
+                if (point2 != null) {
+                    drawPedestrianPath();
+                    naviGuide();
+                } else {
+                    showToast("길찾기를 진행해 주십시오.");
+                }
+            }
+
         }
     }
 
@@ -115,10 +138,15 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         mapContainer = (RelativeLayout) findViewById(R.id.Tmap);
+        mApiClient = new GoogleApiClient.Builder(this)
+                .addApi(LocationServices.API)
+                .addConnectionCallbacks(this)
+                .enableAutoManage(this, this)
+                .build();
 
         mMapView = new TMapView(this);
         mapContainer.addView(mMapView);
-        mMapView.setSKPMapApiKey("a9125b4b-89ae-37f1-9eb1-21dfdc5fb1d7");
+        mMapView.setSKPMapApiKey("ad15017d-7001-3dc4-98f9-908bddb21fd8");
         mMapView.setLanguage(TMapView.LANGUAGE_KOREAN);  // 지도 언어 설정
         mMapView.setMapType(TMapView.MAPTYPE_STANDARD);  // 지도 타입 표준
         mMapView.setIconVisibility(true);    // 현재위치 아이콘을 나타낼 것인지 표시
@@ -132,67 +160,89 @@ public class MainActivity extends AppCompatActivity {
         Search = (Button) findViewById(R.id.search); // 검색버튼
         roadservice = (Button) findViewById(R.id.road); // 길찾기버튼
         VR = (Button) findViewById(R.id.VR);  // VR버튼
+        update = (ImageView)findViewById(R.id.update);
         mContext = this;  // 타 액티비티에서 접근 가능하게 함.
         Intent intent = getIntent();
         my_destination.setText(intent.getStringExtra("des_info")); // listview 에서 돌아온 도착지 name
-        Double la_point = intent.getDoubleExtra("point_la",0);       // listview 에서 돌아온 위도, 경도
-        Double lo_point = intent.getDoubleExtra("point_lo",0);
+        Double la_point = intent.getDoubleExtra("point_la", 0);       // listview 에서 돌아온 위도, 경도
+        Double lo_point = intent.getDoubleExtra("point_lo", 0);
         des_latitude_plic = la_point;
         des_longitude_plic = lo_point;
-        Log.d(TAG, "des=" + String.valueOf( des_latitude_plic));
-        Log.d(TAG, "des=" + String.valueOf( des_longitude_plic));
+        Log.d(TAG, "des=" + String.valueOf(des_latitude_plic));
+        Log.d(TAG, "des=" + String.valueOf(des_longitude_plic));
 
+        chkGpsService();
 
         mOverlayview = new CameraOverlayview(this);
         mCameraActivity = new CameraActivity();
-        coder = new Geocoder(getApplicationContext(), Locale.KOREA);
+    }
 
-        //Bitmap bitmap = BitmapFactory.decodeResource(mContext.getResources(),R.drawable.run);
-        //Bitmap.createScaledBitmap(bitmap, 100, 100, true);
-        //mMapView.setIcon(bitmap);
+    boolean isConnected = false;
 
-        LocationManager locationManager = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
+    @Override
+    public void onConnected(@Nullable Bundle bundle) {
+        isConnected = true;
+        getLocation();
+    }
 
-        LocationListener locationListener = new LocationListener() {
-            public void onLocationChanged(Location location) {
+    private void getLocation() {
+        if (!isConnected) return;
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            return;
+        }
 
-                latitude_plic = location.getLatitude();
-                longitude_plic = location.getLongitude();
-                //Log.d(TAG, "qwe2 = " + String.valueOf(point2));
-                if(point2 != null)
-                {
-                    drawPedestrianPath();
-                }
-                mOverlayview.setCurrentPoint(latitude_plic,longitude_plic,Ddistance);  // 현재위치 업데이트를 위해 mOverlayview에 값 전송
-                mCameraActivity.setCurrent(latitude_plic,longitude_plic);
+        Location location = LocationServices.FusedLocationApi.getLastLocation(mApiClient);
+        if (location != null) {
+            latitude_plic = location.getLatitude();
+            longitude_plic = location.getLongitude();
 
-                my_location.setText("현 위치");
-                mMapView.setCenterPoint(longitude_plic, latitude_plic);
-                mMapView.setLocationPoint(longitude_plic, latitude_plic);
-                mMapView.setTrackingMode(true);
-            }
+            mOverlayview.setCurrentPoint(latitude_plic,longitude_plic,Ddistance);  // 현재위치 업데이트를 위해 mOverlayview에 값 전송
+            mCameraActivity.setCurrent(latitude_plic,longitude_plic);
 
-            @Override
-            public void onStatusChanged(String provider, int status, Bundle extras) {
-            }
+            my_location.setText("현 위치");
+            mMapView.setCenterPoint(longitude_plic, latitude_plic);
+            mMapView.setLocationPoint(longitude_plic, latitude_plic);
+            mMapView.setTrackingMode(true);
+        }
 
-            @Override
-            public void onProviderEnabled(String provider) {
-            }
+        LocationRequest request = new LocationRequest();
+        request.setFastestInterval(10000);
+        request.setInterval(20000);
+        request.setNumUpdates(1);
+        request.setPriority(LocationRequest.PRIORITY_BALANCED_POWER_ACCURACY);
 
-            @Override
-            public void onProviderDisabled(String provider) {
-            }
-        };
-
-        locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 2000, 3, locationListener);
-        locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 2000, 3, locationListener);
+        LocationServices.FusedLocationApi.requestLocationUpdates(mApiClient, request, mListener);
 
         MyListenerClass buttonListener = new MyListenerClass();
         Search.setOnClickListener(buttonListener);
         roadservice.setOnClickListener(buttonListener);
         VR.setOnClickListener(buttonListener);
+        update.setOnClickListener(buttonListener);
     }
+
+    com.google.android.gms.location.LocationListener mListener = new com.google.android.gms.location.LocationListener() {
+        @Override
+        public void onLocationChanged(Location location) {
+            latitude_plic = location.getLatitude();
+            longitude_plic = location.getLongitude();
+
+            mOverlayview.setCurrentPoint(latitude_plic,longitude_plic,Ddistance);  // 현재위치 업데이트를 위해 mOverlayview에 값 전송
+            mCameraActivity.setCurrent(latitude_plic,longitude_plic);
+            mMapView.setCenterPoint(longitude_plic, latitude_plic);
+            mMapView.setLocationPoint(longitude_plic, latitude_plic);
+
+        }
+    };
+    @Override
+    public void onConnectionSuspended(int i) {
+        isConnected = false;
+    }
+
+    @Override
+    public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
+
+    }
+
     public void findAllPoi() {  // 검색 함수
 
         AlertDialog.Builder builder = new AlertDialog.Builder(this);  // 팝업창을 띄워주기 위해 생성
@@ -309,6 +359,39 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
+    public boolean chkGpsService() {
+
+        String gps = android.provider.Settings.Secure.getString(getContentResolver(), android.provider.Settings.Secure.LOCATION_PROVIDERS_ALLOWED);
+
+
+        if (!(gps.matches(".*gps.*") && gps.matches(".*network.*"))) {
+
+            // GPS OFF 일때 Dialog 표시
+            AlertDialog.Builder gsDialog = new AlertDialog.Builder(this);
+
+            gsDialog.setTitle("위치 서비스 설정");
+            gsDialog.setMessage("무선 네트워크 사용, GPS 위성 사용을 모두 체크하셔야 정확한 위치 서비스가 가능합니다.\n위치 서비스 기능을 설정하시겠습니까?");
+
+            gsDialog.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                public void onClick(DialogInterface dialog, int which) {
+                    // GPS설정 화면으로 이동
+                    Intent intent = new Intent(android.provider.Settings.ACTION_LOCATION_SOURCE_SETTINGS);
+                    intent.addCategory(Intent.CATEGORY_DEFAULT);
+                    startActivity(intent);
+                }
+            })
+                    .setNegativeButton("No", new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int which) {
+                            return;
+                        }
+                    }).create().show();
+            return false;
+
+        }
+        else {
+            return true;
+        }
+    }
 
     public String Turntype(String c)
     {
@@ -372,7 +455,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
+        //locationManager.removeUpdates(locationListener);
     }
 
 }
-

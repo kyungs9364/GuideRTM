@@ -35,9 +35,6 @@ public class CameraOverlayview extends View implements SensorEventListener {
     float zAxis;//z축
 
     float a = 0.8f;
-    float mLowPassHeading;
-    float mLowPassPitch;
-    float mLowPassRoll;
     float mLowPassX;
     float mLowPassY;
     float mLowPassZ;
@@ -120,16 +117,17 @@ public class CameraOverlayview extends View implements SensorEventListener {
         double degree = (double) (Math.atan2((double) (nodelan_arrow - tAy)
                 , (double) (nodelon_arrow - tAx)) * 180.0 / Math.PI);
 
-        if(degree<0)
-        {
-            degree+=360;
-        }
-
         if (degree + mXCompassDegree < 360) {
             degree += mXCompassDegree;
         } else if (degree + mXCompassDegree >= 360) {
             degree = degree + mXCompassDegree - 360;
         }
+
+        if(degree<0)
+        {
+            degree+=360;
+        }
+
 
         mBitmap = BitmapFactory.decodeResource(getResources(), R.drawable.dd);
         mBitmap = Bitmap.createScaledBitmap(mBitmap, mWidth / 8, mHeight / 4, true);
@@ -138,54 +136,53 @@ public class CameraOverlayview extends View implements SensorEventListener {
 
 
         if(turntype == null || arrowchange==turntype) {
-            if (degree > 165 && degree < 195)
-            {
+            if (degree >165 && degree <195) {
                 pCanvas.drawBitmap(mBitmap, (mWidth * 3 / 7), (mHeight * 3 / 5), null);
-                pCanvas.drawText("Point 까지 " + nodeAtoB + " m ", (mWidth * 5 / 12), (mHeight * 2 / 5), mTextPaint);
+                //pCanvas.drawText("Point 까지 " + nodeAtoB + " m ", (mWidth * 5 / 12), (mHeight * 2 / 5), mTextPaint);
             }
-            else if (degree >= 195 && degree < 225)
+            else if(degree>=195&&degree<225)
             {
-                pCanvas.drawText("조금 좌측 Point 까지 " + nodeAtoB + " m ", (mWidth * 5 / 12), (mHeight * 2 / 5), mTextPaint);
+                pCanvas.drawText("조금 좌측", (mWidth * 5 / 12), (mHeight * 2 / 5), mTextPaint);
             }
-            else if (degree >= 225 && degree < 255)
+            else if(degree>=225&&degree<255)
             {
-                pCanvas.drawText("조금 더 좌측 Point 까지 " + nodeAtoB + " m ", (mWidth * 5 / 12), (mHeight * 2 / 5), mTextPaint);
+                pCanvas.drawText("조금 더 좌측" , (mWidth * 5 / 12), (mHeight * 2 / 5), mTextPaint);
             }
-            else if (degree >= 255 && degree < 285)
+            else if(degree>=255&&degree<285)
             {
-                pCanvas.drawText("많이 좌측 Point 까지 " + nodeAtoB + " m ", (mWidth * 5 / 12), (mHeight * 2 / 5), mTextPaint);
+                pCanvas.drawText("많이 좌측", (mWidth * 5 / 12), (mHeight * 2 / 5), mTextPaint);
             }
-            else if (degree >= 285 && degree < 315)
+            else if(degree>=285&&degree<315)
             {
-                pCanvas.drawText("더 많이 좌측 Point 까지 " + nodeAtoB + " m ", (mWidth * 5 / 12), (mHeight * 2 / 5), mTextPaint);
+                pCanvas.drawText("더 많이 좌측", (mWidth * 5 / 12), (mHeight * 2 / 5), mTextPaint);
             }
-            else if (degree >= 315 && degree < 345)
+            else if(degree>=315&&degree<345)
             {
-                pCanvas.drawText("더더 많이 좌측 Point 까지 " + nodeAtoB + " m ", (mWidth * 5 / 12), (mHeight * 2 / 5), mTextPaint);
+                pCanvas.drawText("더더 많이 좌측", (mWidth * 5 / 12), (mHeight * 2 / 5), mTextPaint);
             }
-            else if (degree >= 345 && degree <= 360 || degree >= 0 && degree <= 15)
+            else if(degree>=345&&degree<=360||degree>=0&& degree<=15)
             {
-                pCanvas.drawText("뒤돌아서 Point 까지 " + nodeAtoB + " m ", (mWidth * 5 / 12), (mHeight * 2 / 5), mTextPaint);
+                pCanvas.drawText("뒤돌아서", (mWidth * 5 / 12), (mHeight * 2 / 5), mTextPaint);
             }
-            else if (degree > 135 && degree <= 165)
+            else if(degree>135&&degree<=165)
             {
-                pCanvas.drawText("조금 우측 Point 까지 " + nodeAtoB + " m ", (mWidth * 5 / 12), (mHeight * 2 / 5), mTextPaint);
+                pCanvas.drawText("조금 우측", (mWidth * 5 / 12), (mHeight * 2 / 5), mTextPaint);
             }
-            else if (degree > 105 && degree <= 135)
+            else if(degree>105&&degree<=135)
             {
-                pCanvas.drawText("조금 더 우측 Point 까지 " + nodeAtoB + " m ", (mWidth * 5 / 12), (mHeight * 2 / 5), mTextPaint);
+                pCanvas.drawText("조금 더 우측", (mWidth * 5 / 12), (mHeight * 2 / 5), mTextPaint);
             }
-            else if (degree > 75 && degree <= 105)
+            else if(degree>75&&degree<=105)
             {
-                pCanvas.drawText("많이 좌측 Point 까지 " + nodeAtoB + " m ", (mWidth * 5 / 12), (mHeight * 2 / 5), mTextPaint);
+                pCanvas.drawText("많이 우측", (mWidth * 5 / 12), (mHeight * 2 / 5), mTextPaint);
             }
-            else if (degree > 45 && degree <= 75)
+            else if(degree>45&&degree<=75)
             {
-                pCanvas.drawText("더 많이 좌측 Point 까지 " + nodeAtoB + " m ", (mWidth * 5 / 12), (mHeight * 2 / 5), mTextPaint);
+                pCanvas.drawText("더 많이 우측", (mWidth * 5 / 12), (mHeight * 2 / 5), mTextPaint);
             }
-            else if (degree > 15 && degree <= 45)
+            else if(degree>15&&degree<=45)
             {
-                pCanvas.drawText("더더 많이 좌측 Point 까지 " + nodeAtoB + " m ", (mWidth * 5 / 12), (mHeight * 2 / 5), mTextPaint);
+                pCanvas.drawText("더더 많이 우측", (mWidth * 5 / 12), (mHeight * 2 / 5), mTextPaint);
             }
         }
 
@@ -217,6 +214,8 @@ public class CameraOverlayview extends View implements SensorEventListener {
                     thread.start();
                 }
             }
+            else
+                pCanvas.drawText(nodeDistace+"m 후에" +turntype,(mWidth * 5 / 12), (mHeight * 2 / 5),mTextPaint);
         }
 
 
@@ -358,10 +357,14 @@ public class CameraOverlayview extends View implements SensorEventListener {
         sensorManager = (SensorManager) context.getSystemService(Context.SENSOR_SERVICE);
         orientationSensor = Sensor.TYPE_ORIENTATION;
         accelerometerSensor = Sensor.TYPE_ACCELEROMETER;
+    }
+
+    public void resumesensor()
+    {
         sensorManager.registerListener(this, sensorManager.getDefaultSensor(orientationSensor), SensorManager.SENSOR_DELAY_NORMAL);
         sensorManager.registerListener(this, sensorManager.getDefaultSensor(accelerometerSensor), SensorManager.SENSOR_DELAY_NORMAL);
-
     }
+
 
     public void onDraw(Canvas canvas) {
 
@@ -465,5 +468,10 @@ public class CameraOverlayview extends View implements SensorEventListener {
                 e.printStackTrace();
             }
         }
+    }
+
+    // 카메라 액티비티가 소멸될때 센서 리스너를 해제
+    public void viewDestory() {
+        sensorManager.unregisterListener(this);
     }
 }

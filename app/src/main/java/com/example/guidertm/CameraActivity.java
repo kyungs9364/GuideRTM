@@ -57,7 +57,7 @@ public class CameraActivity extends Activity {
                 Log.e("NODE", "nodelon=" + nodelon);
                 Log.e("NODE","lon="+Slongitude);
                 //.e("NODE", "nodelan="+ nodelan);
-               // Log.e("NODE","lan="+Slatitude);
+                // Log.e("NODE","lan="+Slatitude);
 
                 Location locationA = new Location("Point A");
                 Location locationB = new Location("Point B");
@@ -124,6 +124,7 @@ public class CameraActivity extends Activity {
         addContentView(mOverlayview, new ViewGroup.LayoutParams((int) width,
                 height));
 
+        mOverlayview.resumesensor();
         /*GpslocationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);//위치 관리자 객체 구하기
         GpslocationListener = new LocationListener() {//리스너 정의
             @Override
@@ -192,5 +193,6 @@ public class CameraActivity extends Activity {
         latitude_ds = null;
         longitude_ds = null;
         stopflag=true;
+        mOverlayview.viewDestory();
     }
 }
