@@ -195,4 +195,4 @@ public class CameraActivity extends Activity {
         stopflag=true;
         mOverlayview.viewDestory();
     }
-}
+} //merge check

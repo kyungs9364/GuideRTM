@@ -468,7 +468,7 @@ public class CameraOverlayview extends View implements SensorEventListener {
                 e.printStackTrace();
             }
         }
-    }
+    } //merge check
 
     // 카메라 액티비티가 소멸될때 센서 리스너를 해제
     public void viewDestory() {
