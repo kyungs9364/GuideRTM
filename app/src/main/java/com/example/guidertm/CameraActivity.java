@@ -36,6 +36,10 @@ public class CameraActivity extends Activity {
     public static double Slongitude;
     public static int count;
     public static int distance;
+
+    public static Double nodelon;
+    public static Double nodelan;
+
     ArrayList<NodeData> node;
     RequestThread thread;
     private boolean stopflag=false;
@@ -52,6 +56,33 @@ public class CameraActivity extends Activity {
         check(1);  // 출발지의 정보는 보내지 않아도 됨으로 check(1)로 설정
 
         mOverlayview.setDestinationPoint(Double.parseDouble(latitude_ds), Double.parseDouble(longitude_ds));  // 목적지 값 overlayview 전송
+
+    }
+
+    private void Geofence()
+    {
+        Geofence geofence = new Geofence.Builder()
+                .setCircularRegion(nodelan, nodelon, 100)  // 위도,경도,반경을 사용하여 영역 설정
+                .setExpirationDuration(24 * 60 * 60 * 1000)   // 영역 만료시간 설정
+                .setLoiteringDelay(60 * 60 * 1000)  // 영역에 in,out 판단 시 지연시간
+                .setNotificationResponsiveness(2 * 60 * 1000)
+                .setTransitionTypes(Geofence.GEOFENCE_TRANSITION_ENTER // 영역으로 들어갔을 때 서비스 시작
+                        //| Geofence.GEOFENCE_TRANSITION_EXIT    // 영역을 벗어났을 때 서비스 시작
+                        | Geofence.GEOFENCE_TRANSITION_DWELL)   // 들어가거나 들어가있는 상태라면 서비스 시작
+                .setRequestId("geoid")   // 요청 ID
+                .build();
+
+        GeofencingRequest request = new GeofencingRequest.Builder()
+                .setInitialTrigger(GeofencingRequest.INITIAL_TRIGGER_ENTER | Geofence.GEOFENCE_TRANSITION_DWELL)
+                .addGeofence(geofence)
+                .build();
+
+        Intent intents = new Intent(CameraActivity.this, GeofenceService.class);
+        PendingIntent pi = PendingIntent.getService(this, 0, intents, PendingIntent.FLAG_UPDATE_CURRENT);
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            return;
+        }
+        LocationServices.GeofencingApi.addGeofences(mApiClient, request, pi);
     }
 
     public void check(int a)
@@ -61,8 +92,8 @@ public class CameraActivity extends Activity {
         else {
             if(node.get(a).nodeType.equals("POINT")) {
                 String[] data = node.get(a).coordinate.split(",");
-                Double nodelon = Double.parseDouble(data[0]);
-                Double nodelan = Double.parseDouble(data[1]);
+                /*Double*/ nodelon = Double.parseDouble(data[0]);
+                /*Double*/ nodelan = Double.parseDouble(data[1]);
                 Log.e("NODE","a="+a);
                 Log.e("NODE", "nodelon=" + nodelon);
                 Log.e("NODE","lon="+Slongitude);
@@ -90,29 +121,6 @@ public class CameraActivity extends Activity {
                 if(distance <10) // 10m(오차범위) 이내가 되면 노드정보를 overlayview에 전송
                 {
                     mOverlayview.setdata(node.get(a).index, node.get(a).nodeType, nodelan, nodelon, node.get(a).turntype,distance);
-
-                    Geofence geofence = new Geofence.Builder()
-                            .setCircularRegion(nodelan, nodelon, 10)  // 위도,경도,반경을 사용하여 영역 설정
-                            .setExpirationDuration(24 * 60 * 60 * 1000)   // 영역 만료시간 설정
-                            .setLoiteringDelay(60 * 60 * 1000)  // 영역에 in,out 판단 시 지연시간
-                            .setNotificationResponsiveness(2 * 60 * 1000)
-                            .setTransitionTypes(Geofence.GEOFENCE_TRANSITION_ENTER // 영역으로 들어갔을 때 서비스 시작
-                                    //| Geofence.GEOFENCE_TRANSITION_EXIT    // 영역을 벗어났을 때 서비스 시작
-                                    | Geofence.GEOFENCE_TRANSITION_DWELL)   // 들어가거나 들어가있는 상태라면 서비스 시작
-                            .setRequestId("geoid")   // 요청 ID
-                            .build();
-
-                    GeofencingRequest request = new GeofencingRequest.Builder()
-                            .setInitialTrigger(GeofencingRequest.INITIAL_TRIGGER_ENTER | Geofence.GEOFENCE_TRANSITION_DWELL)
-                            .addGeofence(geofence)
-                            .build();
-
-                    Intent intent = new Intent(this, GeofenceService.class);
-                    PendingIntent pi = PendingIntent.getService(this, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
-                    if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-                        return;
-                    }
-                    LocationServices.GeofencingApi.addGeofences(mApiClient, request, pi);
 
                     if (distance < 3)
                     {
@@ -192,6 +200,7 @@ public class CameraActivity extends Activity {
             while (!stopflag) {
                 try {
                     Thread.sleep(3000);   // 3초 뒤에 실행
+                    Geofence();
                     check(count);
                     mOverlayview.setAtoB(distance);  // 노드까지의 실시간 거리 변경을 위해 선언
                     break;  // 중복적 호출을 방지하기 위해 break;

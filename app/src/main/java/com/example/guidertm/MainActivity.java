@@ -122,6 +122,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
                     nodeDatas.clear();
                 }
 
+                VR.setEnabled(true);
                 drawPedestrianPath();
                 naviGuide();
             }
@@ -163,6 +164,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
         Search = (Button) findViewById(R.id.search); // 검색버튼
         roadservice = (Button) findViewById(R.id.road); // 길찾기버튼
         VR = (Button) findViewById(R.id.VR);  // VR버튼
+        VR.setEnabled(false);
         update = (ImageView)findViewById(R.id.update);
         mContext = this;  // 타 액티비티에서 접근 가능하게 함.
         Intent intent = getIntent();
