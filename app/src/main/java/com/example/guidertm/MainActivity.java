@@ -210,10 +210,9 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
         }
 
         LocationRequest request = new LocationRequest();
-        request.setFastestInterval(10000);
-        request.setInterval(20000);
-        request.setNumUpdates(1);
-        request.setPriority(LocationRequest.PRIORITY_BALANCED_POWER_ACCURACY);
+        request.setFastestInterval(2500); // 호출정보가 전달될 간격
+        request.setInterval(5000);  // 호출되는 간격
+        request.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY); // GPS 정확도를 우선으로 한다.
 
         LocationServices.FusedLocationApi.requestLocationUpdates(mApiClient, request, mListener);
 
@@ -226,17 +225,45 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
 
     com.google.android.gms.location.LocationListener mListener = new com.google.android.gms.location.LocationListener() {
         @Override
-        public void onLocationChanged(Location location) {
-            latitude_plic = location.getLatitude();
-            longitude_plic = location.getLongitude();
-
-            mOverlayview.setCurrentPoint(latitude_plic,longitude_plic,Ddistance);  // 현재위치 업데이트를 위해 mOverlayview에 값 전송
-            mCameraActivity.setCurrent(latitude_plic,longitude_plic);
-            mMapView.setCenterPoint(longitude_plic, latitude_plic);
-            mMapView.setLocationPoint(longitude_plic, latitude_plic);
-
+        public void onLocationChanged(Location location) {   //변경 될때 호출 될 리스너
+            updateDisplay(location);
         }
     };
+
+    private void updateDisplay(Location location)
+    {
+        latitude_plic = location.getLatitude();
+        longitude_plic = location.getLongitude();
+
+        mOverlayview.setCurrentPoint(latitude_plic,longitude_plic,Ddistance);  // 현재위치 업데이트를 위해 mOverlayview에 값 전송
+        mCameraActivity.setCurrent(latitude_plic,longitude_plic);
+        mMapView.setLocationPoint(longitude_plic, latitude_plic);
+
+        /*Geofence geofence = new Geofence.Builder()
+                .setCircularRegion(latitude_plic, longitude_plic, 70)  // 위도,경도,반경을 사용하여 영역 설정
+                .setExpirationDuration(24 * 60 * 60 * 1000)   // 영역 만료시간 설정
+                .setLoiteringDelay(60 * 60 * 1000)  // 영역에 in,out 판단 시 지연시간
+                .setNotificationResponsiveness(2 * 60 * 1000)
+                .setTransitionTypes(Geofence.GEOFENCE_TRANSITION_ENTER // 영역으로 들어갔을 때 서비스 시작
+                        //| Geofence.GEOFENCE_TRANSITION_EXIT    // 영역을 벗어났을 때 서비스 시작
+                        | Geofence.GEOFENCE_TRANSITION_DWELL)   // 들어가거나 들어가있는 상태라면 서비스 시작
+                .setRequestId("geoid")   // 요청 ID
+                .build();
+
+        GeofencingRequest request = new GeofencingRequest.Builder()
+                .setInitialTrigger(GeofencingRequest.INITIAL_TRIGGER_ENTER | Geofence.GEOFENCE_TRANSITION_DWELL)
+                .addGeofence(geofence)
+                .build();
+
+        Intent intent = new Intent(this, GeofenceService.class);
+        PendingIntent pi = PendingIntent.getService(this, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            return;
+        }
+        LocationServices.GeofencingApi.addGeofences(mApiClient, request, pi);*/
+
+    }
+
     @Override
     public void onConnectionSuspended(int i) {
         isConnected = false;
@@ -334,6 +361,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
         TMapPoint point2 = new TMapPoint(des_latitude_plic, des_longitude_plic);
         TMapData tmapdata = new TMapData();
         mMapView.zoomToTMapPoint ( point1,point2 );  // 자동 zoomlevel 조정
+        mMapView.setCenterPoint(longitude_plic, latitude_plic);
 
 
         tmapdata.findPathDataAllType(TMapData.TMapPathType.PEDESTRIAN_PATH,point1, point2, new TMapData.FindPathDataAllListenerCallback(){
@@ -486,6 +514,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
     @Override
     protected void onResume() {
         super.onResume();
+        mMapView.setCenterPoint(longitude_plic, latitude_plic);
         //nodeDatas.clear();
     }
 
@@ -497,7 +526,8 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
     @Override
     protected void onDestroy() {
         super.onDestroy();
+        point2 = null;
         //locationManager.removeUpdates(locationListener);
     }
 
-}//merge check
+}
