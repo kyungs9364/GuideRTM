@@ -131,58 +131,69 @@ public class CameraOverlayview extends View implements SensorEventListener {
 
         mBitmap = BitmapFactory.decodeResource(getResources(), R.drawable.dd);
         mBitmap = Bitmap.createScaledBitmap(mBitmap, mWidth / 8, mHeight / 4, true);
+        LeftIcon = BitmapFactory.decodeResource(getResources(), R.drawable.left1);
+        LeftIcon = Bitmap.createScaledBitmap(LeftIcon, mWidth / 8, mHeight / 4, true);
+        RigftIcon = BitmapFactory.decodeResource(getResources(), R.drawable.right1);
+        RigftIcon = Bitmap.createScaledBitmap(RigftIcon, mWidth / 8, mHeight / 4, true);
 
         Log.d(TAG,"DDDD="+degree);
 
+        pCanvas.drawText("Point 까지 " + nodeAtoB + " m ", (mWidth * 5 / 13), (mHeight * 2 / 6), mTextPaint);
 
         if(turntype == null || arrowchange==turntype) {
-            if (degree >175 && degree <185) {
+            if (degree >165 && degree <195) {
                 pCanvas.drawBitmap(mBitmap, (mWidth * 3 / 7), (mHeight * 3 / 5), null);
                 //pCanvas.drawText("Point 까지 " + nodeAtoB + " m ", (mWidth * 5 / 12), (mHeight * 2 / 5), mTextPaint);
             }
-            else if(degree>=185&&degree<225)
+            else if(degree>=315&&degree<345)
             {
-                pCanvas.drawText("조금 좌측", (mWidth * 5 / 12), (mHeight * 2 / 5), mTextPaint);
-            }
-            else if(degree>=225&&degree<255)
-            {
-                pCanvas.drawText("조금 더 좌측" , (mWidth * 5 / 12), (mHeight * 2 / 5), mTextPaint);
-            }
-            else if(degree>=255&&degree<285)
-            {
-                pCanvas.drawText("많이 좌측", (mWidth * 5 / 12), (mHeight * 2 / 5), mTextPaint);
+                pCanvas.drawBitmap(RigftIcon, (mWidth * 3 / 7), (mHeight * 3 / 5), null);
+                pCanvas.drawText("조금 우측", (mWidth * 5 / 12), (mHeight * 2 / 5), mTextPaint);
             }
             else if(degree>=285&&degree<315)
             {
-                pCanvas.drawText("더 많이 좌측", (mWidth * 5 / 12), (mHeight * 2 / 5), mTextPaint);
+                pCanvas.drawBitmap(RigftIcon, (mWidth * 3 / 7), (mHeight * 3 / 5), null);
+                pCanvas.drawText("조금 더 우측" , (mWidth * 5 / 12), (mHeight * 2 / 5), mTextPaint);
             }
-            else if(degree>=315&&degree<345)
+            else if(degree>=255&&degree<285)
             {
-                pCanvas.drawText("더더 많이 좌측", (mWidth * 5 / 12), (mHeight * 2 / 5), mTextPaint);
-            }
-            else if(degree>=345&&degree<=360||degree>=0&& degree<=15)
-            {
-                pCanvas.drawText("뒤돌아서", (mWidth * 5 / 12), (mHeight * 2 / 5), mTextPaint);
-            }
-            else if(degree>135&&degree<=175)
-            {
-                pCanvas.drawText("조금 우측", (mWidth * 5 / 12), (mHeight * 2 / 5), mTextPaint);
-            }
-            else if(degree>105&&degree<=135)
-            {
-                pCanvas.drawText("조금 더 우측", (mWidth * 5 / 12), (mHeight * 2 / 5), mTextPaint);
-            }
-            else if(degree>75&&degree<=105)
-            {
+                pCanvas.drawBitmap(RigftIcon, (mWidth * 3 / 7), (mHeight * 3 / 5), null);
                 pCanvas.drawText("많이 우측", (mWidth * 5 / 12), (mHeight * 2 / 5), mTextPaint);
             }
-            else if(degree>45&&degree<=75)
+            else if(degree>=225&&degree<255)
             {
                 pCanvas.drawText("더 많이 우측", (mWidth * 5 / 12), (mHeight * 2 / 5), mTextPaint);
             }
-            else if(degree>15&&degree<=45)
+            else if(degree>=195&&degree<225)
             {
                 pCanvas.drawText("더더 많이 우측", (mWidth * 5 / 12), (mHeight * 2 / 5), mTextPaint);
+            }
+            else if(degree>165&&degree<195)
+            {
+                pCanvas.drawText("뒤돌아서", (mWidth * 5 / 12), (mHeight * 2 / 5), mTextPaint);
+            }
+            else if(degree>15&&degree<=45)
+            {
+                pCanvas.drawBitmap(LeftIcon, (mWidth * 3 / 7), (mHeight * 3 / 5), null);
+                pCanvas.drawText("조금 좌측", (mWidth * 5 / 12), (mHeight * 2 / 5), mTextPaint);
+            }
+            else if(degree>45&&degree<=75)
+            {
+                pCanvas.drawBitmap(LeftIcon, (mWidth * 3 / 7), (mHeight * 3 / 5), null);
+                pCanvas.drawText("조금 더 좌측", (mWidth * 5 / 12), (mHeight * 2 / 5), mTextPaint);
+            }
+            else if(degree>75&&degree<=105)
+            {
+                pCanvas.drawBitmap(LeftIcon, (mWidth * 3 / 7), (mHeight * 3 / 5), null);
+                pCanvas.drawText("조금 더더 좌측", (mWidth * 5 / 12), (mHeight * 2 / 5), mTextPaint);
+            }
+            else if(degree>105&&degree<=135)
+            {
+                pCanvas.drawText("많이 좌측", (mWidth * 5 / 12), (mHeight * 2 / 5), mTextPaint);
+            }
+            else if(degree>135&&degree<=165)
+            {
+                pCanvas.drawText("더 많이 좌측", (mWidth * 5 / 12), (mHeight * 2 / 5), mTextPaint);
             }
         }
 
@@ -238,6 +249,11 @@ public class CameraOverlayview extends View implements SensorEventListener {
             mXDegree = mXDegree + mXCompassDegree - 360;
         }
 
+        if(mXDegree<0)
+        {
+            mXDegree+=360;
+        }
+
 
         // 계산된 각도 만큼 기기 정중앙 화면 기준 어디에 나타날지 계산함
         float mX = 0;
@@ -245,16 +261,25 @@ public class CameraOverlayview extends View implements SensorEventListener {
 
         Log.d(TAG, "rrrrrmXDegree=" + String.valueOf(mXDegree));
         // 동일
-        if (mXDegree >165 && mXDegree <195) {
-            if (mRDegree > -90 && mRDegree < -75) {
+        if (mXDegree >=345 || mXDegree <=15) {
+            if (mRDegree > 75 && mRDegree < 90) {
 
-                mX = (float) mWidth
-                        - (float) ((mXDegree - 165) * ((float) mWidth / 20));
+                Log.d(TAG,"wwwwwwwwwwmx=dddddddddd");
+                if(mXDegree<=15)
+                {
+                    mX = (float) mWidth
+                            - (float) ((15+mXDegree) * ((float) mWidth / 30));
+                }
+                else if(mXDegree>=345)
+                {
+                    mX = (float) mWidth
+                            - (float) ((mXDegree - 345) * ((float) mWidth / 30));
+                }
 
-                mRDegree = -(mRDegree);
 
-                mY = (mRDegree * ((float) mHeight / 360));
-
+                mY = mHeight /(float)2.5;
+                Log.d(TAG,"wwwwwwwwwwmx="+mY);
+                Log.d(TAG,"wwwwwwwwwwmwidth="+mHeight);
                 // icon의  핸드폰 디스플레이 위치값(값이 변경될때마다 흔들림)
 
                 // 두 위치간의 거리를 계산함
@@ -369,11 +394,11 @@ public class CameraOverlayview extends View implements SensorEventListener {
     public void onDraw(Canvas canvas) {
 
         canvas.save();
-        canvas.rotate(180, mWidth / 2, mHeight / 2);//화면 돌리기
+        //canvas.rotate(180, mWidth / 2, mHeight / 2);//화면 돌리기
 
         getLocation(canvas);
 
-        canvas.restore();
+        //canvas.restore();
     }
 
     Handler mHandler = new Handler() {
