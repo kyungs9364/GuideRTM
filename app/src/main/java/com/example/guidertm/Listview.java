@@ -29,17 +29,20 @@ public class Listview extends Activity {
         ArrayList<String> addss = (ArrayList<String>) intent.getSerializableExtra("address"); // 도착지 주소이름
         ArrayList<String> poi = (ArrayList<String>) intent.getSerializableExtra("point");  // 도착지 위도,경도
 
-        if(addss.size() == 0)
-        {
-            Toast.makeText(getApplicationContext(), "검색 결과가 존재 하지 않습니다.", Toast.LENGTH_SHORT).show();
-        }
-        else
+        if(addss != null)
         {
             for(int i=0; i < addss.size(); i++)  // 리스트 안에 전달 받은 주소이름과 위도경도를 추가한다.
             {
                 address.add(addss.get(i));
                 point.add(poi.get(i));
             }
+        }
+        else
+        {
+            Toast.makeText(getApplicationContext(), "검색 결과가 존재 하지 않습니다.", Toast.LENGTH_SHORT).show();
+            Intent back = new Intent(Listview.this,MainActivity.class);
+            startActivity(back);
+            finish();
         }
 
         ArrayAdapter<String> Adapter;  // 어텝터 연결

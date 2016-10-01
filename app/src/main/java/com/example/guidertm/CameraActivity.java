@@ -10,8 +10,6 @@ import android.view.Display;
 import android.view.ViewGroup;
 import android.view.WindowManager;
 
-import com.google.android.gms.common.api.GoogleApiClient;
-
 import java.util.ArrayList;
 
 /**
@@ -29,14 +27,9 @@ public class CameraActivity extends Activity {
     public static double Slongitude;
     public static int count;
     public static int distance;
-
-    public static Double nodelon;
-    public static Double nodelan;
-
     ArrayList<NodeData> node;
     RequestThread thread;
     private boolean stopflag=false;
-    GoogleApiClient mApiClient;
     int i=0;
 
     protected void onCreate(Bundle savedInstanceState) {
@@ -49,9 +42,7 @@ public class CameraActivity extends Activity {
         check(1);  // 출발지의 정보는 보내지 않아도 됨으로 check(1)로 설정
 
         mOverlayview.setDestinationPoint(Double.parseDouble(latitude_ds), Double.parseDouble(longitude_ds));  // 목적지 값 overlayview 전송
-
     }
-
 
     public void check(int a)
     {
@@ -60,8 +51,8 @@ public class CameraActivity extends Activity {
         else {
             if(node.get(a).nodeType.equals("POINT")) {
                 String[] data = node.get(a).coordinate.split(",");
-                /*Double*/ nodelon = Double.parseDouble(data[0]);
-                /*Double*/ nodelan = Double.parseDouble(data[1]);
+                Double nodelon = Double.parseDouble(data[0]);
+                Double nodelan = Double.parseDouble(data[1]);
                 Log.e("NODE","a="+a);
                 Log.e("NODE", "nodelon=" + nodelon);
                 Log.e("NODE","lon="+Slongitude);
@@ -77,6 +68,7 @@ public class CameraActivity extends Activity {
                 distance = (int) locationA.distanceTo(locationB);
                 Log.d(TAG, "AtoB =  " + distance);
 
+
                 if(i == 0)
                 {
                     mOverlayview.setnode(nodelan, nodelon);
@@ -85,10 +77,9 @@ public class CameraActivity extends Activity {
 
                 count = a;
 
-                if(distance <10) // 10m(오차범위) 이내가 되면 노드정보를 overlayview에 전송
+                if(distance < 10) // 10m(오차범위) 이내가 되면 노드정보를 overlayview에 전송
                 {
                     mOverlayview.setdata(node.get(a).index, node.get(a).nodeType, nodelan, nodelon, node.get(a).turntype,distance);
-                    ((MainActivity)MainActivity.mContext).Geofence(nodelan,nodelon);
 
                     if (distance < 3)
                     {
@@ -113,6 +104,7 @@ public class CameraActivity extends Activity {
         }
     }
 
+
     public void onResume() {
         super.onResume();
 
@@ -132,8 +124,33 @@ public class CameraActivity extends Activity {
         addContentView(mOverlayview, new ViewGroup.LayoutParams((int) width,
                 height));
 
-
         mOverlayview.resumesensor();
+        /*GpslocationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);//위치 관리자 객체 구하기
+        GpslocationListener = new LocationListener() {//리스너 정의
+            @Override
+            public void onLocationChanged(Location location) { //위치 업데이트시 리스너 호출
+                double latitude;//위도
+                double longitude;//경도
+                //변경되는 location값 받는 메소드
+                latitude = location.getLatitude();
+                longitude = location.getLongitude();
+                Log.d(TAG, "latitude=" + String.valueOf(latitude));
+                Log.d(TAG, "longitude=" + String.valueOf(longitude));
+                mOverlayview.setCurrentPoint(latitude, longitude);
+            }
+            @Override
+            public void onStatusChanged(String provider, int status, Bundle extras) {
+            }
+            @Override
+            public void onProviderEnabled(String provider) {
+            }
+            @Override
+            public void onProviderDisabled(String provider) {
+            }
+        };*/
+
+        //GpslocationManager.requestLocationUpdates(GpslocationManager.GPS_PROVIDER, 0, 0,GpslocationListener);
+        //(서비스제공자의 상수값, 업데이트간격,기기 움직이는 미터 단위의 최소거리, 알림을 받을 locationListener)
     }
 
     class RequestThread extends  Thread
