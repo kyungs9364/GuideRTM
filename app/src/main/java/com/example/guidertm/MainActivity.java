@@ -1,6 +1,7 @@
 package com.example.guidertm;
 
 import android.Manifest;
+import android.app.PendingIntent;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -29,6 +30,8 @@ import android.widget.Toast;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.location.Geofence;
+import com.google.android.gms.location.GeofencingRequest;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
 import com.skp.Tmap.TMapData;
@@ -228,21 +231,20 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
     com.google.android.gms.location.LocationListener mListener = new com.google.android.gms.location.LocationListener() {
         @Override
         public void onLocationChanged(Location location) {   //변경 될때 호출 될 리스너
-            updateDisplay(location);
+            latitude_plic = location.getLatitude();
+            longitude_plic = location.getLongitude();
+
+            mOverlayview.setCurrentPoint(latitude_plic,longitude_plic,Ddistance);  // 현재위치 업데이트를 위해 mOverlayview에 값 전송
+            mCameraActivity.setCurrent(latitude_plic,longitude_plic);
+            mMapView.setLocationPoint(longitude_plic, latitude_plic);
+            //updateDisplay(location);
         }
     };
 
-    private void updateDisplay(Location location)
+    public void Geofence(double latitude, double longitude)   // CameraActivity 에서 사용할 Geofence 함수
     {
-        latitude_plic = location.getLatitude();
-        longitude_plic = location.getLongitude();
-
-        mOverlayview.setCurrentPoint(latitude_plic,longitude_plic,Ddistance);  // 현재위치 업데이트를 위해 mOverlayview에 값 전송
-        mCameraActivity.setCurrent(latitude_plic,longitude_plic);
-        mMapView.setLocationPoint(longitude_plic, latitude_plic);
-
-        /*Geofence geofence = new Geofence.Builder()
-                .setCircularRegion(latitude_plic, longitude_plic, 70)  // 위도,경도,반경을 사용하여 영역 설정
+        Geofence geofence = new Geofence.Builder()
+                .setCircularRegion(latitude, longitude, 10)  // 위도,경도,반경을 사용하여 영역 설정
                 .setExpirationDuration(24 * 60 * 60 * 1000)   // 영역 만료시간 설정
                 .setLoiteringDelay(60 * 60 * 1000)  // 영역에 in,out 판단 시 지연시간
                 .setNotificationResponsiveness(2 * 60 * 1000)
@@ -262,7 +264,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             return;
         }
-        LocationServices.GeofencingApi.addGeofences(mApiClient, request, pi);*/
+        LocationServices.GeofencingApi.addGeofences(mApiClient, request, pi);
 
     }
 

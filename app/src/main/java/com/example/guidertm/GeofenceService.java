@@ -31,12 +31,12 @@ public class GeofenceService extends Service {
             int action = event.getGeofenceTransition();
             switch (action) {
                 case Geofence.GEOFENCE_TRANSITION_ENTER:
-                    Toast.makeText(getApplicationContext(), "100m 안에 진입 하였습니다.", Toast.LENGTH_LONG).show();
+                    Toast.makeText(getApplicationContext(), "10m 안에 진입 하였습니다.", Toast.LENGTH_LONG).show();
                     Log.e("Geo", "10m 안에 진입 하였습니다." );
                     break;
                 //case Geofence.GEOFENCE_TRANSITION_EXIT:
                 case Geofence.GEOFENCE_TRANSITION_DWELL:
-                    Toast.makeText(getApplicationContext(), "이미 100m 안에 들어와 있습니다." , Toast.LENGTH_LONG).show();
+                    Toast.makeText(getApplicationContext(), "이미 10m 안에 들어와 있습니다." , Toast.LENGTH_LONG).show();
                     Log.e("Geo", "이미 10m 안에 들어와 있습니다." );
                     break;
             }

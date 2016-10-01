@@ -1,23 +1,16 @@
 package com.example.guidertm;
 
-import android.Manifest;
 import android.app.Activity;
-import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
-import android.content.pm.PackageManager;
 import android.location.Location;
 import android.os.Bundle;
-import android.support.v4.app.ActivityCompat;
 import android.util.Log;
 import android.view.Display;
 import android.view.ViewGroup;
 import android.view.WindowManager;
 
 import com.google.android.gms.common.api.GoogleApiClient;
-import com.google.android.gms.location.Geofence;
-import com.google.android.gms.location.GeofencingRequest;
-import com.google.android.gms.location.LocationServices;
 
 import java.util.ArrayList;
 
@@ -59,31 +52,6 @@ public class CameraActivity extends Activity {
 
     }
 
-    private void Geofence()
-    {
-        Geofence geofence = new Geofence.Builder()
-                .setCircularRegion(nodelan, nodelon, 100)  // 위도,경도,반경을 사용하여 영역 설정
-                .setExpirationDuration(24 * 60 * 60 * 1000)   // 영역 만료시간 설정
-                .setLoiteringDelay(60 * 60 * 1000)  // 영역에 in,out 판단 시 지연시간
-                .setNotificationResponsiveness(2 * 60 * 1000)
-                .setTransitionTypes(Geofence.GEOFENCE_TRANSITION_ENTER // 영역으로 들어갔을 때 서비스 시작
-                        //| Geofence.GEOFENCE_TRANSITION_EXIT    // 영역을 벗어났을 때 서비스 시작
-                        | Geofence.GEOFENCE_TRANSITION_DWELL)   // 들어가거나 들어가있는 상태라면 서비스 시작
-                .setRequestId("geoid")   // 요청 ID
-                .build();
-
-        GeofencingRequest request = new GeofencingRequest.Builder()
-                .setInitialTrigger(GeofencingRequest.INITIAL_TRIGGER_ENTER | Geofence.GEOFENCE_TRANSITION_DWELL)
-                .addGeofence(geofence)
-                .build();
-
-        Intent intents = new Intent(CameraActivity.this, GeofenceService.class);
-        PendingIntent pi = PendingIntent.getService(this, 0, intents, PendingIntent.FLAG_UPDATE_CURRENT);
-        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            return;
-        }
-        LocationServices.GeofencingApi.addGeofences(mApiClient, request, pi);
-    }
 
     public void check(int a)
     {
@@ -109,7 +77,6 @@ public class CameraActivity extends Activity {
                 distance = (int) locationA.distanceTo(locationB);
                 Log.d(TAG, "AtoB =  " + distance);
 
-
                 if(i == 0)
                 {
                     mOverlayview.setnode(nodelan, nodelon);
@@ -121,6 +88,7 @@ public class CameraActivity extends Activity {
                 if(distance <10) // 10m(오차범위) 이내가 되면 노드정보를 overlayview에 전송
                 {
                     mOverlayview.setdata(node.get(a).index, node.get(a).nodeType, nodelan, nodelon, node.get(a).turntype,distance);
+                    ((MainActivity)MainActivity.mContext).Geofence(nodelan,nodelon);
 
                     if (distance < 3)
                     {
@@ -145,7 +113,6 @@ public class CameraActivity extends Activity {
         }
     }
 
-
     public void onResume() {
         super.onResume();
 
@@ -166,32 +133,6 @@ public class CameraActivity extends Activity {
                 height));
 
         mOverlayview.resumesensor();
-        /*GpslocationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);//위치 관리자 객체 구하기
-        GpslocationListener = new LocationListener() {//리스너 정의
-            @Override
-            public void onLocationChanged(Location location) { //위치 업데이트시 리스너 호출
-                double latitude;//위도
-                double longitude;//경도
-                //변경되는 location값 받는 메소드
-                latitude = location.getLatitude();
-                longitude = location.getLongitude();
-                Log.d(TAG, "latitude=" + String.valueOf(latitude));
-                Log.d(TAG, "longitude=" + String.valueOf(longitude));
-                mOverlayview.setCurrentPoint(latitude, longitude);
-            }
-            @Override
-            public void onStatusChanged(String provider, int status, Bundle extras) {
-            }
-            @Override
-            public void onProviderEnabled(String provider) {
-            }
-            @Override
-            public void onProviderDisabled(String provider) {
-            }
-        };*/
-
-        //GpslocationManager.requestLocationUpdates(GpslocationManager.GPS_PROVIDER, 0, 0,GpslocationListener);
-        //(서비스제공자의 상수값, 업데이트간격,기기 움직이는 미터 단위의 최소거리, 알림을 받을 locationListener)
     }
 
     class RequestThread extends  Thread
@@ -200,7 +141,6 @@ public class CameraActivity extends Activity {
             while (!stopflag) {
                 try {
                     Thread.sleep(3000);   // 3초 뒤에 실행
-                    Geofence();
                     check(count);
                     mOverlayview.setAtoB(distance);  // 노드까지의 실시간 거리 변경을 위해 선언
                     break;  // 중복적 호출을 방지하기 위해 break;
