@@ -141,7 +141,7 @@ public class CameraOverlayview extends View implements SensorEventListener {
         pCanvas.drawText("Point 까지 " + nodeAtoB + " m ", (mWidth * 5 / 13), (mHeight * 2 / 6), mTextPaint);
 
         if(turntype == null || arrowchange==turntype) {
-            if (degree >165 && degree <195) {
+            if (degree >=345 || degree <=15) {
                 pCanvas.drawBitmap(mBitmap, (mWidth * 3 / 7), (mHeight * 3 / 5), null);
                 //pCanvas.drawText("Point 까지 " + nodeAtoB + " m ", (mWidth * 5 / 12), (mHeight * 2 / 5), mTextPaint);
             }
@@ -334,7 +334,7 @@ public class CameraOverlayview extends View implements SensorEventListener {
                 }
             }
         }
-        mHandler.sendEmptyMessageDelayed(0, 10);
+        mHandler.sendEmptyMessage(0);
     }
 
     //로우패스 필터
@@ -359,8 +359,8 @@ public class CameraOverlayview extends View implements SensorEventListener {
             Log.d(TAG, "mXDegree=" + String.valueOf(mXCompassDegree));
             Log.d(TAG, "mYD=" + String.valueOf(mYCompassDegree));
 
-
-        } else if (sensorEvent.sensor.getType() == Sensor.TYPE_ACCELEROMETER) {
+            mHandler.sendEmptyMessage(0);
+        } /*else if (sensorEvent.sensor.getType() == Sensor.TYPE_ACCELEROMETER) {
             xAxis = sensorEvent.values[0];
             yAxis = sensorEvent.values[1];
             zAxis = sensorEvent.values[2];
@@ -370,7 +370,7 @@ public class CameraOverlayview extends View implements SensorEventListener {
             mLowPassY = lowPass(yAxis, mLowPassY);
             mLowPassZ = lowPass(zAxis, mLowPassZ);
 
-        }
+        }*/
     }
 
     @Override
@@ -404,7 +404,7 @@ public class CameraOverlayview extends View implements SensorEventListener {
     Handler mHandler = new Handler() {
         public void handleMessage(Message msg) {
             invalidate();
-            mHandler.sendEmptyMessageDelayed(0, 10);
+            mHandler.sendEmptyMessageDelayed(0, 100);
         }
     };
 
@@ -498,5 +498,6 @@ public class CameraOverlayview extends View implements SensorEventListener {
     // 카메라 액티비티가 소멸될때 센서 리스너를 해제
     public void viewDestory() {
         sensorManager.unregisterListener(this);
+        mHandler.removeMessages(0);
     }
 }
