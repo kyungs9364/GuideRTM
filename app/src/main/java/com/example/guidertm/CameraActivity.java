@@ -10,8 +10,6 @@ import android.view.Display;
 import android.view.ViewGroup;
 import android.view.WindowManager;
 
-import com.google.android.gms.common.api.GoogleApiClient;
-
 import java.util.ArrayList;
 
 /**
@@ -23,12 +21,14 @@ public class CameraActivity extends Activity {
     String TAG="PAAR";
     CameraPreview mCameraPreview;
     CameraOverlayview mOverlayview=null;
+    GeofenceService mGeofenceService;
     public static String latitude_ds;
     public static String longitude_ds;
     public static double Slatitude;
     public static double Slongitude;
     public static int count;
     public static int distance;
+    public static Context mContext;
 
     public static Double nodelon;
     public static Double nodelan;
@@ -36,12 +36,14 @@ public class CameraActivity extends Activity {
     ArrayList<NodeData> node;
     RequestThread thread;
     private boolean stopflag=false;
-    GoogleApiClient mApiClient;
     int i=0;
 
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         mOverlayview=new CameraOverlayview(this);
+        mGeofenceService = new GeofenceService();
+        mContext = this;
+
         Intent intent = getIntent();
         latitude_ds = intent.getStringExtra("latitude_id");
         longitude_ds = intent.getStringExtra("longitude_id");
@@ -85,22 +87,12 @@ public class CameraActivity extends Activity {
 
                 count = a;
 
-                if(distance <10) // 10m(오차범위) 이내가 되면 노드정보를 overlayview에 전송
-                {
-                    mOverlayview.setdata(node.get(a).index, node.get(a).nodeType, nodelan, nodelon, node.get(a).turntype,distance);
-                    ((MainActivity)MainActivity.mContext).Geofence(nodelan,nodelon);
+                ((MainActivity) MainActivity.mContext).Geofence(nodelan, nodelon);
+                ((MainActivity) MainActivity.mContext).Geofence_re(nodelan, nodelon);
 
-                    if (distance < 3)
-                    {
-                        i=0;
-                        check(a + 1);
-                    }
-                }
-                else {
-                    thread = new RequestThread();
-                    thread.start(); //check 함수를 일정시간마다 불러옴
+                thread = new RequestThread();
+                thread.start(); //check 함수를 일정시간마다 불러옴
 
-                }
                 /*if (nodelan - 0.0001 < Slatitude && Slatitude < nodelan + 0.0001 && nodelon - 0.0001 < Slongitude && Slongitude < nodelon + 0.0001) {
                     mOverlayview.setdata(node.get(a).index, node.get(a).nodeType, Double.parseDouble(data[1]), Double.parseDouble(data[0]), node.get(a).turntype);
                     //Toast.makeText(getApplicationContext(), node.get(a).turntype , Toast.LENGTH_LONG).show();
@@ -149,6 +141,15 @@ public class CameraActivity extends Activity {
                 }
             }
         }
+    }
+    public void setpush()
+    {
+        mOverlayview.setdata(node.get(count).index, node.get(count).nodeType, nodelan, nodelon, node.get(count).turntype,distance);
+    }
+    public void check_ch()
+    {
+        i=0;
+        check(count + 1);
     }
 
     public void setCurrent(double latitude_st, double longitude_st)//현위치 좌표 정보 얻기

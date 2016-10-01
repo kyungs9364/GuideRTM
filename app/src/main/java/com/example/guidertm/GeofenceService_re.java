@@ -11,11 +11,10 @@ import com.google.android.gms.location.GeofencingEvent;
 import java.util.List;
 
 /**
- * Created by 경석 on 2016-09-30.
+ * Created by 경석 on 2016-10-01.
  */
-public class GeofenceService extends Service {
-
-    public GeofenceService() {
+public class GeofenceService_re extends Service {
+    public GeofenceService_re() {
 
     }
 
@@ -31,11 +30,11 @@ public class GeofenceService extends Service {
             int action = event.getGeofenceTransition();
             switch (action) {
                 case Geofence.GEOFENCE_TRANSITION_ENTER:
-                    ((CameraActivity) CameraActivity.mContext).setpush();
+                    ((CameraActivity) CameraActivity.mContext).check_ch();
                     break;
                 //case Geofence.GEOFENCE_TRANSITION_EXIT:
                 case Geofence.GEOFENCE_TRANSITION_DWELL:
-                    ((CameraActivity) CameraActivity.mContext).setpush();
+                    ((CameraActivity) CameraActivity.mContext).check_ch();
                     break;
             }
 
