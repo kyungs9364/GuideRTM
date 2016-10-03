@@ -194,8 +194,8 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
         getLocation();
     }
 
-    private void getLocation() {
-        if (!isConnected) return;
+    public void getLocation() {
+        //if (!isConnected) return;
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             return;
         }
@@ -233,12 +233,16 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
         public void onLocationChanged(Location location) {   //변경 될때 호출 될 리스너
             latitude_plic = location.getLatitude();
             longitude_plic = location.getLongitude();
+            Log.e("TEST","l2="+latitude_plic);
+            Log.e("TEST","l2="+longitude_plic);
+
 
             mOverlayview.setCurrentPoint(latitude_plic,longitude_plic,Ddistance);  // 현재위치 업데이트를 위해 mOverlayview에 값 전송
             mCameraActivity.setCurrent(latitude_plic,longitude_plic);
             mMapView.setLocationPoint(longitude_plic, latitude_plic);
             //updateDisplay(location);
         }
+
     };
 
     public void Geofence(double latitude, double longitude)   // CameraActivity 에서 사용할 Geofence 10m반경 함수

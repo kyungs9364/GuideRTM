@@ -66,9 +66,9 @@ public class CameraActivity extends Activity {
                 /*Double*/ nodelan = Double.parseDouble(data[1]);
                 Log.e("NODE","a="+a);
                 Log.e("NODE", "nodelon=" + nodelon);
-                Log.e("NODE","lon="+Slongitude);
+                Log.e("TEST","lon="+Slongitude);
                 //.e("NODE", "nodelan="+ nodelan);
-                // Log.e("NODE","lan="+Slatitude);
+                 Log.e("TEST","lan="+Slatitude);
 
                 Location locationA = new Location("Point A");
                 Location locationB = new Location("Point B");
@@ -133,6 +133,7 @@ public class CameraActivity extends Activity {
             while (!stopflag) {
                 try {
                     Thread.sleep(3000);   // 3초 뒤에 실행
+                    //Log.e("Node", "test");
                     check(count);
                     mOverlayview.setAtoB(distance);  // 노드까지의 실시간 거리 변경을 위해 선언
                     break;  // 중복적 호출을 방지하기 위해 break;
