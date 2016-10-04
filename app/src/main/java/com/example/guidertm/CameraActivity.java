@@ -1,61 +1,98 @@
 package com.example.guidertm;
 
 import android.app.Activity;
+import android.app.IntentService;
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
+import android.content.pm.PackageManager;
 import android.location.Location;
 import android.os.Bundle;
+import android.support.v4.app.ActivityCompat;
 import android.util.Log;
 import android.view.Display;
 import android.view.ViewGroup;
 import android.view.WindowManager;
 
 import java.util.ArrayList;
+import java.util.jar.Manifest;
 
 /**
  * Created by 경석 on 2016-09-08.
  */
 
-public class CameraActivity extends Activity {
+public class CameraActivity extends Activity{
 
-    String TAG="PAAR";
+    String TAG = "PAAR";
     CameraPreview mCameraPreview;
-    CameraOverlayview mOverlayview=null;
+    CameraOverlayview mOverlayview = null;
+    GeofenceService mGeofenceService;
     public static String latitude_ds;
     public static String longitude_ds;
     public static double Slatitude;
     public static double Slongitude;
     public static int count;
     public static int distance;
+    public static Context mContext;
+
+    public static Double nodelon;
+    public static Double nodelan;
+
+
     ArrayList<NodeData> node;
     RequestThread thread;
-    private boolean stopflag=false;
-    int i=0;
+    private boolean stopflag = false;
+    int i = 0;
+
+    BroadcastReceiver mReceiver;
 
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        mOverlayview=new CameraOverlayview(this);
+        mOverlayview = new CameraOverlayview(this);
+        mGeofenceService = new GeofenceService();
+        mContext = this;
+
         Intent intent = getIntent();
         latitude_ds = intent.getStringExtra("latitude_id");
         longitude_ds = intent.getStringExtra("longitude_id");
         node = (ArrayList<NodeData>) intent.getSerializableExtra("node");
+
+        IntentFilter intentfilter = new IntentFilter();
+        intentfilter.addAction("com.example.guidertm.SEND_BROAD_CAST");
+
+
+        //동적 리시버 구현
+        mReceiver = new BroadcastReceiver() {
+            public void onReceive(Context context, Intent intent) {
+                Slatitude = intent.getDoubleExtra("sendlat",0);
+                Slongitude = intent.getDoubleExtra("sendlon",0);
+                Log.d(TAG, "현위치 위도="+Slatitude);
+                Log.d(TAG, "현위치 경도="+Slongitude);
+            }
+        };
+        registerReceiver(mReceiver, intentfilter);
+
         check(1);  // 출발지의 정보는 보내지 않아도 됨으로 check(1)로 설정
 
         mOverlayview.setDestinationPoint(Double.parseDouble(latitude_ds), Double.parseDouble(longitude_ds));  // 목적지 값 overlayview 전송
+        //((MainActivity) MainActivity.mContext).Geofence(nodelan, nodelon);
     }
 
-    public void check(int a)
-    {
-        if(a>node.size())
-            return ;
+
+    public void check(int a) {
+        if (a > node.size())
+            return;
         else {
-            if(node.get(a).nodeType.equals("POINT")) {
+            if (node.get(a).nodeType.equals("POINT")) {
                 String[] data = node.get(a).coordinate.split(",");
-                Double nodelon = Double.parseDouble(data[0]);
-                Double nodelan = Double.parseDouble(data[1]);
-                Log.e("NODE","a="+a);
+                /*Double*/
+                nodelon = Double.parseDouble(data[0]);
+                /*Double*/
+                nodelan = Double.parseDouble(data[1]);
+                Log.e("NODE", "a=" + a);
                 Log.e("NODE", "nodelon=" + nodelon);
-                Log.e("NODE","lon="+Slongitude);
+                Log.e("NODE", "lon=" + Slongitude);
                 //.e("NODE", "nodelan="+ nodelan);
                 // Log.e("NODE","lan="+Slatitude);
 
@@ -68,48 +105,31 @@ public class CameraActivity extends Activity {
                 distance = (int) locationA.distanceTo(locationB);
                 Log.d(TAG, "AtoB =  " + distance);
 
-
-                if(i == 0)
-                {
+                if (i == 0) {
                     mOverlayview.setnode(nodelan, nodelon);
                     i++;
                 }
 
                 count = a;
+                //((MainActivity) MainActivity.mContext).Geofence(nodelan, nodelon);
+                //((MainActivity) MainActivity.mContext).Geofence_re(nodelan, nodelon);
 
-                if(distance < 10) // 10m(오차범위) 이내가 되면 노드정보를 overlayview에 전송
-                {
-                    mOverlayview.setdata(node.get(a).index, node.get(a).nodeType, nodelan, nodelon, node.get(a).turntype,distance);
+                thread = new RequestThread();
+                thread.start(); //check 함수를 일정시간마다 불러옴
 
-                    if (distance < 3)
-                    {
-                        i=0;
-                        check(a + 1);
-                    }
-                }
-                else {
-                    thread = new RequestThread();
-                    thread.start(); //check 함수를 일정시간마다 불러옴
-
-                }
-                /*if (nodelan - 0.0001 < Slatitude && Slatitude < nodelan + 0.0001 && nodelon - 0.0001 < Slongitude && Slongitude < nodelon + 0.0001) {
-                    mOverlayview.setdata(node.get(a).index, node.get(a).nodeType, Double.parseDouble(data[1]), Double.parseDouble(data[0]), node.get(a).turntype);
-                    //Toast.makeText(getApplicationContext(), node.get(a).turntype , Toast.LENGTH_LONG).show();
-                    check(a + 1);
-                }*/
             }
-            else if(node.get(a).nodeType.equals("LINE")) {
+
+            else if (node.get(a).nodeType.equals("LINE")) {
                 check(a + 1);
             }
         }
     }
 
-
     public void onResume() {
         super.onResume();
 
         mCameraPreview = new CameraPreview(this);
-        mOverlayview=new CameraOverlayview(this);
+        mOverlayview = new CameraOverlayview(this);
 
 
         Display display = ((WindowManager) this
@@ -125,37 +145,10 @@ public class CameraActivity extends Activity {
                 height));
 
         mOverlayview.resumesensor();
-        /*GpslocationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);//위치 관리자 객체 구하기
-        GpslocationListener = new LocationListener() {//리스너 정의
-            @Override
-            public void onLocationChanged(Location location) { //위치 업데이트시 리스너 호출
-                double latitude;//위도
-                double longitude;//경도
-                //변경되는 location값 받는 메소드
-                latitude = location.getLatitude();
-                longitude = location.getLongitude();
-                Log.d(TAG, "latitude=" + String.valueOf(latitude));
-                Log.d(TAG, "longitude=" + String.valueOf(longitude));
-                mOverlayview.setCurrentPoint(latitude, longitude);
-            }
-            @Override
-            public void onStatusChanged(String provider, int status, Bundle extras) {
-            }
-            @Override
-            public void onProviderEnabled(String provider) {
-            }
-            @Override
-            public void onProviderDisabled(String provider) {
-            }
-        };*/
-
-        //GpslocationManager.requestLocationUpdates(GpslocationManager.GPS_PROVIDER, 0, 0,GpslocationListener);
-        //(서비스제공자의 상수값, 업데이트간격,기기 움직이는 미터 단위의 최소거리, 알림을 받을 locationListener)
     }
 
-    class RequestThread extends  Thread
-    {
-        public  void run() {
+    class RequestThread extends Thread {
+        public void run() {
             while (!stopflag) {
                 try {
                     Thread.sleep(3000);   // 3초 뒤에 실행
@@ -169,12 +162,13 @@ public class CameraActivity extends Activity {
         }
     }
 
-    public void setCurrent(double latitude_st, double longitude_st)//현위치 좌표 정보 얻기
-    {
-        this.Slatitude =latitude_st;
-        this.Slongitude =longitude_st;
-        Log.d(TAG, "cameraactivity sta_la=" + String.valueOf(Slatitude));  // 값이 들어가있나 확인용
-        Log.d(TAG, "cameraactivity sta_lo=" + String.valueOf(Slongitude));  // 동일
+    public void setpush() {
+        mOverlayview.setdata(node.get(count).index, node.get(count).nodeType, nodelan, nodelon, node.get(count).turntype, distance);
+    }
+
+    public void check_ch() {
+        i = 0;
+        check(count + 1);
     }
 
     public void onPause() {
@@ -183,7 +177,8 @@ public class CameraActivity extends Activity {
         }
         super.onPause();
     }
-    public void onStop(){
+
+    public void onStop() {
         super.onStop();
     }
 
@@ -192,7 +187,9 @@ public class CameraActivity extends Activity {
         //thread.interrupt();
         latitude_ds = null;
         longitude_ds = null;
-        stopflag=true;
+        stopflag = true;
         mOverlayview.viewDestory();
+        unregisterReceiver(mReceiver);
     }
+
 }
