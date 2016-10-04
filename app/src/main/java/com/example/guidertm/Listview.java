@@ -29,6 +29,7 @@ public class Listview extends Activity {
         ArrayList<String> addss = (ArrayList<String>) intent.getSerializableExtra("address"); // 도착지 주소이름
         ArrayList<String> poi = (ArrayList<String>) intent.getSerializableExtra("point");  // 도착지 위도,경도
 
+
         if(addss != null)
         {
             for(int i=0; i < addss.size(); i++)  // 리스트 안에 전달 받은 주소이름과 위도경도를 추가한다.
@@ -44,6 +45,7 @@ public class Listview extends Activity {
             startActivity(back);
             finish();
         }
+
 
         ArrayAdapter<String> Adapter;  // 어텝터 연결
         Adapter = new ArrayAdapter<String>(this, android.R.layout.simple_expandable_list_item_1, address);
