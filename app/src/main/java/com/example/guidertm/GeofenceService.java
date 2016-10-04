@@ -5,6 +5,8 @@ import android.app.Service;
 import android.content.Intent;
 import android.location.Location;
 import android.os.IBinder;
+import android.util.Log;
+import android.widget.Toast;
 
 import com.google.android.gms.location.Geofence;
 import com.google.android.gms.location.GeofencingEvent;
@@ -33,10 +35,13 @@ public class GeofenceService extends Service {
             switch (action) {
                 case Geofence.GEOFENCE_TRANSITION_ENTER:
                     ((CameraActivity) CameraActivity.mContext).setpush();
+                    Toast.makeText(getApplicationContext(), "10m 이내에 진입하였습니다.", Toast.LENGTH_SHORT).show();
+                    Log.e("Geo", "check");
                     break;
-                //case Geofence.GEOFENCE_TRANSITION_EXIT:
+               //case Geofence.GEOFENCE_TRANSITION_EXIT:
                 case Geofence.GEOFENCE_TRANSITION_DWELL:
                     ((CameraActivity) CameraActivity.mContext).setpush();
+                    Log.e("Geo", "check2");
                     break;
             }
 

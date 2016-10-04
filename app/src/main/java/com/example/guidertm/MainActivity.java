@@ -71,6 +71,8 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
     public static double des_longitude_plic ;
     public static TMapPoint point2;
     public static  double Ddistance;
+    public static  double Geo_latitude;
+    public static  double Geo_longitude;
     public static List<NodeData> nodeDatas=new ArrayList<NodeData>();
     LocationManager locationManager;
     LocationListener locationListener;
@@ -206,7 +208,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
             longitude_plic = location.getLongitude();
 
             mOverlayview.setCurrentPoint(latitude_plic,longitude_plic,Ddistance);  // 현재위치 업데이트를 위해 mOverlayview에 값 전송
-            mCameraActivity.setCurrent(latitude_plic,longitude_plic);
+            //mCameraActivity.setCurrent(latitude_plic,longitude_plic);
 
             my_location.setText("현 위치");
             mMapView.setCenterPoint(longitude_plic, latitude_plic);
@@ -238,9 +240,27 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
 
 
             mOverlayview.setCurrentPoint(latitude_plic,longitude_plic,Ddistance);  // 현재위치 업데이트를 위해 mOverlayview에 값 전송
-            mCameraActivity.setCurrent(latitude_plic,longitude_plic);
+            //mCameraActivity.setCurrent(latitude_plic,longitude_plic);
             mMapView.setLocationPoint(longitude_plic, latitude_plic);
             //updateDisplay(location);
+
+
+            if(((CameraActivity)CameraActivity.mContext).nodelan != null) {
+                double Geo_lan = ((CameraActivity) CameraActivity.mContext).nodelan;
+                double Geo_lon = ((CameraActivity) CameraActivity.mContext).nodelon;
+
+                Geofence(Geo_lan,Geo_lon);
+            }
+            /*else
+            {
+
+                double Geo_lan = Geo_latitude;
+                double Geo_lon = Geo_longitude;
+                Log.d(TAG, "AtoB =  " + Geo_lan);
+                Log.d(TAG, "AtoB =  " + Geo_lon);
+
+                Geofence(Geo_lan,Geo_lon);
+            }*/
         }
 
     };
@@ -248,7 +268,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
     public void Geofence(double latitude, double longitude)   // CameraActivity 에서 사용할 Geofence 10m반경 함수
     {
         Geofence geofence = new Geofence.Builder()
-                .setCircularRegion(latitude, longitude, 10)  // 위도,경도,반경을 사용하여 영역 설정
+                .setCircularRegion(latitude, longitude, 100)  // 위도,경도,반경을 사용하여 영역 설정
                 .setExpirationDuration(24 * 60 * 60 * 1000)   // 영역 만료시간 설정
                 .setLoiteringDelay(60 * 60 * 1000)  // 영역에 in,out 판단 시 지연시간
                 .setNotificationResponsiveness(2 * 60 * 1000)
@@ -268,7 +288,9 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             return;
         }
+
         LocationServices.GeofencingApi.addGeofences(mApiClient, request, pi);
+
     }
 
     public void Geofence_re(double latitude, double longitude)   // CameraActivity 에서 사용할 Geofence 3m 반경함수
@@ -294,6 +316,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             return;
         }
+
         LocationServices.GeofencingApi.addGeofences(mApiClient, request, pi);
     }
 
@@ -323,6 +346,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
 
                 tmapdata.findAllPOI(strData, new TMapData.FindAllPOIListenerCallback() {
                     @Override
+
                     public void onFindAllPOI(ArrayList<TMapPOIItem> poiItem) {
                         Intent intent = new Intent(MainActivity.this,Listview.class);
                         ArrayList<String> search_list = new ArrayList<String>();
@@ -415,7 +439,10 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
                     if(nodeType.getTextContent().equals("POINT")) {
                         Node turnType = ((Element) placemark).getElementsByTagName("tmap:turnType").item(0);
                         a = Turntype(turnType.getTextContent());
+
                         nodeDatas.add(new NodeData(index,nodetype,coordinates,a));
+
+
                     }
                     else nodeDatas.add(new NodeData(index, nodetype, coordinates,a));
 

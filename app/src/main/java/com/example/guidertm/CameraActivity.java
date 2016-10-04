@@ -87,8 +87,8 @@ public class CameraActivity extends Activity {
 
                 count = a;
 
-                ((MainActivity) MainActivity.mContext).Geofence(nodelan, nodelon);
-                ((MainActivity) MainActivity.mContext).Geofence_re(nodelan, nodelon);
+                //((MainActivity) MainActivity.mContext).Geofence(nodelan, nodelon);
+                //((MainActivity) MainActivity.mContext).Geofence_re(nodelan, nodelon);
 
                 thread = new RequestThread();
                 thread.start(); //check 함수를 일정시간마다 불러옴
