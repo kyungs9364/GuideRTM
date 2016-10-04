@@ -364,12 +364,9 @@ public class CameraOverlayview extends View implements SensorEventListener {
             xAxis = sensorEvent.values[0];
             yAxis = sensorEvent.values[1];
             zAxis = sensorEvent.values[2];
-
-
             mLowPassX = lowPass(xAxis, mLowPassX);
             mLowPassY = lowPass(yAxis, mLowPassY);
             mLowPassZ = lowPass(zAxis, mLowPassZ);
-
         }*/
     }
 
