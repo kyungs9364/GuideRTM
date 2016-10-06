@@ -74,6 +74,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
     public static  double Geo_latitude;
     public static  double Geo_longitude;
     public static List<NodeData> nodeDatas=new ArrayList<NodeData>();
+    public static  ArrayList<String> GEO_list = new ArrayList<String>();
     LocationManager locationManager;
     LocationListener locationListener;
     GoogleApiClient mApiClient;
@@ -98,6 +99,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
                 Intent intent = new Intent(MainActivity.this,CameraActivity.class);
                 intent.putExtra("latitude_id",String.valueOf(des_latitude_plic));  // CameraOverlayview 에 목적지값 전송 - cameraActivity 통해서 경유
                 intent.putExtra("longitude_id",String.valueOf(des_longitude_plic ));
+                intent.putExtra("distance",Ddistance);
                 intent.putExtra("node",(Serializable)nodeDatas);
                 startActivity(intent);
 
@@ -207,7 +209,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
             latitude_plic = location.getLatitude();
             longitude_plic = location.getLongitude();
 
-            mOverlayview.setCurrentPoint(latitude_plic,longitude_plic,Ddistance);  // 현재위치 업데이트를 위해 mOverlayview에 값 전송
+            //mOverlayview.setCurrentPoint(latitude_plic,longitude_plic,Ddistance);  // 현재위치 업데이트를 위해 mOverlayview에 값 전송
             //mCameraActivity.setCurrent(latitude_plic,longitude_plic);
 
             my_location.setText("현 위치");
@@ -217,11 +219,14 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
         }
 
         LocationRequest request = new LocationRequest();
-        request.setFastestInterval(2500); // 호출정보가 전달될 간격
-        request.setInterval(5000);  // 호출되는 간격
+        request.setFastestInterval(1500); // 호출정보가 전달될 간격
+        request.setInterval(3000);  // 호출되는 간격
         request.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY); // GPS 정확도를 우선으로 한다.
 
+        Intent intent= new Intent(this, BackgroundService.class);
+        PendingIntent pending = PendingIntent.getService(this, 0,intent,0);
         LocationServices.FusedLocationApi.requestLocationUpdates(mApiClient, request, mListener);
+        LocationServices.FusedLocationApi.requestLocationUpdates(mApiClient,request,pending);
 
         MyListenerClass buttonListener = new MyListenerClass();
         Search.setOnClickListener(buttonListener);
@@ -239,31 +244,23 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
             Log.e("TEST","l2="+longitude_plic);
 
 
-            mOverlayview.setCurrentPoint(latitude_plic,longitude_plic,Ddistance);  // 현재위치 업데이트를 위해 mOverlayview에 값 전송
+            //mOverlayview.setCurrentPoint(latitude_plic,longitude_plic,Ddistance);  // 현재위치 업데이트를 위해 mOverlayview에 값 전송
             //mCameraActivity.setCurrent(latitude_plic,longitude_plic);
             mMapView.setLocationPoint(longitude_plic, latitude_plic);
             //updateDisplay(location);
-
-
-            if(((CameraActivity)CameraActivity.mContext).nodelan != null) {
-                double Geo_lan = ((CameraActivity) CameraActivity.mContext).nodelan;
-                double Geo_lon = ((CameraActivity) CameraActivity.mContext).nodelon;
-
-                Geofence(Geo_lan,Geo_lon);
-            }
-            /*else
-            {
-
-                double Geo_lan = Geo_latitude;
-                double Geo_lon = Geo_longitude;
-                Log.d(TAG, "AtoB =  " + Geo_lan);
-                Log.d(TAG, "AtoB =  " + Geo_lon);
-
-                Geofence(Geo_lan,Geo_lon);
-            }*/
+            //Geo_test();
         }
 
     };
+    public void Geo_test()
+    {
+        if(((CameraActivity)CameraActivity.mContext).nodelan != null)
+        {
+            double geolan = ((CameraActivity)CameraActivity.mContext).nodelan;
+            double geolon = ((CameraActivity)CameraActivity.mContext).nodelon;
+            Geofence(geolan,geolon);
+        }
+    }
 
     public void Geofence(double latitude, double longitude)   // CameraActivity 에서 사용할 Geofence 10m반경 함수
     {
@@ -279,7 +276,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
                 .build();
 
         GeofencingRequest request = new GeofencingRequest.Builder()
-                .setInitialTrigger(GeofencingRequest.INITIAL_TRIGGER_ENTER | Geofence.GEOFENCE_TRANSITION_DWELL)
+                .setInitialTrigger(GeofencingRequest.INITIAL_TRIGGER_ENTER | GeofencingRequest.INITIAL_TRIGGER_DWELL )
                 .addGeofence(geofence)
                 .build();
 
@@ -289,7 +286,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
             return;
         }
 
-        LocationServices.GeofencingApi.addGeofences(mApiClient, request, pi);
+       LocationServices.GeofencingApi.addGeofences(mApiClient, request,pi);
 
     }
 
@@ -441,7 +438,6 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
                         a = Turntype(turnType.getTextContent());
 
                         nodeDatas.add(new NodeData(index,nodetype,coordinates,a));
-
 
                     }
                     else nodeDatas.add(new NodeData(index, nodetype, coordinates,a));

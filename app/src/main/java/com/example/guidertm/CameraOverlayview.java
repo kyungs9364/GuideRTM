@@ -78,6 +78,7 @@ public class CameraOverlayview extends View implements SensorEventListener {
 
     public CameraOverlayview(Context context) {
         super(context);
+
         //mContext = (CameraActivity) context;
         //mainActivity = (MainActivity) context;
         initBitamaps();
@@ -232,13 +233,13 @@ public class CameraOverlayview extends View implements SensorEventListener {
 
         // 4/4분면을 고려하여 0~360도가 나오게 설정
         /*if (tBx > tAx && tBy > tAy) {
-            ;
+            Log.d("","1111");
         } else if (tBx < tAx && tBy > tAy) {
-            mXDegree += 180;
+            Log.d("","2222");
         } else if (tBx < tAx && tBy < tAy) {
-            mXDegree += 180;
+            Log.d("","3333");
         } else if (tBx > tAx && tBy < tAy) {
-            mXDegree += 360;
+            Log.d("","4444");
         }*/
 
         // 두 위치간의 각도에 현재 스마트폰이 동쪽기준 바라보고 있는 방향 만큼 더해줌
@@ -421,6 +422,7 @@ public class CameraOverlayview extends View implements SensorEventListener {
 
     public void getLocation(Canvas canvas) {
         double tAx, tAy, tBx, tBy;
+
         tAx = sta_longitude;//현위치 경도좌표
         tAy = sta_latitude;//현위치 위도좌표
         tBx = des_longitude;//임의 경도좌표
@@ -435,8 +437,8 @@ public class CameraOverlayview extends View implements SensorEventListener {
         this.sta_latitude = latitude_st;
         this.sta_longitude = longitude_st;
         this.distance = distance;
-        //Log.d(TAG, "sta_la=" + String.valueOf(sta_latitude));  // 값이 들어가있나 확인용
-        //Log.d(TAG, "sta_lo=" + String.valueOf(sta_longitude));  // 동일
+        Log.d(TAG, "sta_la=" + String.valueOf(sta_latitude));  // 값이 들어가있나 확인용
+        Log.d(TAG, "sta_lo=" + String.valueOf(sta_longitude));  // 동일
         Log.d(TAG, "distance=" + String.valueOf(distance));
     }
 

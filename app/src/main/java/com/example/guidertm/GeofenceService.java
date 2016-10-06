@@ -34,7 +34,9 @@ public class GeofenceService extends Service {
             int action = event.getGeofenceTransition();
             switch (action) {
                 case Geofence.GEOFENCE_TRANSITION_ENTER:
-                    ((CameraActivity) CameraActivity.mContext).setpush();
+                    //if(((CameraActivity)CameraActivity.mContext).nodelan != null)
+                        ((CameraActivity) CameraActivity.mContext).setpush();
+
                     Toast.makeText(getApplicationContext(), "10m 이내에 진입하였습니다.", Toast.LENGTH_SHORT).show();
                     Log.e("Geo", "check");
                     break;
