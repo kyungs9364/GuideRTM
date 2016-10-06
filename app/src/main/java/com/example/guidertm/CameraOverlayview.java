@@ -379,13 +379,13 @@ public class CameraOverlayview extends View implements SensorEventListener {
     public void initSensor(Context context) {
         sensorManager = (SensorManager) context.getSystemService(Context.SENSOR_SERVICE);
         orientationSensor = Sensor.TYPE_ORIENTATION;
-        accelerometerSensor = Sensor.TYPE_ACCELEROMETER;
+        //accelerometerSensor = Sensor.TYPE_ACCELEROMETER;
     }
 
     public void resumesensor()
     {
         sensorManager.registerListener(this, sensorManager.getDefaultSensor(orientationSensor), SensorManager.SENSOR_DELAY_NORMAL);
-        sensorManager.registerListener(this, sensorManager.getDefaultSensor(accelerometerSensor), SensorManager.SENSOR_DELAY_NORMAL);
+        //sensorManager.registerListener(this, sensorManager.getDefaultSensor(accelerometerSensor), SensorManager.SENSOR_DELAY_NORMAL);
     }
 
 
