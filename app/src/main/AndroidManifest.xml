@@ -30,9 +30,6 @@
             android:configChanges="keyboardHidden|orientation">
         </activity>
         <activity android:name="Listview" android:label="listview"></activity>
-        <service android:name=".GeofenceService"></service>
-        <service android:name=".GeofenceService_re"></service>
-        <service android:name=".BackgroundService"></service>
     </application>
 
 
@@ -44,7 +41,5 @@
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"/>
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
-
-    <meta-data android:name="com.google.android.gms.version" android:value="@integer/google_play_services_version"/>
 
 </manifest>
