@@ -30,19 +30,15 @@ import android.widget.Toast;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
-import com.google.android.gms.location.FusedLocationProviderApi;
 import com.google.android.gms.location.Geofence;
 import com.google.android.gms.location.GeofencingRequest;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
-
-
 import com.skp.Tmap.TMapData;
 import com.skp.Tmap.TMapPOIItem;
 import com.skp.Tmap.TMapPoint;
 import com.skp.Tmap.TMapPolyLine;
 import com.skp.Tmap.TMapView;
-
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -56,6 +52,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
         GoogleApiClient.ConnectionCallbacks {
 
     String TAG="PAAR";
+    String Distance;
     TMapView mMapView = null;
     RelativeLayout mapContainer = null;
     EditText my_location;
@@ -65,22 +62,22 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
     Button roadservice;
     ImageView update;
     public static Context mContext;  // 타 액티비티에서 변수or함수를 사용가능하게함
+    Geocoder coder;
     CameraOverlayview mOverlayview;
     CameraActivity mCameraActivity;
-    public  double latitude_plic ;
-    public  double longitude_plic ;
+    public static double latitude_plic ;
+    public static double longitude_plic ;
     public static double des_latitude_plic ;
     public static double des_longitude_plic ;
     public static TMapPoint point2;
     public static  double Ddistance;
+    public static  double Geo_latitude;
+    public static  double Geo_longitude;
     public static List<NodeData> nodeDatas=new ArrayList<NodeData>();
+    public static  ArrayList<String> GEO_list = new ArrayList<String>();
+    LocationManager locationManager;
+    LocationListener locationListener;
     GoogleApiClient mApiClient;
-    boolean isConnected = false;
-
-
-
-
-
 
 
     class MyListenerClass implements View.OnClickListener {
@@ -96,12 +93,28 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
                     showToast("검색어가 입력되지 않았습니다.");
                     return;
                 }
+                //Toast.makeText(getApplicationContext(), "도착지 : " + end, Toast.LENGTH_SHORT).show();
+
 
                 Intent intent = new Intent(MainActivity.this,CameraActivity.class);
                 intent.putExtra("latitude_id",String.valueOf(des_latitude_plic));  // CameraOverlayview 에 목적지값 전송 - cameraActivity 통해서 경유
                 intent.putExtra("longitude_id",String.valueOf(des_longitude_plic ));
+                intent.putExtra("distance",Ddistance);
                 intent.putExtra("node",(Serializable)nodeDatas);
                 startActivity(intent);
+
+                  /*
+                List<Address> des_location = null;
+                try {    //  도착위치 값 지오코딩.
+                    des_location = coder.getFromLocationName(end, 5);
+                } catch (NumberFormatException e) {
+                    e.printStackTrace();
+                } catch (IOException e) {
+                    Toast.makeText(getApplicationContext(), "입출력오류 :" + e.getMessage() + "", Toast.LENGTH_SHORT).show();
+                    e.printStackTrace();
+                }
+                des_latitude_plic = des_location.get(0).getLatitude();
+                des_longitude_plic = des_location.get(0).getLongitude();*/
 
             }
             else if (v.getId() == R.id.road)
@@ -136,7 +149,6 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         mapContainer = (RelativeLayout) findViewById(R.id.Tmap);
-
         mApiClient = new GoogleApiClient.Builder(this)
                 .addApi(LocationServices.API)
                 .addConnectionCallbacks(this)
@@ -176,33 +188,19 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
 
         mOverlayview = new CameraOverlayview(this);
         mCameraActivity = new CameraActivity();
-
-
-
-        //getLocation();
     }
 
-
-
-
-
-
+    boolean isConnected = false;
 
     @Override
     public void onConnected(@Nullable Bundle bundle) {
         isConnected = true;
         getLocation();
-        //Log.d("onconnceted", "isconnected=" + isConnected);
-
     }
 
     public void getLocation() {
-        if (!isConnected) {
-            Log.d("getlocation high","isconnected="+isConnected);
-            return;
-        }
+        //if (!isConnected) return;
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            Log.d("getlocation mid","isconnected="+isConnected);
             return;
         }
 
@@ -211,29 +209,25 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
             latitude_plic = location.getLatitude();
             longitude_plic = location.getLongitude();
 
-            /*mOverlayview.setCurrentPoint(latitude_plic,longitude_plic,Ddistance);  // 현재위치 업데이트를 위해 mOverlayview에 값 전송
-            mCameraActivity.setCurrent(latitude_plic,longitude_plic);
-*/
+            //mOverlayview.setCurrentPoint(latitude_plic,longitude_plic,Ddistance);  // 현재위치 업데이트를 위해 mOverlayview에 값 전송
+            //mCameraActivity.setCurrent(latitude_plic,longitude_plic);
+
             my_location.setText("현 위치");
-            /*mMapView.setCenterPoint(longitude_plic, latitude_plic);
-            mMapView.setLocationPoint(longitude_plic, latitude_plic);*/
+            mMapView.setCenterPoint(longitude_plic, latitude_plic);
+            mMapView.setLocationPoint(longitude_plic, latitude_plic);
             mMapView.setTrackingMode(true);
         }
 
         LocationRequest request = new LocationRequest();
-        request.setFastestInterval(2500); // 호출정보가 전달될 간격
-        request.setInterval(5000);  // 호출되는 간격
+        request.setFastestInterval(1500); // 호출정보가 전달될 간격
+        request.setInterval(3000);  // 호출되는 간격
         request.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY); // GPS 정확도를 우선으로 한다.
-
-
 
         Intent intent= new Intent(this, BackgroundService.class);
         PendingIntent pending = PendingIntent.getService(this, 0,intent,0);
         LocationServices.FusedLocationApi.requestLocationUpdates(mApiClient, request, mListener);
         LocationServices.FusedLocationApi.requestLocationUpdates(mApiClient,request,pending);
 
-
-        Log.d("getlocaiton down", "isconnected=" + isConnected);
         MyListenerClass buttonListener = new MyListenerClass();
         Search.setOnClickListener(buttonListener);
         roadservice.setOnClickListener(buttonListener);
@@ -246,49 +240,54 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
         public void onLocationChanged(Location location) {   //변경 될때 호출 될 리스너
             latitude_plic = location.getLatitude();
             longitude_plic = location.getLongitude();
+            Log.e("TEST","l2="+latitude_plic);
+            Log.e("TEST","l2="+longitude_plic);
 
-            Log.d("locationchange", "isconnected=" + isConnected);
 
-            mOverlayview.setCurrentPoint(latitude_plic, longitude_plic, Ddistance);  // 현재위치 업데이트를 위해 mOverlayview에 값 전송
+            //mOverlayview.setCurrentPoint(latitude_plic,longitude_plic,Ddistance);  // 현재위치 업데이트를 위해 mOverlayview에 값 전송
             //mCameraActivity.setCurrent(latitude_plic,longitude_plic);
             mMapView.setLocationPoint(longitude_plic, latitude_plic);
             //updateDisplay(location);
-
-            if(((CameraActivity)CameraActivity.mContext).nodelan !=null){
-                double geolan = ((CameraActivity)CameraActivity.mContext).nodelan;
-                double geolon = ((CameraActivity)CameraActivity.mContext).nodelon;
-
-                Geofence(geolan,geolon);
-            }
-
+            //Geo_test();
         }
-    };
 
-    public void Geofence(double latitude,double longitude)   // CameraActivity 에서 사용할 Geofence 10m반경 함수
+    };
+    public void Geo_test()
+    {
+        if(((CameraActivity)CameraActivity.mContext).nodelan != null)
+        {
+            double geolan = ((CameraActivity)CameraActivity.mContext).nodelan;
+            double geolon = ((CameraActivity)CameraActivity.mContext).nodelon;
+            Geofence(geolan,geolon);
+        }
+    }
+
+    public void Geofence(double latitude, double longitude)   // CameraActivity 에서 사용할 Geofence 10m반경 함수
     {
         Geofence geofence = new Geofence.Builder()
-                .setCircularRegion(latitude, longitude, 35)  // 위도,경도,반경을 사용하여 영역 설정
+                .setCircularRegion(latitude, longitude, 100)  // 위도,경도,반경을 사용하여 영역 설정
                 .setExpirationDuration(24 * 60 * 60 * 1000)   // 영역 만료시간 설정
                 .setLoiteringDelay(60 * 60 * 1000)  // 영역에 in,out 판단 시 지연시간
                 .setNotificationResponsiveness(2 * 60 * 1000)
                 .setTransitionTypes(Geofence.GEOFENCE_TRANSITION_ENTER // 영역으로 들어갔을 때 서비스 시작
-                        | Geofence.GEOFENCE_TRANSITION_EXIT    // 영역을 벗어났을 때 서비스 시작
+                        //| Geofence.GEOFENCE_TRANSITION_EXIT    // 영역을 벗어났을 때 서비스 시작
                         | Geofence.GEOFENCE_TRANSITION_DWELL)   // 들어가거나 들어가있는 상태라면 서비스 시작
                 .setRequestId("geoid")   // 요청 ID
                 .build();
 
         GeofencingRequest request = new GeofencingRequest.Builder()
-                .setInitialTrigger(GeofencingRequest.INITIAL_TRIGGER_ENTER | Geofence.GEOFENCE_TRANSITION_DWELL)
+                .setInitialTrigger(GeofencingRequest.INITIAL_TRIGGER_ENTER | GeofencingRequest.INITIAL_TRIGGER_DWELL )
                 .addGeofence(geofence)
                 .build();
 
         Intent intent = new Intent(this, GeofenceService.class);
-        PendingIntent pi = PendingIntent.getService(this, 0, intent, 0);
+        PendingIntent pi = PendingIntent.getService(this, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             return;
         }
-        LocationServices.GeofencingApi.addGeofences(mApiClient, request, pi);
-        Log.d("ddddd", "dddddddd");
+
+       LocationServices.GeofencingApi.addGeofences(mApiClient, request,pi);
+
     }
 
     public void Geofence_re(double latitude, double longitude)   // CameraActivity 에서 사용할 Geofence 3m 반경함수
@@ -314,19 +313,18 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             return;
         }
+
         LocationServices.GeofencingApi.addGeofences(mApiClient, request, pi);
     }
 
     @Override
     public void onConnectionSuspended(int i) {
-        isConnected = true;
-        Log.d("onconnectionsuspend","connection suspended");
-        mApiClient.connect();
+        isConnected = false;
     }
 
     @Override
     public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
-        Log.d("onconnectionfailed", "failed.Error: " + connectionResult.getErrorCode());
+
     }
 
     public void findAllPoi() {  // 검색 함수
@@ -345,6 +343,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
 
                 tmapdata.findAllPOI(strData, new TMapData.FindAllPOIListenerCallback() {
                     @Override
+
                     public void onFindAllPOI(ArrayList<TMapPOIItem> poiItem) {
                         Intent intent = new Intent(MainActivity.this,Listview.class);
                         ArrayList<String> search_list = new ArrayList<String>();
@@ -425,7 +424,6 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
                 doc.getDocumentElement().normalize();
                 Element root = doc.getDocumentElement();
                 int length = root.getElementsByTagName("Placemark").getLength();
-                //int count=0;
                 for(int i=0; i<length; i++) {
                     String a="";
                     Node placemark = root.getElementsByTagName("Placemark").item(i);
@@ -436,17 +434,14 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
                     Node coordinate = ((Element)placemark).getElementsByTagName("coordinates").item(0);
                     String coordinates=coordinate.getTextContent();
                     if(nodeType.getTextContent().equals("POINT")) {
-                        //++count;
                         Node turnType = ((Element) placemark).getElementsByTagName("tmap:turnType").item(0);
                         a = Turntype(turnType.getTextContent());
-/*
-                        if(count==1)
-                        {
-                            Log.d("coordinate=","1="+coordinates);
-                        }*/
-                        nodeDatas.add(new NodeData(index, nodetype, coordinates, a));
-                        //Log.d("all coordinate=", coordinates);
+
+                        nodeDatas.add(new NodeData(index,nodetype,coordinates,a));
+
                     }
+                    else nodeDatas.add(new NodeData(index, nodetype, coordinates,a));
+
                 }
             }
         });
@@ -577,19 +572,6 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
         super.onResume();
         mMapView.setCenterPoint(longitude_plic, latitude_plic);
         //nodeDatas.clear();
-    }
-
-
-    protected void onStart() {
-        super.onStart();
-        mApiClient.connect();
-    }
-    @Override
-    protected void onStop() {
-        super.onStop();
-        if (mApiClient.isConnected()) {
-            mApiClient.disconnect();
-        }
     }
 
     @Override

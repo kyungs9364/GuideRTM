@@ -1,15 +1,14 @@
 package com.example.guidertm;
 
 import android.app.IntentService;
-import android.content.Context;
 import android.content.Intent;
 import android.location.Location;
-import android.os.Bundle;
-import android.os.ResultReceiver;
-import android.util.Log;
 
 import com.google.android.gms.location.FusedLocationProviderApi;
 
+/**
+ * Created by 경석 on 2016-10-05.
+ */
 public class BackgroundService extends IntentService {
 
     public BackgroundService() {
