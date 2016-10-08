@@ -71,6 +71,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
     public static double des_longitude_plic ;
     public static double Temporary_la;
     public static double Temporary_lo;
+    public static int k=0;
     public static TMapPoint point2;
     public static  double Ddistance;
     public static  double Geo_latitude;
@@ -80,6 +81,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
     LocationManager locationManager;
     LocationListener locationListener;
     GoogleApiClient mApiClient;
+    boolean stopANDstart; // backgroundservice 를 control 하기 위해 사용
 
 
     class MyListenerClass implements View.OnClickListener {
@@ -210,7 +212,6 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
         if (location != null) {
             latitude_plic = location.getLatitude();
             longitude_plic = location.getLongitude();
-            Log.e("KS","10 ");
 
             //mOverlayview.setCurrentPoint(latitude_plic,longitude_plic,Ddistance);  // 현재위치 업데이트를 위해 mOverlayview에 값 전송
             //mCameraActivity.setCurrent(latitude_plic,longitude_plic);
@@ -222,7 +223,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
         }
 
         LocationRequest request = new LocationRequest();
-        request.setFastestInterval(1500); // 호출정보가 전달될 간격
+        request.setFastestInterval(1000); // 호출정보가 전달될 간격
         request.setInterval(3000);  // 호출되는 간격
         request.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY); // GPS 정확도를 우선으로 한다.
 
@@ -245,7 +246,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
 
             double change_la;
             double change_lo;
-            if (Temporary_la == 0) {
+            if (Temporary_la == 0 || k==0 ) {
                 change_la = latitude_plic;
                 change_lo = longitude_plic;
             }
@@ -253,6 +254,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
             {
                 change_la = Temporary_la;
                 change_lo = Temporary_lo;
+                k = 0;
             }
             Log.e("TEST","1-> "+ change_la);
             Log.e("TEST","1~-> "+ change_lo);
@@ -582,19 +584,14 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
         return c;
     }
 
-    /*public static String longDouble2String(int size, double value) {   // 소수점 이하 자리를 짜르는 함수
-        NumberFormat nf = NumberFormat.getNumberInstance();
-        nf.setMaximumFractionDigits(size);
-        nf.setGroupingUsed(false);
-        return nf.format(value);
-    }*/
-
     private void showToast(String s) {
         Toast.makeText(getApplicationContext(), s, Toast.LENGTH_SHORT).show();
     }
     @Override
     protected void onResume() {
         super.onResume();
+        stopANDstart = false;
+        k=1;
         Temporary_la =  ((CameraActivity) CameraActivity.mContext).Slatitude;
         Temporary_lo =  ((CameraActivity) CameraActivity.mContext).Slongitude;
         mMapView.setCenterPoint(longitude_plic, latitude_plic);
@@ -604,6 +601,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
     @Override
     protected void onPause() {
         super.onPause();
+        stopANDstart =true;
     }
 
     @Override
