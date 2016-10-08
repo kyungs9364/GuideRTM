@@ -69,6 +69,8 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
     public static double longitude_plic ;
     public static double des_latitude_plic ;
     public static double des_longitude_plic ;
+    public static double Temporary_la;
+    public static double Temporary_lo;
     public static TMapPoint point2;
     public static  double Ddistance;
     public static  double Geo_latitude;
@@ -208,6 +210,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
         if (location != null) {
             latitude_plic = location.getLatitude();
             longitude_plic = location.getLongitude();
+            Log.e("KS","10 ");
 
             //mOverlayview.setCurrentPoint(latitude_plic,longitude_plic,Ddistance);  // 현재위치 업데이트를 위해 mOverlayview에 값 전송
             //mCameraActivity.setCurrent(latitude_plic,longitude_plic);
@@ -224,7 +227,8 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
         request.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY); // GPS 정확도를 우선으로 한다.
 
         Intent intent= new Intent(this, BackgroundService.class);
-        PendingIntent pending = PendingIntent.getService(this, 0,intent,0);
+        PendingIntent pending = PendingIntent.getService(this, 0, intent, 0);
+
         LocationServices.FusedLocationApi.requestLocationUpdates(mApiClient, request, mListener);
         LocationServices.FusedLocationApi.requestLocationUpdates(mApiClient,request,pending);
 
@@ -237,11 +241,32 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
 
     com.google.android.gms.location.LocationListener mListener = new com.google.android.gms.location.LocationListener() {
         @Override
-        public void onLocationChanged(Location location) {   //변경 될때 호출 될 리스너
+        public void onLocationChanged(Location location) { //변경 될때 호출 될 리스너
+
+            double change_la;
+            double change_lo;
+            if (Temporary_la == 0) {
+                change_la = latitude_plic;
+                change_lo = longitude_plic;
+            }
+            else
+            {
+                change_la = Temporary_la;
+                change_lo = Temporary_lo;
+            }
+            Log.e("TEST","1-> "+ change_la);
+            Log.e("TEST","1~-> "+ change_lo);
+
             latitude_plic = location.getLatitude();
             longitude_plic = location.getLongitude();
-            Log.e("TEST","l2="+latitude_plic);
-            Log.e("TEST","l2="+longitude_plic);
+            Log.e("TEST","2-> "+latitude_plic);
+            Log.e("TEST","2~-> "+ longitude_plic);
+
+            latitude_plic = (change_la + latitude_plic)/2;
+            longitude_plic = (change_lo + longitude_plic)/2;
+            Log.e("TEST","3-> "+latitude_plic);
+            Log.e("TEST","3~-> "+ longitude_plic);
+           // Log.e("TEST","l2="+longitude_plic);
 
 
             //mOverlayview.setCurrentPoint(latitude_plic,longitude_plic,Ddistance);  // 현재위치 업데이트를 위해 mOverlayview에 값 전송
@@ -570,6 +595,8 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
     @Override
     protected void onResume() {
         super.onResume();
+        Temporary_la =  ((CameraActivity) CameraActivity.mContext).Slatitude;
+        Temporary_lo =  ((CameraActivity) CameraActivity.mContext).Slongitude;
         mMapView.setCenterPoint(longitude_plic, latitude_plic);
         //nodeDatas.clear();
     }
