@@ -14,13 +14,14 @@ public class BackgroundService extends IntentService {
     public static double Temporary_la;
     public static double Temporary_lo;
 
+
     public BackgroundService() {
         super("BackgroundService");
     }
     protected void onHandleIntent(Intent intent)
     {
         Location location = intent.getParcelableExtra(FusedLocationProviderApi.KEY_LOCATION_CHANGED);
-        if(location !=null)
+        if(location !=null && ((MainActivity) MainActivity.mContext).serviceSTOP ==true)
         {
             if(((MainActivity) MainActivity.mContext).stopANDstart == true) {
 
@@ -48,5 +49,8 @@ public class BackgroundService extends IntentService {
                 Temporary_lo = ((MainActivity) MainActivity.mContext).longitude_plic;
             }
         }
+        else return;
+
     }
+
 }

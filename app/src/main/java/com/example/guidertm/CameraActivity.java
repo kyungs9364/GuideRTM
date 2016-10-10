@@ -6,6 +6,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.location.Location;
+import android.net.ConnectivityManager;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Display;
@@ -82,6 +83,10 @@ public class CameraActivity extends Activity  {
         registerReceiver(mReceiver, intentfilter);
 
 
+        IntentFilter filter = new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION);
+        mContext.registerReceiver(((MainActivity) MainActivity.mContext).receiver, filter);
+
+
         check(1);  // 출발지의 정보는 보내지 않아도 됨으로 check(1)로 설정
 
         mOverlayview.setDestinationPoint(Double.parseDouble(latitude_ds), Double.parseDouble(longitude_ds));  // 목적지 값 overlayview 전송
@@ -89,7 +94,7 @@ public class CameraActivity extends Activity  {
     }
 
 
-public void check(int a)
+    public void check(int a)
     {
         if(a>node.size())
             return ;
@@ -223,5 +228,6 @@ public void check(int a)
         stopflag=true;
         mOverlayview.viewDestory();
         unregisterReceiver(mReceiver);
+        mContext.unregisterReceiver(((MainActivity)MainActivity.mContext).receiver);
     }
 }

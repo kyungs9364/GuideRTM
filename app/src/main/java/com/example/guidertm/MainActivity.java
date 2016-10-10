@@ -2,15 +2,15 @@ package com.example.guidertm;
 
 import android.Manifest;
 import android.app.PendingIntent;
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.location.Geocoder;
 import android.location.Location;
-import android.location.LocationListener;
-import android.location.LocationManager;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
@@ -78,11 +78,13 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
     public static  double Geo_longitude;
     public static List<NodeData> nodeDatas=new ArrayList<NodeData>();
     public static  ArrayList<String> GEO_list = new ArrayList<String>();
-    LocationManager locationManager;
-    LocationListener locationListener;
+    public  static int TYPE_WIFI = 1;
+    public  static int TYPE_MOBILE = 2;
+    public  static int TYPE_NOT_CONNECTED = 0;
     GoogleApiClient mApiClient;
     boolean stopANDstart; // backgroundservice 를 control 하기 위해 사용
-
+    boolean serviceSTOP = true;
+    IntentFilter filter;
 
     class MyListenerClass implements View.OnClickListener {
         public void onClick(View v) {
@@ -188,10 +190,11 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
         Log.d(TAG, "des=" + String.valueOf(des_longitude_plic));
 
         chkGpsService();
-        isNetworkState(this);
-
         mOverlayview = new CameraOverlayview(this);
         mCameraActivity = new CameraActivity();
+
+        filter = new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION);
+        mContext.registerReceiver(receiver,filter);
     }
 
     boolean isConnected = false;
@@ -268,7 +271,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
             longitude_plic = (change_lo + longitude_plic)/2;
             Log.e("TEST","3-> "+latitude_plic);
             Log.e("TEST","3~-> "+ longitude_plic);
-           // Log.e("TEST","l2="+longitude_plic);
+            // Log.e("TEST","l2="+longitude_plic);
 
 
             //mOverlayview.setCurrentPoint(latitude_plic,longitude_plic,Ddistance);  // 현재위치 업데이트를 위해 mOverlayview에 값 전송
@@ -313,7 +316,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
             return;
         }
 
-       LocationServices.GeofencingApi.addGeofences(mApiClient, request,pi);
+        LocationServices.GeofencingApi.addGeofences(mApiClient, request,pi);
 
     }
 
@@ -441,33 +444,32 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
         TMapPoint point1 = new TMapPoint(latitude_plic, longitude_plic);
         TMapPoint point2 = new TMapPoint(des_latitude_plic, des_longitude_plic);
         TMapData tmapdata = new TMapData();
-        mMapView.zoomToTMapPoint ( point1,point2 );  // 자동 zoomlevel 조정
+        mMapView.zoomToTMapPoint(point1, point2);  // 자동 zoomlevel 조정
         mMapView.setCenterPoint(longitude_plic, latitude_plic);
 
 
-        tmapdata.findPathDataAllType(TMapData.TMapPathType.PEDESTRIAN_PATH,point1, point2, new TMapData.FindPathDataAllListenerCallback(){
+        tmapdata.findPathDataAllType(TMapData.TMapPathType.PEDESTRIAN_PATH, point1, point2, new TMapData.FindPathDataAllListenerCallback() {
             @Override
             public void onFindPathDataAll(Document doc) {
                 doc.getDocumentElement().normalize();
                 Element root = doc.getDocumentElement();
                 int length = root.getElementsByTagName("Placemark").getLength();
-                for(int i=0; i<length; i++) {
-                    String a="";
+                for (int i = 0; i < length; i++) {
+                    String a = "";
                     Node placemark = root.getElementsByTagName("Placemark").item(i);
-                    Node tmapindex = ((Element)placemark).getElementsByTagName("tmap:index").item(0);
-                    String index=tmapindex.getTextContent();
-                    Node nodeType = ((Element)placemark).getElementsByTagName("tmap:nodeType").item(0);
-                    String nodetype=nodeType.getTextContent();
-                    Node coordinate = ((Element)placemark).getElementsByTagName("coordinates").item(0);
-                    String coordinates=coordinate.getTextContent();
-                    if(nodeType.getTextContent().equals("POINT")) {
+                    Node tmapindex = ((Element) placemark).getElementsByTagName("tmap:index").item(0);
+                    String index = tmapindex.getTextContent();
+                    Node nodeType = ((Element) placemark).getElementsByTagName("tmap:nodeType").item(0);
+                    String nodetype = nodeType.getTextContent();
+                    Node coordinate = ((Element) placemark).getElementsByTagName("coordinates").item(0);
+                    String coordinates = coordinate.getTextContent();
+                    if (nodeType.getTextContent().equals("POINT")) {
                         Node turnType = ((Element) placemark).getElementsByTagName("tmap:turnType").item(0);
                         a = Turntype(turnType.getTextContent());
 
-                        nodeDatas.add(new NodeData(index,nodetype,coordinates,a));
+                        nodeDatas.add(new NodeData(index, nodetype, coordinates, a));
 
-                    }
-                    else nodeDatas.add(new NodeData(index, nodetype, coordinates,a));
+                    } else nodeDatas.add(new NodeData(index, nodetype, coordinates, a));
 
                 }
             }
@@ -508,42 +510,54 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
         }
     }
 
-    public  boolean isNetworkState(Context context) {
-        ConnectivityManager manager =
-                (ConnectivityManager)context.getSystemService(Context.CONNECTIVITY_SERVICE);
-        NetworkInfo mobile = manager.getNetworkInfo(ConnectivityManager.TYPE_MOBILE);
-        NetworkInfo wifi = manager.getNetworkInfo(ConnectivityManager.TYPE_WIFI);
-        NetworkInfo lte_4g = manager.getNetworkInfo(ConnectivityManager.TYPE_WIMAX);
+    public BroadcastReceiver receiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            boolean status = getConnectivityStatusString(context);
 
-        boolean blte_4g = false;
-        if(lte_4g != null)
-            blte_4g = lte_4g.isConnected();
-        if( mobile != null ) {
-            if (mobile.isConnected() || wifi.isConnected() || blte_4g)
-                return true;
-        } else {
-            if ( wifi.isConnected() || blte_4g )
-                return true;
-        }
+            if(!status)
+            {
+                android.app.AlertDialog.Builder dlg = new android.app.AlertDialog.Builder(context);
+                dlg.setTitle("네트워크 오류");
+                dlg.setMessage("네트워크 연결 후 사용 가능합니다.\n 네트워크 연결을 설정 하시겠습니까?");
 
-        AlertDialog.Builder dlg = new AlertDialog.Builder(context);
-        dlg.setTitle("네트워크 오류");
-        dlg.setMessage("네트워크 연결 후 사용 가능합니다.\n 네트워크 연결을 설정 하시겠습니까?");
-
-        dlg.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
-            public void onClick(DialogInterface dialog, int which) {
-                // network설정 화면으로 이동
-                Intent intent = new Intent(Settings.ACTION_WIFI_SETTINGS);
-                intent.addCategory(Intent.CATEGORY_DEFAULT);
-                startActivity(intent);
-            }
-        })
-                .setNegativeButton("No", new DialogInterface.OnClickListener() {
+                dlg.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int which) {
-                        return;
+                        // network설정 화면으로 이동
+                        Intent intent = new Intent(Settings.ACTION_WIFI_SETTINGS);
+                        intent.addCategory(Intent.CATEGORY_DEFAULT);
+                        startActivity(intent);
                     }
-                }).create().show();
-        return false;
+                })
+                        .setNegativeButton("No", new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int which) {
+                            }
+                        }).create().show();
+            }
+
+        }
+    };
+    public static int getConnectivityStatus(Context context) {
+        ConnectivityManager cm = (ConnectivityManager) context
+                .getSystemService(Context.CONNECTIVITY_SERVICE);
+
+        NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
+        if (null != activeNetwork) {
+            if(activeNetwork.getType() == ConnectivityManager.TYPE_WIFI||activeNetwork.getType()==ConnectivityManager.TYPE_MOBILE)
+                return TYPE_WIFI;
+        }
+        return TYPE_NOT_CONNECTED;
+    }
+
+    public static boolean getConnectivityStatusString(Context context) {
+        int conn = MainActivity.getConnectivityStatus(context);
+        boolean status = false;
+        if (conn == MainActivity.TYPE_WIFI) {
+            status=true;
+        } else if (conn == MainActivity.TYPE_NOT_CONNECTED) {
+            status = false;
+        }
+        return status;
     }
 
     public String Turntype(String c)
@@ -595,6 +609,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
         Temporary_la =  ((CameraActivity) CameraActivity.mContext).Slatitude;
         Temporary_lo =  ((CameraActivity) CameraActivity.mContext).Slongitude;
         mMapView.setCenterPoint(longitude_plic, latitude_plic);
+        filter = new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION);
         //nodeDatas.clear();
     }
 
@@ -608,6 +623,9 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
     protected void onDestroy() {
         super.onDestroy();
         point2 = null;
+        mContext.unregisterReceiver(receiver);
+        serviceSTOP = false;
+
         //locationManager.removeUpdates(locationListener);
     }
 
