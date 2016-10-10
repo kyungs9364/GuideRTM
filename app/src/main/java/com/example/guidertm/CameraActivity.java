@@ -20,7 +20,7 @@ import java.util.ArrayList;
 /**
  * Created by 경석 on 2016-09-08.
  */
-
+//ㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇ
 public class CameraActivity extends Activity  {
 
     String TAG="PAAR";
