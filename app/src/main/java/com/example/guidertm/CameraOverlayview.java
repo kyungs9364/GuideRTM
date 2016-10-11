@@ -139,73 +139,73 @@ public class CameraOverlayview extends View implements SensorEventListener {
         }
 
         mBitmap = BitmapFactory.decodeResource(getResources(), R.drawable.direct);
-        mBitmap = Bitmap.createScaledBitmap(mBitmap, mWidth / 5, mHeight / 5, true);
+        mBitmap = Bitmap.createScaledBitmap(mBitmap, mWidth / 7, mHeight / 6, true);
         BackIcon = BitmapFactory.decodeResource(getResources(), R.drawable.back);
         BackIcon = Bitmap.createScaledBitmap(BackIcon, mWidth / 8, mHeight / 6, true);
         LeftIcon1 = BitmapFactory.decodeResource(getResources(), R.drawable.left_arrow1);
         LeftIcon1 = Bitmap.createScaledBitmap(LeftIcon1, mWidth / 8, mHeight / 6, true);
         LeftIcon2 = BitmapFactory.decodeResource(getResources(), R.drawable.left_arrow2);
-        LeftIcon2 = Bitmap.createScaledBitmap(LeftIcon2, mWidth / 8, mHeight / 6, true);
+        LeftIcon2 = Bitmap.createScaledBitmap(LeftIcon2, mWidth / 7, mHeight / 6, true);
         LeftIcon3 = BitmapFactory.decodeResource(getResources(), R.drawable.left_arrow3);
         LeftIcon3 = Bitmap.createScaledBitmap(LeftIcon3, mWidth / 8, mHeight / 6, true);
         RigftIcon1 = BitmapFactory.decodeResource(getResources(), R.drawable.right_arrow1);
         RigftIcon1 = Bitmap.createScaledBitmap(RigftIcon1, mWidth / 8, mHeight / 6, true);
         RigftIcon2 = BitmapFactory.decodeResource(getResources(), R.drawable.right_arrow2);
-        RigftIcon2 = Bitmap.createScaledBitmap(RigftIcon2, mWidth / 8, mHeight / 6, true);
+        RigftIcon2 = Bitmap.createScaledBitmap(RigftIcon2, mWidth / 7, mHeight / 6, true);
         RigftIcon3 = BitmapFactory.decodeResource(getResources(), R.drawable.right_arrow3);
         RigftIcon3 = Bitmap.createScaledBitmap(RigftIcon3, mWidth / 8, mHeight / 6, true);
 
 
 
 
-        pCanvas.drawText("Point 까지 " + nodeAtoB + " m ", (mWidth * 1 / 7), (mHeight * 2 / 6), mTextPaint);
-        pCanvas.drawText("Point 까지 " + nodeAtoB + " m ", (mWidth * 4 / 7), (mHeight * 2 / 6), mTextPaint);
+        pCanvas.drawText("Point 까지 " + nodeAtoB + " m ", (mWidth * 2 / 7), (mHeight * 2 / 6), mTextPaint);
+        pCanvas.drawText("Point 까지 " + nodeAtoB + " m ", (mWidth * 5 / 7), (mHeight * 2 / 6), mTextPaint);
 
 
 
         if(turntype == null || arrowchange==turntype) {
             if (degree >=340 || degree <=20) {
                 //pCanvas.drawText("Point 까지 " + nodeAtoB + " m ", (mWidth * 5 / 12), (mHeight * 2 / 5), mTextPaint);
-                pCanvas.drawBitmap(mBitmap, (mWidth * 1 / 7), (mHeight * 4 / 6), null);
-                pCanvas.drawBitmap(mBitmap, (mWidth * 4 / 7), (mHeight * 4 / 6), null);
+                pCanvas.drawBitmap(mBitmap, (mWidth * 2 / 9), (mHeight * 4 / 6), null);
+                pCanvas.drawBitmap(mBitmap, (mWidth * 5 / 8), (mHeight * 4 / 6), null);
                 //pCanvas.drawBitmap(mBitmap2, 1720, 820, null);
                 //오른쪽 이미지
                 //pCanvas.drawBitmap(mBitmap, (mWidth * 3 / 7), (mHeight * 3 / 5), null);
             }
             else if(degree>=300&&degree<340)
             {
-                pCanvas.drawBitmap(RigftIcon1, (mWidth * 1 / 7), (mHeight * 4 / 6), null);
-                pCanvas.drawBitmap(RigftIcon1, (mWidth * 4 / 7), (mHeight * 4 / 6), null);
+                pCanvas.drawBitmap(RigftIcon1, (mWidth * 2 / 9), (mHeight * 4 / 6), null);
+                pCanvas.drawBitmap(RigftIcon1, (mWidth * 5 / 8), (mHeight * 4 / 6), null);
             }
             else if(degree>=260&&degree<300)
             {
-                pCanvas.drawBitmap(RigftIcon2, (mWidth * 1 / 7), (mHeight * 4 / 6), null);
-                pCanvas.drawBitmap(RigftIcon2, (mWidth * 4 / 7), (mHeight * 4 / 6), null);
+                pCanvas.drawBitmap(RigftIcon2, (mWidth * 2 / 9), (mHeight * 4 / 6), null);
+                pCanvas.drawBitmap(RigftIcon2, (mWidth * 5 / 8), (mHeight * 4 / 6), null);
             }
             else if(degree>=220&&degree<260)
             {
-                 pCanvas.drawBitmap(RigftIcon3, (mWidth * 1 / 7), (mHeight * 4 / 6), null);
-                 pCanvas.drawBitmap(RigftIcon3, (mWidth * 4 / 7), (mHeight * 4 / 6), null);
+                pCanvas.drawBitmap(RigftIcon3, (mWidth * 2 / 9), (mHeight * 4 / 6), null);
+                pCanvas.drawBitmap(RigftIcon3, (mWidth * 5 / 8), (mHeight * 4 / 6), null);
             }
             else if(degree>140&&degree<220)
             {
-                pCanvas.drawBitmap(BackIcon, (mWidth * 1 / 7), (mHeight * 4 / 6), null);
-                pCanvas.drawBitmap(BackIcon, (mWidth * 4 / 7), (mHeight * 4 / 6), null);
+                pCanvas.drawBitmap(BackIcon, (mWidth * 2 / 9), (mHeight * 4 / 6), null);
+                pCanvas.drawBitmap(BackIcon, (mWidth * 5 / 8), (mHeight * 4 / 6), null);
             }
             else if(degree>20&&degree<=60)
             {
-                pCanvas.drawBitmap(LeftIcon1, (mWidth * 1 / 7), (mHeight * 4 / 6), null);
-                pCanvas.drawBitmap(LeftIcon1, (mWidth * 4 / 7), (mHeight * 4 / 6), null);
+                pCanvas.drawBitmap(LeftIcon1, (mWidth * 2 / 9), (mHeight * 4 / 6), null);
+                pCanvas.drawBitmap(LeftIcon1, (mWidth * 5 / 8), (mHeight * 4 / 6), null);
             }
             else if(degree>60&&degree<=100)
             {
-                   pCanvas.drawBitmap(LeftIcon2, (mWidth * 1 / 7), (mHeight * 4 / 6), null);
-                 pCanvas.drawBitmap(LeftIcon2, (mWidth * 4 / 7), (mHeight * 4 / 6), null);
+                pCanvas.drawBitmap(LeftIcon2, (mWidth * 2 / 9), (mHeight * 4 / 6), null);
+                pCanvas.drawBitmap(LeftIcon2, (mWidth * 5 / 8), (mHeight * 4 / 6), null);
             }
             else if(degree>100&&degree<=140)
             {
-                   pCanvas.drawBitmap(LeftIcon3, (mWidth * 1 / 7), (mHeight * 4 / 6), null);
-                 pCanvas.drawBitmap(LeftIcon3, (mWidth * 4 / 7), (mHeight * 4 / 6), null);
+                pCanvas.drawBitmap(LeftIcon3, (mWidth * 2 / 9), (mHeight * 4 / 6), null);
+                pCanvas.drawBitmap(LeftIcon3, (mWidth * 5 / 8), (mHeight * 4 / 6), null);
             }
         }
 

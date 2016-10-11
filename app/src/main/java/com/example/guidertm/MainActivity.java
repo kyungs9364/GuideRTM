@@ -82,9 +82,9 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
     public  static int TYPE_MOBILE = 2;
     public  static int TYPE_NOT_CONNECTED = 0;
     GoogleApiClient mApiClient;
-    boolean stopANDstart; // backgroundservice 를 control 하기 위해 사용
-    boolean serviceSTOP = true;
+    public static boolean stopANDstart; // backgroundservice 를 control 하기 위해 사용
     IntentFilter filter;
+    PendingIntent pending;
 
     class MyListenerClass implements View.OnClickListener {
         public void onClick(View v) {
@@ -231,10 +231,16 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
         request.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY); // GPS 정확도를 우선으로 한다.
 
         Intent intent= new Intent(this, BackgroundService.class);
-        PendingIntent pending = PendingIntent.getService(this, 0, intent, 0);
+        pending = PendingIntent.getService(this, 0, intent, 0);
 
         LocationServices.FusedLocationApi.requestLocationUpdates(mApiClient, request, mListener);
+
+        /*if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            return;
+        }*/
         LocationServices.FusedLocationApi.requestLocationUpdates(mApiClient,request,pending);
+
+
 
         MyListenerClass buttonListener = new MyListenerClass();
         Search.setOnClickListener(buttonListener);
@@ -624,7 +630,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
         super.onDestroy();
         point2 = null;
         mContext.unregisterReceiver(receiver);
-        serviceSTOP = false;
+        //LocationServices.FusedLocationApi.removeLocationUpdates(mApiClient,pending);
 
         //locationManager.removeUpdates(locationListener);
     }

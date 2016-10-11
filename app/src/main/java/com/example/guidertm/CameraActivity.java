@@ -138,12 +138,13 @@ public class CameraActivity extends Activity  {
                 if(i == 0)
                 {
                     mOverlayview.setnode(nodelan, nodelon);
+                    //((MainActivity) MainActivity.mContext).Geofence(nodelan, nodelon);
+
                     i++;
                 }
 
                 count = a;
 
-                ((MainActivity) MainActivity.mContext).Geofence(nodelan, nodelon);
                 //((MainActivity) MainActivity.mContext).Geofence_re(nodelan, nodelon);
 
                 thread = new RequestThread();
@@ -163,6 +164,7 @@ public class CameraActivity extends Activity  {
 
     public void onResume() {
         super.onResume();
+        ((MainActivity) MainActivity.mContext).stopANDstart = true;
 
         mCameraPreview = new CameraPreview(this);
         mOverlayview=new CameraOverlayview(this);
@@ -215,6 +217,7 @@ public class CameraActivity extends Activity  {
             mCameraPreview.camera.startPreview();
         }
         super.onPause();
+        ((MainActivity) MainActivity.mContext).stopANDstart = false;
     }
     public void onStop(){
         super.onStop();
