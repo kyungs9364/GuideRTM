@@ -157,13 +157,9 @@ public class CameraOverlayview extends View implements SensorEventListener {
 
 
 
-
-        pCanvas.drawText("Point 까지 " + nodeAtoB + " m ", (mWidth * 1 / 7), (mHeight * 2 / 6), mTextPaint);
-        pCanvas.drawText("Point 까지 " + nodeAtoB + " m ", (mWidth * 4 / 7), (mHeight * 2 / 6), mTextPaint);
-
-
-
         if(turntype == null || arrowchange==turntype) {
+            pCanvas.drawText("Point 까지 " + nodeAtoB + " m ", (mWidth * 1 / 7), (mHeight * 2 / 6), mTextPaint);
+            pCanvas.drawText("Point 까지 " + nodeAtoB + " m ", (mWidth * 4 / 7), (mHeight * 2 / 6), mTextPaint);
             if (degree >=340 || degree <=20) {
                 //pCanvas.drawText("Point 까지 " + nodeAtoB + " m ", (mWidth * 5 / 12), (mHeight * 2 / 5), mTextPaint);
                 pCanvas.drawBitmap(mBitmap, (mWidth * 1 / 7), (mHeight * 4 / 6), null);
@@ -212,26 +208,29 @@ public class CameraOverlayview extends View implements SensorEventListener {
 
         else if(turntype != null && arrowchange!=turntype)
         {
-            if(turntype.equals("좌회전")) {
+            if (turntype.equals("좌회전")) {
                 mBitmap = BitmapFactory.decodeResource(getResources(), R.drawable.left);
                 mBitmap = Bitmap.createScaledBitmap(mBitmap, mWidth / 8, mHeight / 4, true);
-                pCanvas.drawBitmap(mBitmap, (mWidth * 3 / 7), (mHeight * 3 / 5), null);
+                pCanvas.drawBitmap(mBitmap, (mWidth * 1 / 7), (mHeight * 3 / 5), null);
+                pCanvas.drawBitmap(mBitmap, (mWidth * 4 / 7), (mHeight * 3 / 5), null);
                 //pCanvas.drawBitmap(LeftIcon, (mWidth * 3 / 7), (mHeight * 3 / 5), null);
-                pCanvas.drawText(nodeDistace + "m 후에 " + turntype, (mWidth * 5 / 12), (mHeight * 2 / 5), mTextPaint);
 
+                pCanvas.drawText(nodeDistace + "m 후에 " + turntype, (mWidth * 1 / 7), (mHeight * 2 / 6), mTextPaint);
+                pCanvas.drawText(nodeDistace + "m 후에 " + turntype, (mWidth * 4 / 7), (mHeight * 2 / 6), mTextPaint);
                 if (thread == null) // thread 가 null 일 경우만 실행
                 {
                     thread = new RequestThread();
                     thread.start();
                 }
-            }
-            else if(turntype.equals("우회전")) {
+            } else if (turntype.equals("우회전")) {
                 mBitmap = BitmapFactory.decodeResource(getResources(), R.drawable.right);
                 mBitmap = Bitmap.createScaledBitmap(mBitmap, mWidth / 8, mHeight / 4, true);
-                pCanvas.drawBitmap(mBitmap, (mWidth * 3 / 7), (mHeight * 3 / 5), null);
+                pCanvas.drawBitmap(mBitmap, (mWidth * 1 / 7), (mHeight * 3 / 5), null);
+                pCanvas.drawBitmap(mBitmap, (mWidth * 4 / 7), (mHeight * 3 / 5), null);
                 //pCanvas.drawBitmap(RigftIcon, (mWidth * 3 / 7), (mHeight * 3 / 5), null);
-                pCanvas.drawText(nodeDistace+"m 후에 " +turntype, (mWidth * 5 / 12), (mHeight * 2 / 5), mTextPaint);
 
+                pCanvas.drawText(nodeDistace+"m 후에 " +turntype, (mWidth * 1 / 7), (mHeight * 2 / 6), mTextPaint);
+                pCanvas.drawText(nodeDistace+"m 후에 " +turntype, (mWidth * 4 / 7), (mHeight * 2 / 6), mTextPaint);
                 if (thread == null) // thread 가 null 일 경우만 실행
                 {
                     thread = new RequestThread();
@@ -239,7 +238,10 @@ public class CameraOverlayview extends View implements SensorEventListener {
                 }
             }
             else
-                pCanvas.drawText(nodeDistace+"m 후에" +turntype,(mWidth * 5 / 12), (mHeight * 2 / 5),mTextPaint);
+            {
+                pCanvas.drawText(nodeDistace+"m 후에" +turntype,(mWidth * 1 / 7), (mHeight * 2 / 6),mTextPaint);
+                pCanvas.drawText(nodeDistace+"m 후에" +turntype,(mWidth * 4 / 7), (mHeight * 2 / 6),mTextPaint);
+            }
         }
 
 
@@ -259,13 +261,30 @@ public class CameraOverlayview extends View implements SensorEventListener {
         if (mXDegree + mXCompassDegree < 360) {
             mXDegree += mXCompassDegree;
         } else if (mXDegree + mXCompassDegree >= 360) {
-            mXDegree = mXDegree + mXCompassDegree - 360;
+            mXDegree = mXDegree + mXCompassDegree - 360;/////////////////////////////////////////////////////////////////////////////////////////////////////////////
         }
 
         if(mXDegree<0)
         {
             mXDegree+=360;
         }
+        // 4/4분면을 고려하여 0~360도가 나오게 설정
+        if (tBx > tAx && tBy > tAy) {
+            Log.d("rrrrrrr","1111");
+            Log.d("rrrrrr",String.valueOf(mXDegree));
+        } else if (tBx < tAx && tBy > tAy) {
+            Log.d("rrrrrrrr","2222");
+            Log.d("rrrrrr",String.valueOf(mXDegree));
+        } else if (tBx < tAx && tBy < tAy) {
+            Log.d("rrrrrrrr","3333");
+            Log.d("rrrrrr",String.valueOf(mXDegree));
+        } else if (tBx > tAx && tBy < tAy) {
+            Log.d("rrrrrrr","4444");
+            Log.d("rrrrrr",String.valueOf(mXDegree));
+        }
+
+
+
 
 
         // 계산된 각도 만큼 기기 정중앙 화면 기준 어디에 나타날지 계산함

@@ -14,16 +14,15 @@ public class BackgroundService extends IntentService {
     public static double Temporary_la;
     public static double Temporary_lo;
 
+
     public BackgroundService() {
         super("BackgroundService");
     }
     protected void onHandleIntent(Intent intent)
     {
         Location location = intent.getParcelableExtra(FusedLocationProviderApi.KEY_LOCATION_CHANGED);
-        if(location !=null)
+        if(location !=null )
         {
-            if(((MainActivity) MainActivity.mContext).stopANDstart == true) {
-
                 double change_la = Temporary_la;
                 double change_lo = Temporary_lo;
                 Log.e("TEST", "3.3~-> " + change_la );
@@ -46,7 +45,11 @@ public class BackgroundService extends IntentService {
             else {
                 Temporary_la = ((MainActivity) MainActivity.mContext).latitude_plic;
                 Temporary_lo = ((MainActivity) MainActivity.mContext).longitude_plic;
+                Log.e("TEST", "5");
+                //stopSelf();
             }
-        }
+        return;
+
     }
+
 }
