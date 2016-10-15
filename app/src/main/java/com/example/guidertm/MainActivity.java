@@ -30,8 +30,6 @@ import android.widget.Toast;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
-import com.google.android.gms.location.Geofence;
-import com.google.android.gms.location.GeofencingRequest;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
 import com.skp.Tmap.TMapData;
@@ -84,7 +82,10 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
     GoogleApiClient mApiClient;
     public static boolean stopANDstart; // backgroundservice 를 control 하기 위해 사용
     IntentFilter filter;
+    public static boolean stop = false;
+    Intent bintent;
     PendingIntent pending;
+    LocationRequest request;
 
     class MyListenerClass implements View.OnClickListener {
         public void onClick(View v) {
@@ -225,20 +226,17 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
             mMapView.setTrackingMode(true);
         }
 
-        LocationRequest request = new LocationRequest();
+        request = new LocationRequest();
         request.setFastestInterval(1000); // 호출정보가 전달될 간격
         request.setInterval(3000);  // 호출되는 간격
         request.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY); // GPS 정확도를 우선으로 한다.
 
-        Intent intent= new Intent(this, BackgroundService.class);
-        pending = PendingIntent.getService(this, 0, intent, 0);
 
         LocationServices.FusedLocationApi.requestLocationUpdates(mApiClient, request, mListener);
 
-        /*if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            return;
-        }*/
-        LocationServices.FusedLocationApi.requestLocationUpdates(mApiClient,request,pending);
+        bintent = new Intent(this, BackgroundService.class);
+
+        pending = PendingIntent.getService(this, 0, bintent, PendingIntent.FLAG_ONE_SHOT);
 
 
 
@@ -284,74 +282,13 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
             //mCameraActivity.setCurrent(latitude_plic,longitude_plic);
             mMapView.setLocationPoint(longitude_plic, latitude_plic);
             //updateDisplay(location);
-            //Geo_test();
+
+            LocationServices.FusedLocationApi.requestLocationUpdates(mApiClient,request,pending);
+
         }
 
     };
-    public void Geo_test()
-    {
-        if(((CameraActivity)CameraActivity.mContext).nodelan != null)
-        {
-            double geolan = ((CameraActivity)CameraActivity.mContext).nodelan;
-            double geolon = ((CameraActivity)CameraActivity.mContext).nodelon;
-            Geofence(geolan,geolon);
-        }
-    }
 
-    public void Geofence(double latitude, double longitude)   // CameraActivity 에서 사용할 Geofence 10m반경 함수
-    {
-        Geofence geofence = new Geofence.Builder()
-                .setCircularRegion(latitude, longitude, 100)  // 위도,경도,반경을 사용하여 영역 설정
-                .setExpirationDuration(24 * 60 * 60 * 1000)   // 영역 만료시간 설정
-                .setLoiteringDelay(60 * 60 * 1000)  // 영역에 in,out 판단 시 지연시간
-                .setNotificationResponsiveness(2 * 60 * 1000)
-                .setTransitionTypes(Geofence.GEOFENCE_TRANSITION_ENTER // 영역으로 들어갔을 때 서비스 시작
-                        //| Geofence.GEOFENCE_TRANSITION_EXIT    // 영역을 벗어났을 때 서비스 시작
-                        | Geofence.GEOFENCE_TRANSITION_DWELL)   // 들어가거나 들어가있는 상태라면 서비스 시작
-                .setRequestId("geoid")   // 요청 ID
-                .build();
-
-        GeofencingRequest request = new GeofencingRequest.Builder()
-                .setInitialTrigger(GeofencingRequest.INITIAL_TRIGGER_ENTER | GeofencingRequest.INITIAL_TRIGGER_DWELL )
-                .addGeofence(geofence)
-                .build();
-
-        Intent intent = new Intent(this, GeofenceService.class);
-        PendingIntent pi = PendingIntent.getService(this, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
-        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            return;
-        }
-
-        LocationServices.GeofencingApi.addGeofences(mApiClient, request,pi);
-
-    }
-
-    public void Geofence_re(double latitude, double longitude)   // CameraActivity 에서 사용할 Geofence 3m 반경함수
-    {
-        Geofence geofence = new Geofence.Builder()
-                .setCircularRegion(latitude, longitude, 3)  // 위도,경도,반경을 사용하여 영역 설정
-                .setExpirationDuration(24 * 60 * 60 * 1000)   // 영역 만료시간 설정
-                .setLoiteringDelay(60 * 60 * 1000)  // 영역에 in,out 판단 시 지연시간
-                .setNotificationResponsiveness(2 * 60 * 1000)
-                .setTransitionTypes(Geofence.GEOFENCE_TRANSITION_ENTER // 영역으로 들어갔을 때 서비스 시작
-                        //| Geofence.GEOFENCE_TRANSITION_EXIT    // 영역을 벗어났을 때 서비스 시작
-                        | Geofence.GEOFENCE_TRANSITION_DWELL)   // 들어가거나 들어가있는 상태라면 서비스 시작
-                .setRequestId("geoid")   // 요청 ID
-                .build();
-
-        GeofencingRequest request = new GeofencingRequest.Builder()
-                .setInitialTrigger(GeofencingRequest.INITIAL_TRIGGER_ENTER | Geofence.GEOFENCE_TRANSITION_DWELL)
-                .addGeofence(geofence)
-                .build();
-
-        Intent intent = new Intent(this, GeofenceService_re.class);
-        PendingIntent pi = PendingIntent.getService(this, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
-        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            return;
-        }
-
-        LocationServices.GeofencingApi.addGeofences(mApiClient, request, pi);
-    }
 
     @Override
     public void onConnectionSuspended(int i) {
@@ -630,6 +567,8 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
         super.onDestroy();
         point2 = null;
         mContext.unregisterReceiver(receiver);
+        stop = true;
+
         //LocationServices.FusedLocationApi.removeLocationUpdates(mApiClient,pending);
 
         //locationManager.removeUpdates(locationListener);

@@ -127,6 +127,17 @@ public class CameraOverlayview extends View implements SensorEventListener {
         double degree = (double) (Math.atan2((double) (nodelan_arrow - tAy)
                 , (double) (nodelon_arrow - tAx)) * 180.0 / Math.PI);
 
+        if (tBx > tAx && tBy > tAy) {
+            ;
+        } else if (tBx < tAx && tBy > tAy) {
+            degree += 180;
+        } else if (tBx < tAx && tBy < tAy) {
+            degree += 180;
+        } else if (tBx > tAx && tBy < tAy) {
+            degree += 360;
+        }
+
+
         if (degree + mXCompassDegree < 360) {
             degree += mXCompassDegree;
         } else if (degree + mXCompassDegree >= 360) {
@@ -155,8 +166,7 @@ public class CameraOverlayview extends View implements SensorEventListener {
         RigftIcon3 = BitmapFactory.decodeResource(getResources(), R.drawable.right_arrow3);
         RigftIcon3 = Bitmap.createScaledBitmap(RigftIcon3, mWidth / 8, mHeight / 6, true);
 
-
-
+        Log.e("qqdegree","= "+degree);
 
         pCanvas.drawText("Point 까지 " + nodeAtoB + " m ", (mWidth * 2 / 7), (mHeight * 2 / 6), mTextPaint);
         pCanvas.drawText("Point 까지 " + nodeAtoB + " m ", (mWidth * 5 / 7), (mHeight * 2 / 6), mTextPaint);

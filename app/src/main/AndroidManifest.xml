@@ -10,8 +10,7 @@
         android:theme="@style/AppTheme">
         <meta-data android:name="com.google.android.gms.vision"
             android:value="@integer/google_play_services_version"/>
-        <service android:name=".GeofenceService"></service>
-        <service android:name=".GeofenceService_re"></service>
+
         <service android:name=".BackgroundService"></service>
 
         <activity android:name=".MainActivity"
