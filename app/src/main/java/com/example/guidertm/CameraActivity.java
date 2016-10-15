@@ -7,6 +7,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.location.Location;
+import android.location.LocationListener;
 import android.location.LocationManager;
 import android.net.ConnectivityManager;
 import android.os.Bundle;
@@ -16,8 +17,6 @@ import android.view.Gravity;
 import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.widget.Toast;
-
-import com.google.android.gms.location.LocationListener;
 
 import java.util.ArrayList;
 
@@ -52,10 +51,8 @@ public class CameraActivity extends Activity {
     LocationManager locationManager;
     LocationListener locationListener;
     PendingIntent proximityIntent_10;
-    PendingIntent proximityIntent_3;
-
-
     BroadcastReceiver mReceiver;
+
 
 
     protected void onCreate(Bundle savedInstanceState) {
@@ -71,7 +68,7 @@ public class CameraActivity extends Activity {
 
         node = (ArrayList<NodeData>) intent.getSerializableExtra("node");
 
-        locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+        locationManager=(LocationManager) getSystemService(Context.LOCATION_SERVICE);
 
 
         IntentFilter intentfilter = new IntentFilter();
@@ -97,15 +94,11 @@ public class CameraActivity extends Activity {
         mContext.registerReceiver(((MainActivity) MainActivity.mContext).receiver, filter);
 
 
+
         Intent Pintent_10 = new Intent("com.example.guidertmcom.proximityalert_10");
         proximityIntent_10 = PendingIntent.getBroadcast(this, 0, Pintent_10, 0);
         IntentFilter Pfilter_10 = new IntentFilter("com.example.guidertmcom.proximityalert_10");
         registerReceiver(receiver_proxi_10, Pfilter_10);
-
-        Intent Pintent_3 = new Intent("com.example.guidertmcom.proximityalert_3");
-        proximityIntent_3 = PendingIntent.getBroadcast(this, 0, Pintent_3, 0);
-        IntentFilter Pfilter_3 = new IntentFilter("com.example.guidertmcom.proximityalert_3");
-        registerReceiver(receiver_proxi_3, Pfilter_3);
 
 
         check(1);  // 출발지의 정보는 보내지 않아도 됨으로 check(1)로 설정
@@ -163,10 +156,8 @@ public class CameraActivity extends Activity {
 
                 count = a;
 
-                if (nodelan != null) {
-                    locationManager.addProximityAlert(nodelan, nodelon, 10f, -1, proximityIntent_10);
-                    locationManager.addProximityAlert(nodelan, nodelon, 3f, -1, proximityIntent_3);
-                }
+                if(nodelan!=null)
+                    locationManager.addProximityAlert(nodelan, nodelon, 50f, -1, proximityIntent_10);
                 //((MainActivity) MainActivity.mContext).Geofence_re(nodelan, nodelon);
 
                 thread = new RequestThread();
@@ -235,7 +226,7 @@ public class CameraActivity extends Activity {
 
             boolean isEntering = intent.getBooleanExtra(LocationManager.KEY_PROXIMITY_ENTERING, false);
             if (isEntering) {
-                Toast.makeText(context, "10m 후에" + node.get(count).turntype + "입니다.", Toast.LENGTH_LONG).show();
+                Toast.makeText(context, "10m 후에"+node.get(count).turntype+"입니다.", Toast.LENGTH_LONG).show();
                 setpush();
             } /*else {
                 Toast.makeText(context, "목표 지점에서 벗어납니다.", Toast.LENGTH_LONG).show();
@@ -243,19 +234,7 @@ public class CameraActivity extends Activity {
         }
     };
 
-    public BroadcastReceiver receiver_proxi_3 = new BroadcastReceiver() {
-        @Override
-        public void onReceive(Context context, Intent intent) {
 
-            boolean isEntering = intent.getBooleanExtra(LocationManager.KEY_PROXIMITY_ENTERING, false);
-            if (isEntering) {
-                Toast.makeText(context, "다음 경유지를 알려드리겠습니다", Toast.LENGTH_LONG).show();
-                check_ch();
-            } /*else {
-                Toast.makeText(context, "목표 지점에서 벗어납니다.", Toast.LENGTH_LONG).show();
-            }*/
-        }
-    };
 
 
     public void onPause() {
@@ -280,9 +259,6 @@ public class CameraActivity extends Activity {
         unregisterReceiver(mReceiver);
         mContext.unregisterReceiver(((MainActivity) MainActivity.mContext).receiver);
         unregisterReceiver(receiver_proxi_10);
-        unregisterReceiver(receiver_proxi_3);
-
         locationManager.removeProximityAlert(proximityIntent_10);
-        locationManager.removeProximityAlert(proximityIntent_3);
     }
 }

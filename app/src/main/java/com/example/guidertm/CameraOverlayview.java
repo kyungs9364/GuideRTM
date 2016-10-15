@@ -127,17 +127,6 @@ public class CameraOverlayview extends View implements SensorEventListener {
         double degree = (double) (Math.atan2((double) (nodelan_arrow - tAy)
                 , (double) (nodelon_arrow - tAx)) * 180.0 / Math.PI);
 
-        if (tBx > tAx && tBy > tAy) {
-            ;
-        } else if (tBx < tAx && tBy > tAy) {
-            degree += 180;
-        } else if (tBx < tAx && tBy < tAy) {
-            degree += 180;
-        } else if (tBx > tAx && tBy < tAy) {
-            degree += 360;
-        }
-
-
         if (degree + mXCompassDegree < 360) {
             degree += mXCompassDegree;
         } else if (degree + mXCompassDegree >= 360) {
@@ -150,98 +139,98 @@ public class CameraOverlayview extends View implements SensorEventListener {
         }
 
         mBitmap = BitmapFactory.decodeResource(getResources(), R.drawable.direct);
-        mBitmap = Bitmap.createScaledBitmap(mBitmap, mWidth / 7, mHeight / 6, true);
+        mBitmap = Bitmap.createScaledBitmap(mBitmap, mWidth / 5, mHeight / 5, true);
         BackIcon = BitmapFactory.decodeResource(getResources(), R.drawable.back);
         BackIcon = Bitmap.createScaledBitmap(BackIcon, mWidth / 8, mHeight / 6, true);
         LeftIcon1 = BitmapFactory.decodeResource(getResources(), R.drawable.left_arrow1);
         LeftIcon1 = Bitmap.createScaledBitmap(LeftIcon1, mWidth / 8, mHeight / 6, true);
         LeftIcon2 = BitmapFactory.decodeResource(getResources(), R.drawable.left_arrow2);
-        LeftIcon2 = Bitmap.createScaledBitmap(LeftIcon2, mWidth / 7, mHeight / 6, true);
+        LeftIcon2 = Bitmap.createScaledBitmap(LeftIcon2, mWidth / 8, mHeight / 6, true);
         LeftIcon3 = BitmapFactory.decodeResource(getResources(), R.drawable.left_arrow3);
         LeftIcon3 = Bitmap.createScaledBitmap(LeftIcon3, mWidth / 8, mHeight / 6, true);
         RigftIcon1 = BitmapFactory.decodeResource(getResources(), R.drawable.right_arrow1);
         RigftIcon1 = Bitmap.createScaledBitmap(RigftIcon1, mWidth / 8, mHeight / 6, true);
         RigftIcon2 = BitmapFactory.decodeResource(getResources(), R.drawable.right_arrow2);
-        RigftIcon2 = Bitmap.createScaledBitmap(RigftIcon2, mWidth / 7, mHeight / 6, true);
+        RigftIcon2 = Bitmap.createScaledBitmap(RigftIcon2, mWidth / 8, mHeight / 6, true);
         RigftIcon3 = BitmapFactory.decodeResource(getResources(), R.drawable.right_arrow3);
         RigftIcon3 = Bitmap.createScaledBitmap(RigftIcon3, mWidth / 8, mHeight / 6, true);
-
-        Log.e("qqdegree","= "+degree);
-
-        pCanvas.drawText("Point 까지 " + nodeAtoB + " m ", (mWidth * 2 / 7), (mHeight * 2 / 6), mTextPaint);
-        pCanvas.drawText("Point 까지 " + nodeAtoB + " m ", (mWidth * 5 / 7), (mHeight * 2 / 6), mTextPaint);
 
 
 
         if(turntype == null || arrowchange==turntype) {
+            pCanvas.drawText("Point 까지 " + nodeAtoB + " m ", (mWidth * 1 / 7), (mHeight * 2 / 6), mTextPaint);
+            pCanvas.drawText("Point 까지 " + nodeAtoB + " m ", (mWidth * 4 / 7), (mHeight * 2 / 6), mTextPaint);
             if (degree >=340 || degree <=20) {
                 //pCanvas.drawText("Point 까지 " + nodeAtoB + " m ", (mWidth * 5 / 12), (mHeight * 2 / 5), mTextPaint);
-                pCanvas.drawBitmap(mBitmap, (mWidth * 2 / 9), (mHeight * 4 / 6), null);
-                pCanvas.drawBitmap(mBitmap, (mWidth * 5 / 8), (mHeight * 4 / 6), null);
+                pCanvas.drawBitmap(mBitmap, (mWidth * 1 / 7), (mHeight * 4 / 6), null);
+                pCanvas.drawBitmap(mBitmap, (mWidth * 4 / 7), (mHeight * 4 / 6), null);
                 //pCanvas.drawBitmap(mBitmap2, 1720, 820, null);
                 //오른쪽 이미지
                 //pCanvas.drawBitmap(mBitmap, (mWidth * 3 / 7), (mHeight * 3 / 5), null);
             }
             else if(degree>=300&&degree<340)
             {
-                pCanvas.drawBitmap(RigftIcon1, (mWidth * 2 / 9), (mHeight * 4 / 6), null);
-                pCanvas.drawBitmap(RigftIcon1, (mWidth * 5 / 8), (mHeight * 4 / 6), null);
+                pCanvas.drawBitmap(RigftIcon1, (mWidth * 1 / 7), (mHeight * 4 / 6), null);
+                pCanvas.drawBitmap(RigftIcon1, (mWidth * 4 / 7), (mHeight * 4 / 6), null);
             }
             else if(degree>=260&&degree<300)
             {
-                pCanvas.drawBitmap(RigftIcon2, (mWidth * 2 / 9), (mHeight * 4 / 6), null);
-                pCanvas.drawBitmap(RigftIcon2, (mWidth * 5 / 8), (mHeight * 4 / 6), null);
+                pCanvas.drawBitmap(RigftIcon2, (mWidth * 1 / 7), (mHeight * 4 / 6), null);
+                pCanvas.drawBitmap(RigftIcon2, (mWidth * 4 / 7), (mHeight * 4 / 6), null);
             }
             else if(degree>=220&&degree<260)
             {
-                pCanvas.drawBitmap(RigftIcon3, (mWidth * 2 / 9), (mHeight * 4 / 6), null);
-                pCanvas.drawBitmap(RigftIcon3, (mWidth * 5 / 8), (mHeight * 4 / 6), null);
+                 pCanvas.drawBitmap(RigftIcon3, (mWidth * 1 / 7), (mHeight * 4 / 6), null);
+                 pCanvas.drawBitmap(RigftIcon3, (mWidth * 4 / 7), (mHeight * 4 / 6), null);
             }
             else if(degree>140&&degree<220)
             {
-                pCanvas.drawBitmap(BackIcon, (mWidth * 2 / 9), (mHeight * 4 / 6), null);
-                pCanvas.drawBitmap(BackIcon, (mWidth * 5 / 8), (mHeight * 4 / 6), null);
+                pCanvas.drawBitmap(BackIcon, (mWidth * 1 / 7), (mHeight * 4 / 6), null);
+                pCanvas.drawBitmap(BackIcon, (mWidth * 4 / 7), (mHeight * 4 / 6), null);
             }
             else if(degree>20&&degree<=60)
             {
-                pCanvas.drawBitmap(LeftIcon1, (mWidth * 2 / 9), (mHeight * 4 / 6), null);
-                pCanvas.drawBitmap(LeftIcon1, (mWidth * 5 / 8), (mHeight * 4 / 6), null);
+                pCanvas.drawBitmap(LeftIcon1, (mWidth * 1 / 7), (mHeight * 4 / 6), null);
+                pCanvas.drawBitmap(LeftIcon1, (mWidth * 4 / 7), (mHeight * 4 / 6), null);
             }
             else if(degree>60&&degree<=100)
             {
-                pCanvas.drawBitmap(LeftIcon2, (mWidth * 2 / 9), (mHeight * 4 / 6), null);
-                pCanvas.drawBitmap(LeftIcon2, (mWidth * 5 / 8), (mHeight * 4 / 6), null);
+                   pCanvas.drawBitmap(LeftIcon2, (mWidth * 1 / 7), (mHeight * 4 / 6), null);
+                 pCanvas.drawBitmap(LeftIcon2, (mWidth * 4 / 7), (mHeight * 4 / 6), null);
             }
             else if(degree>100&&degree<=140)
             {
-                pCanvas.drawBitmap(LeftIcon3, (mWidth * 2 / 9), (mHeight * 4 / 6), null);
-                pCanvas.drawBitmap(LeftIcon3, (mWidth * 5 / 8), (mHeight * 4 / 6), null);
+                   pCanvas.drawBitmap(LeftIcon3, (mWidth * 1 / 7), (mHeight * 4 / 6), null);
+                 pCanvas.drawBitmap(LeftIcon3, (mWidth * 4 / 7), (mHeight * 4 / 6), null);
             }
         }
 
 
         else if(turntype != null && arrowchange!=turntype)
         {
-            if(turntype.equals("좌회전")) {
+            if (turntype.equals("좌회전")) {
                 mBitmap = BitmapFactory.decodeResource(getResources(), R.drawable.left);
                 mBitmap = Bitmap.createScaledBitmap(mBitmap, mWidth / 8, mHeight / 4, true);
-                pCanvas.drawBitmap(mBitmap, (mWidth * 3 / 7), (mHeight * 3 / 5), null);
+                pCanvas.drawBitmap(mBitmap, (mWidth * 1 / 7), (mHeight * 3 / 5), null);
+                pCanvas.drawBitmap(mBitmap, (mWidth * 4 / 7), (mHeight * 3 / 5), null);
                 //pCanvas.drawBitmap(LeftIcon, (mWidth * 3 / 7), (mHeight * 3 / 5), null);
-                pCanvas.drawText(nodeDistace + "m 후에 " + turntype, (mWidth * 5 / 12), (mHeight * 2 / 5), mTextPaint);
 
+                pCanvas.drawText(nodeDistace + "m 후에 " + turntype, (mWidth * 1 / 7), (mHeight * 2 / 6), mTextPaint);
+                pCanvas.drawText(nodeDistace + "m 후에 " + turntype, (mWidth * 4 / 7), (mHeight * 2 / 6), mTextPaint);
                 if (thread == null) // thread 가 null 일 경우만 실행
                 {
                     thread = new RequestThread();
                     thread.start();
                 }
-            }
-            else if(turntype.equals("우회전")) {
+            } else if (turntype.equals("우회전")) {
                 mBitmap = BitmapFactory.decodeResource(getResources(), R.drawable.right);
                 mBitmap = Bitmap.createScaledBitmap(mBitmap, mWidth / 8, mHeight / 4, true);
-                pCanvas.drawBitmap(mBitmap, (mWidth * 3 / 7), (mHeight * 3 / 5), null);
+                pCanvas.drawBitmap(mBitmap, (mWidth * 1 / 7), (mHeight * 3 / 5), null);
+                pCanvas.drawBitmap(mBitmap, (mWidth * 4 / 7), (mHeight * 3 / 5), null);
                 //pCanvas.drawBitmap(RigftIcon, (mWidth * 3 / 7), (mHeight * 3 / 5), null);
-                pCanvas.drawText(nodeDistace+"m 후에 " +turntype, (mWidth * 5 / 12), (mHeight * 2 / 5), mTextPaint);
 
+                pCanvas.drawText(nodeDistace+"m 후에 " +turntype, (mWidth * 1 / 7), (mHeight * 2 / 6), mTextPaint);
+                pCanvas.drawText(nodeDistace+"m 후에 " +turntype, (mWidth * 4 / 7), (mHeight * 2 / 6), mTextPaint);
                 if (thread == null) // thread 가 null 일 경우만 실행
                 {
                     thread = new RequestThread();
@@ -249,7 +238,10 @@ public class CameraOverlayview extends View implements SensorEventListener {
                 }
             }
             else
-                pCanvas.drawText(nodeDistace+"m 후에" +turntype,(mWidth * 5 / 12), (mHeight * 2 / 5),mTextPaint);
+            {
+                pCanvas.drawText(nodeDistace+"m 후에" +turntype,(mWidth * 1 / 7), (mHeight * 2 / 6),mTextPaint);
+                pCanvas.drawText(nodeDistace+"m 후에" +turntype,(mWidth * 4 / 7), (mHeight * 2 / 6),mTextPaint);
+            }
         }
 
 
@@ -269,13 +261,30 @@ public class CameraOverlayview extends View implements SensorEventListener {
         if (mXDegree + mXCompassDegree < 360) {
             mXDegree += mXCompassDegree;
         } else if (mXDegree + mXCompassDegree >= 360) {
-            mXDegree = mXDegree + mXCompassDegree - 360;
+            mXDegree = mXDegree + mXCompassDegree - 360;/////////////////////////////////////////////////////////////////////////////////////////////////////////////
         }
 
         if(mXDegree<0)
         {
             mXDegree+=360;
         }
+        // 4/4분면을 고려하여 0~360도가 나오게 설정
+        if (tBx > tAx && tBy > tAy) {
+            Log.d("rrrrrrr","1111");
+            Log.d("rrrrrr",String.valueOf(mXDegree));
+        } else if (tBx < tAx && tBy > tAy) {
+            Log.d("rrrrrrrr","2222");
+            Log.d("rrrrrr",String.valueOf(mXDegree));
+        } else if (tBx < tAx && tBy < tAy) {
+            Log.d("rrrrrrrr","3333");
+            Log.d("rrrrrr",String.valueOf(mXDegree));
+        } else if (tBx > tAx && tBy < tAy) {
+            Log.d("rrrrrrr","4444");
+            Log.d("rrrrrr",String.valueOf(mXDegree));
+        }
+
+
+
 
 
         // 계산된 각도 만큼 기기 정중앙 화면 기준 어디에 나타날지 계산함
