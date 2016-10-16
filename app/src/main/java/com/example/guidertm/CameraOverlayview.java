@@ -129,7 +129,7 @@ public class CameraOverlayview extends View implements SensorEventListener {
 
 
         // 4/4분면을 고려하여 0~360도가 나오게 설정
-        if (nodelon_arrow > tAx && nodelan_arrow > tAy) {
+        /*if (nodelon_arrow > tAx && nodelan_arrow > tAy) {
             ;
             Log.e("4/4", " = 1");
         } else if (nodelon_arrow < tAx && nodelan_arrow > tAy) {
@@ -141,7 +141,7 @@ public class CameraOverlayview extends View implements SensorEventListener {
         } else if (nodelon_arrow  > tAx && nodelan_arrow < tAy) {
             degree += 360;
             Log.e("4/4", " = 4");
-        }
+        }*/
 
         if (degree + mXCompassDegree < 360) {
             degree += mXCompassDegree;
@@ -262,7 +262,7 @@ public class CameraOverlayview extends View implements SensorEventListener {
 
 
         // 4/4분면을 고려하여 0~360도가 나오게 설정
-        if (tBx > tAx && tBy > tAy) {
+        /*if (tBx > tAx && tBy > tAy) {
             ;
             Log.e("4/4", " = r1");
         } else if (tBx < tAx && tBy > tAy) {
@@ -274,7 +274,7 @@ public class CameraOverlayview extends View implements SensorEventListener {
         } else if (tBx > tAx && tBy < tAy) {
             mXDegree += 360;
             Log.e("4/4", " = r4");
-        }
+        }*/
 
 
 
