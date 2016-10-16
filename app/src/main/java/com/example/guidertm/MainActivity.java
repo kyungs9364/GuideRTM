@@ -82,10 +82,9 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
     GoogleApiClient mApiClient;
     public static boolean stopANDstart; // backgroundservice 를 control 하기 위해 사용
     IntentFilter filter;
-    public static boolean stop = false;
-    Intent bintent;
+    boolean stop = false;
+    public static Intent bintent;
     PendingIntent pending;
-    LocationRequest request;
 
     class MyListenerClass implements View.OnClickListener {
         public void onClick(View v) {
@@ -226,19 +225,18 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
             mMapView.setTrackingMode(true);
         }
 
-        request = new LocationRequest();
-        request.setFastestInterval(1000); // 호출정보가 전달될 간격
-        request.setInterval(3000);  // 호출되는 간격
+
+        LocationRequest request;
+        request = LocationRequest.create();
         request.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY); // GPS 정확도를 우선으로 한다.
+        request.setFastestInterval(1500); // 호출정보가 전달될 간격
+        request.setInterval(3000);  // 호출되는 간격
+
 
 
         LocationServices.FusedLocationApi.requestLocationUpdates(mApiClient, request, mListener);
 
-        bintent = new Intent(this, BackgroundService.class);
-
-        pending = PendingIntent.getService(this, 0, bintent, PendingIntent.FLAG_ONE_SHOT);
-
-
+        BackConnect();
 
         MyListenerClass buttonListener = new MyListenerClass();
         Search.setOnClickListener(buttonListener);
@@ -283,11 +281,20 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
             mMapView.setLocationPoint(longitude_plic, latitude_plic);
             //updateDisplay(location);
 
-            LocationServices.FusedLocationApi.requestLocationUpdates(mApiClient,request,pending);
-
         }
 
     };
+    public void BackConnect()
+    {
+        LocationRequest requests = new LocationRequest();
+        //requests.setFastestInterval(2500);
+        requests.setInterval(3000);  // 호출되는 간격
+        bintent = new Intent(this, BackgroundService.class);
+
+        pending = PendingIntent.getService(this, 0, bintent, 0);
+
+        LocationServices.FusedLocationApi.requestLocationUpdates(mApiClient,requests,pending);
+    }
 
 
     @Override

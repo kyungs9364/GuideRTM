@@ -19,6 +19,7 @@ public class BackgroundService  extends Service {
     public static double Temporary_la;
     public static double Temporary_lo;
 
+
     @Override
     public IBinder onBind(Intent intent) {
         return null;
@@ -54,13 +55,18 @@ public class BackgroundService  extends Service {
                 else {
                     Temporary_la = ((MainActivity) MainActivity.mContext).latitude_plic;
                     Temporary_lo = ((MainActivity) MainActivity.mContext).longitude_plic;
-                    Log.e("TEST", "5");
-                    //stopSelf();
+                   // Log.e("TEST", "5");
                 }
             }
+            //Log.e("TEST", "6");
             return START_NOT_STICKY;
-
         }
+    }
+    public void onDestroy()
+    {
+        super.onDestroy();
+        Log.e("TEST", "7");
+
     }
 }
 
