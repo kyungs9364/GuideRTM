@@ -127,15 +127,20 @@ public class CameraOverlayview extends View implements SensorEventListener {
         double degree = (double) (Math.atan2((double) (nodelan_arrow - tAy)
                 , (double) (nodelon_arrow - tAx)) * 180.0 / Math.PI);
 
+
         // 4/4분면을 고려하여 0~360도가 나오게 설정
-        if (tBx > tAx && tBy > tAy) {
+        if (nodelon_arrow > tAx && nodelan_arrow > tAy) {
             ;
-        } else if (tBx < tAx && tBy > tAy) {
+            Log.e("4/4", " = 1");
+        } else if (nodelon_arrow < tAx && nodelan_arrow > tAy) {
             degree += 180;
-        } else if (tBx < tAx && tBy < tAy) {
+            Log.e("4/4", " = 2");
+        } else if (nodelon_arrow  < tAx && nodelan_arrow < tAy) {
             degree += 180;
-        } else if (tBx > tAx && tBy < tAy) {
+            Log.e("4/4", " = 3");
+        } else if (nodelon_arrow  > tAx && nodelan_arrow < tAy) {
             degree += 360;
+            Log.e("4/4", " = 4");
         }
 
         if (degree + mXCompassDegree < 360) {
@@ -148,6 +153,8 @@ public class CameraOverlayview extends View implements SensorEventListener {
         {
             degree+=360;
         }
+
+        Log.d(TAG, "rrrrraaasa=" + String.valueOf(degree));
 
         mBitmap = BitmapFactory.decodeResource(getResources(), R.drawable.direct);
         mBitmap = Bitmap.createScaledBitmap(mBitmap, mWidth / 7, mHeight / 6, true);
@@ -255,15 +262,21 @@ public class CameraOverlayview extends View implements SensorEventListener {
 
 
         // 4/4분면을 고려하여 0~360도가 나오게 설정
-        /*if (tBx > tAx && tBy > tAy) {
-            Log.d("","1111");
+        if (tBx > tAx && tBy > tAy) {
+            ;
+            Log.e("4/4", " = r1");
         } else if (tBx < tAx && tBy > tAy) {
-            Log.d("","2222");
+            mXDegree += 180;
+            Log.e("4/4", " = r2");
         } else if (tBx < tAx && tBy < tAy) {
-            Log.d("","3333");
+            mXDegree += 180;
+            Log.e("4/4", " = r3");
         } else if (tBx > tAx && tBy < tAy) {
-            Log.d("","4444");
-        }*/
+            mXDegree += 360;
+            Log.e("4/4", " = r4");
+        }
+
+
 
         // 두 위치간의 각도에 현재 스마트폰이 동쪽기준 바라보고 있는 방향 만큼 더해줌
         // 360도(한바퀴)가 넘었으면 한바퀴 회전한것이기에 360를 빼줌
@@ -506,11 +519,11 @@ public class CameraOverlayview extends View implements SensorEventListener {
         mHeight = height;
     }
 
-    public void setdata(String index, String nodetype, Double nodelan, Double nodelon, String turntype, int distance) {
+    public void setdata(String index, String nodetype, String turntype, int distance) {
         this.index = index;
         this.nodetype = nodetype;
-        this.nodelan = nodelan;
-        this.nodelon = nodelon;
+        //this.nodelan = nodelan;
+        //this.nodelon = nodelon;
         this.turntype = turntype;
         this.nodeDistace=distance;
         Log.e("Node", "index2=" + this.index);

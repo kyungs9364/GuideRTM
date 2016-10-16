@@ -222,7 +222,7 @@ public class CameraActivity extends Activity {
     }
 
     public void setpush() {
-        mOverlayview.setdata(node.get(count).index, node.get(count).nodeType, nodelan, nodelon, node.get(count).turntype, distance);
+        mOverlayview.setdata(node.get(count).index, node.get(count).nodeType, node.get(count).turntype, distance);
     }
 
     public void check_ch() {
