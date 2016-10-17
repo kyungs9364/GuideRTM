@@ -226,15 +226,26 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
         }
 
 
-        LocationRequest request;
-        request = LocationRequest.create();
-        request.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY); // GPS 정확도를 우선으로 한다.
-        request.setFastestInterval(1500); // 호출정보가 전달될 간격
-        request.setInterval(3000);  // 호출되는 간격
+        LocationRequest req = LocationRequest.create();
+        req.setFastestInterval(1500);
+        req.setInterval(3000);
+        req.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
 
+        LocationRequest req2 = LocationRequest.create();
+        req.setFastestInterval(1500);
+        req.setInterval(3000);
+        req2.setSmallestDisplacement(1);
+        req2.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
 
+        if(location !=null) {
+            LocationServices.FusedLocationApi.requestLocationUpdates(mApiClient, req, mListener);
+            Log.e(TAG, "getLocation: " );
 
-        LocationServices.FusedLocationApi.requestLocationUpdates(mApiClient, request, mListener);
+        }
+        if(location !=null) {
+            LocationServices.FusedLocationApi.requestLocationUpdates(mApiClient, req2, mListener2);
+            Log.e(TAG, "getLocation:2 " );
+        }
 
         BackConnect();
 
@@ -249,6 +260,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
         @Override
         public void onLocationChanged(Location location) { //변경 될때 호출 될 리스너
 
+            Log.e(TAG, "getLocation:sss " );
             double change_la;
             double change_lo;
             if (Temporary_la == 0 || k==0 ) {
@@ -273,6 +285,41 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
             longitude_plic = (change_lo + longitude_plic)/2;
             Log.e("TEST","3-> "+latitude_plic);
             Log.e("TEST","3~-> "+ longitude_plic);
+            // Log.e("TEST","l2="+longitude_plic);
+
+
+            //mOverlayview.setCurrentPoint(latitude_plic,longitude_plic,Ddistance);  // 현재위치 업데이트를 위해 mOverlayview에 값 전송
+            //mCameraActivity.setCurrent(latitude_plic,longitude_plic);
+            mMapView.setLocationPoint(longitude_plic, latitude_plic);
+            //updateDisplay(location);
+
+        }
+
+    };
+    com.google.android.gms.location.LocationListener mListener2 = new com.google.android.gms.location.LocationListener() {
+        @Override
+        public void onLocationChanged(Location location) { //변경 될때 호출 될 리스너
+
+            Log.e(TAG, "getLocation:2sss " );
+            double change_la;
+            double change_lo;
+            if (Temporary_la == 0 || k==0 ) {
+                change_la = latitude_plic;
+                change_lo = longitude_plic;
+            }
+            else
+            {
+                change_la = Temporary_la;
+                change_lo = Temporary_lo;
+                k = 0;
+            }
+
+            latitude_plic = location.getLatitude();
+            longitude_plic = location.getLongitude();
+
+            latitude_plic = (change_la + latitude_plic)/2;
+            longitude_plic = (change_lo + longitude_plic)/2;
+
             // Log.e("TEST","l2="+longitude_plic);
 
 
