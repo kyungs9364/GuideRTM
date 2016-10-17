@@ -231,6 +231,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
         req.setInterval(3000);
         req.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
 
+
         LocationRequest req2 = LocationRequest.create();
         req.setFastestInterval(1500);
         req.setInterval(3000);
@@ -296,6 +297,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
         }
 
     };
+
     com.google.android.gms.location.LocationListener mListener2 = new com.google.android.gms.location.LocationListener() {
         @Override
         public void onLocationChanged(Location location) { //변경 될때 호출 될 리스너
