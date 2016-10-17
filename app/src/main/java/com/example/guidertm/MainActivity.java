@@ -233,20 +233,15 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
 
 
         LocationRequest req2 = LocationRequest.create();
-        req.setFastestInterval(1500);
-        req.setInterval(3000);
-        req2.setSmallestDisplacement(1);
+        req2.setFastestInterval(1500);
+        req2.setInterval(3000);
+        req2.setSmallestDisplacement(5);
         req2.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
 
-        if(location !=null) {
-            LocationServices.FusedLocationApi.requestLocationUpdates(mApiClient, req, mListener);
-            Log.e(TAG, "getLocation: " );
 
-        }
-        if(location !=null) {
-            LocationServices.FusedLocationApi.requestLocationUpdates(mApiClient, req2, mListener2);
-            Log.e(TAG, "getLocation:2 " );
-        }
+        LocationServices.FusedLocationApi.requestLocationUpdates(mApiClient, req, mListener);
+        LocationServices.FusedLocationApi.requestLocationUpdates(mApiClient, req2, mListener2);
+
 
         BackConnect();
 
@@ -261,38 +256,36 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
         @Override
         public void onLocationChanged(Location location) { //변경 될때 호출 될 리스너
 
-            Log.e(TAG, "getLocation:sss " );
-            double change_la;
-            double change_lo;
-            if (Temporary_la == 0 || k==0 ) {
-                change_la = latitude_plic;
-                change_lo = longitude_plic;
-            }
-            else
-            {
-                change_la = Temporary_la;
-                change_lo = Temporary_lo;
-                k = 0;
-            }
-            Log.e("TEST","1-> "+ change_la);
-            Log.e("TEST","1~-> "+ change_lo);
+                Log.e(TAG, "getLocation:sss ");
+                double change_la;
+                double change_lo;
+                if (Temporary_la == 0 || k == 0) {
+                    change_la = latitude_plic;
+                    change_lo = longitude_plic;
+                } else {
+                    change_la = Temporary_la;
+                    change_lo = Temporary_lo;
+                    k = 0;
+                }
+                Log.e("TEST", "1-> " + change_la);
+                Log.e("TEST", "1~-> " + change_lo);
 
-            latitude_plic = location.getLatitude();
-            longitude_plic = location.getLongitude();
-            Log.e("TEST","2-> "+latitude_plic);
-            Log.e("TEST","2~-> "+ longitude_plic);
+                latitude_plic = location.getLatitude();
+                longitude_plic = location.getLongitude();
+                Log.e("TEST", "2-> " + latitude_plic);
+                Log.e("TEST", "2~-> " + longitude_plic);
 
-            latitude_plic = (change_la + latitude_plic)/2;
-            longitude_plic = (change_lo + longitude_plic)/2;
-            Log.e("TEST","3-> "+latitude_plic);
-            Log.e("TEST","3~-> "+ longitude_plic);
-            // Log.e("TEST","l2="+longitude_plic);
+                latitude_plic = (change_la + latitude_plic) / 2;
+                longitude_plic = (change_lo + longitude_plic) / 2;
+                Log.e("TEST", "3-> " + latitude_plic);
+                Log.e("TEST", "3~-> " + longitude_plic);
+                // Log.e("TEST","l2="+longitude_plic);
 
 
-            //mOverlayview.setCurrentPoint(latitude_plic,longitude_plic,Ddistance);  // 현재위치 업데이트를 위해 mOverlayview에 값 전송
-            //mCameraActivity.setCurrent(latitude_plic,longitude_plic);
-            mMapView.setLocationPoint(longitude_plic, latitude_plic);
-            //updateDisplay(location);
+                //mOverlayview.setCurrentPoint(latitude_plic,longitude_plic,Ddistance);  // 현재위치 업데이트를 위해 mOverlayview에 값 전송
+                //mCameraActivity.setCurrent(latitude_plic,longitude_plic);
+                mMapView.setLocationPoint(longitude_plic, latitude_plic);
+                //updateDisplay(location);
 
         }
 
@@ -302,35 +295,32 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
         @Override
         public void onLocationChanged(Location location) { //변경 될때 호출 될 리스너
 
-            Log.e(TAG, "getLocation:2sss " );
-            double change_la;
-            double change_lo;
-            if (Temporary_la == 0 || k==0 ) {
-                change_la = latitude_plic;
-                change_lo = longitude_plic;
+                Log.e(TAG, "getLocation:2sss ");
+                double change_la;
+                double change_lo;
+                if (Temporary_la == 0 || k == 0) {
+                    change_la = latitude_plic;
+                    change_lo = longitude_plic;
+                } else {
+                    change_la = Temporary_la;
+                    change_lo = Temporary_lo;
+                    k = 0;
+                }
+
+                latitude_plic = location.getLatitude();
+                longitude_plic = location.getLongitude();
+
+                latitude_plic = (change_la + latitude_plic) / 2;
+                longitude_plic = (change_lo + longitude_plic) / 2;
+
+                // Log.e("TEST","l2="+longitude_plic);
+
+
+                //mOverlayview.setCurrentPoint(latitude_plic,longitude_plic,Ddistance);  // 현재위치 업데이트를 위해 mOverlayview에 값 전송
+                //mCameraActivity.setCurrent(latitude_plic,longitude_plic);
+                mMapView.setLocationPoint(longitude_plic, latitude_plic);
+                //updateDisplay(location);
             }
-            else
-            {
-                change_la = Temporary_la;
-                change_lo = Temporary_lo;
-                k = 0;
-            }
-
-            latitude_plic = location.getLatitude();
-            longitude_plic = location.getLongitude();
-
-            latitude_plic = (change_la + latitude_plic)/2;
-            longitude_plic = (change_lo + longitude_plic)/2;
-
-            // Log.e("TEST","l2="+longitude_plic);
-
-
-            //mOverlayview.setCurrentPoint(latitude_plic,longitude_plic,Ddistance);  // 현재위치 업데이트를 위해 mOverlayview에 값 전송
-            //mCameraActivity.setCurrent(latitude_plic,longitude_plic);
-            mMapView.setLocationPoint(longitude_plic, latitude_plic);
-            //updateDisplay(location);
-
-        }
 
     };
     public void BackConnect()
