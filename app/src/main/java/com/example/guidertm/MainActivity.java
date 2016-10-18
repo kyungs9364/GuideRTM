@@ -14,6 +14,7 @@ import android.location.Location;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
+import android.os.Handler;
 import android.provider.Settings;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -85,6 +86,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
     boolean stop = false;
     public static Intent bintent;
     PendingIntent pending;
+    //LocationRequest req;
 
     class MyListenerClass implements View.OnClickListener {
         public void onClick(View v) {
@@ -195,6 +197,14 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
 
         filter = new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION);
         mContext.registerReceiver(receiver,filter);
+
+        Handler mHandler = new Handler();
+        mHandler.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                Log.e(TAG, "cokebear ");
+            }
+        },2000);
     }
 
     boolean isConnected = false;
@@ -223,25 +233,25 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
             mMapView.setCenterPoint(longitude_plic, latitude_plic);
             mMapView.setLocationPoint(longitude_plic, latitude_plic);
             mMapView.setTrackingMode(true);
+
+
         }
 
-
         LocationRequest req = LocationRequest.create();
-        req.setFastestInterval(1500);
-        req.setInterval(3000);
         req.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
+        req.setInterval(4000);
+        req.setFastestInterval(2000);
+
+        //req.setSmallestDisplacement(5);
+        //req.setMaxWaitTime(2000);
 
 
-        LocationRequest req2 = LocationRequest.create();
-        req2.setFastestInterval(1500);
-        req2.setInterval(3000);
-        req2.setSmallestDisplacement(5);
-        req2.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
-
+        /*LocationRequest request = new LocationRequest();
+        request.setInterval(5000);
+        request.setFastestInterval(1000);
+        */
 
         LocationServices.FusedLocationApi.requestLocationUpdates(mApiClient, req, mListener);
-        LocationServices.FusedLocationApi.requestLocationUpdates(mApiClient, req2, mListener2);
-
 
         BackConnect();
 
@@ -259,7 +269,8 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
                 Log.e(TAG, "getLocation:sss ");
                 double change_la;
                 double change_lo;
-                if (Temporary_la == 0 || k == 0) {
+                if (Temporary_la == 0 || k == 0)
+                {
                     change_la = latitude_plic;
                     change_lo = longitude_plic;
                 } else {
@@ -291,38 +302,6 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
 
     };
 
-    com.google.android.gms.location.LocationListener mListener2 = new com.google.android.gms.location.LocationListener() {
-        @Override
-        public void onLocationChanged(Location location) { //변경 될때 호출 될 리스너
-
-                Log.e(TAG, "getLocation:2sss ");
-                double change_la;
-                double change_lo;
-                if (Temporary_la == 0 || k == 0) {
-                    change_la = latitude_plic;
-                    change_lo = longitude_plic;
-                } else {
-                    change_la = Temporary_la;
-                    change_lo = Temporary_lo;
-                    k = 0;
-                }
-
-                latitude_plic = location.getLatitude();
-                longitude_plic = location.getLongitude();
-
-                latitude_plic = (change_la + latitude_plic) / 2;
-                longitude_plic = (change_lo + longitude_plic) / 2;
-
-                // Log.e("TEST","l2="+longitude_plic);
-
-
-                //mOverlayview.setCurrentPoint(latitude_plic,longitude_plic,Ddistance);  // 현재위치 업데이트를 위해 mOverlayview에 값 전송
-                //mCameraActivity.setCurrent(latitude_plic,longitude_plic);
-                mMapView.setLocationPoint(longitude_plic, latitude_plic);
-                //updateDisplay(location);
-            }
-
-    };
     public void BackConnect()
     {
         LocationRequest requests = new LocationRequest();
