@@ -232,15 +232,12 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
         req.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
 
 
-        LocationRequest req2 = LocationRequest.create();
-        req2.setFastestInterval(1500);
-        req2.setInterval(3000);
-        req2.setSmallestDisplacement(5);
-        req2.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
+
+        //.setSmallestDisplacement(5); 최소거리이후 업데이트
+
 
 
         LocationServices.FusedLocationApi.requestLocationUpdates(mApiClient, req, mListener);
-        LocationServices.FusedLocationApi.requestLocationUpdates(mApiClient, req2, mListener2);
 
 
         BackConnect();
@@ -291,38 +288,6 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
 
     };
 
-    com.google.android.gms.location.LocationListener mListener2 = new com.google.android.gms.location.LocationListener() {
-        @Override
-        public void onLocationChanged(Location location) { //변경 될때 호출 될 리스너
-
-                Log.e(TAG, "getLocation:2sss ");
-                double change_la;
-                double change_lo;
-                if (Temporary_la == 0 || k == 0) {
-                    change_la = latitude_plic;
-                    change_lo = longitude_plic;
-                } else {
-                    change_la = Temporary_la;
-                    change_lo = Temporary_lo;
-                    k = 0;
-                }
-
-                latitude_plic = location.getLatitude();
-                longitude_plic = location.getLongitude();
-
-                latitude_plic = (change_la + latitude_plic) / 2;
-                longitude_plic = (change_lo + longitude_plic) / 2;
-
-                // Log.e("TEST","l2="+longitude_plic);
-
-
-                //mOverlayview.setCurrentPoint(latitude_plic,longitude_plic,Ddistance);  // 현재위치 업데이트를 위해 mOverlayview에 값 전송
-                //mCameraActivity.setCurrent(latitude_plic,longitude_plic);
-                mMapView.setLocationPoint(longitude_plic, latitude_plic);
-                //updateDisplay(location);
-            }
-
-    };
     public void BackConnect()
     {
         LocationRequest requests = new LocationRequest();
