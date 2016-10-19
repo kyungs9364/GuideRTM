@@ -49,7 +49,7 @@ import java.util.List;
 public class MainActivity extends AppCompatActivity implements GoogleApiClient.OnConnectionFailedListener,
         GoogleApiClient.ConnectionCallbacks {
 
-    String TAG="PAAR";
+    String TAG = "PAAR";
     String Distance;
     TMapView mMapView = null;
     RelativeLayout mapContainer = null;
@@ -63,22 +63,22 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
     Geocoder coder;
     CameraOverlayview mOverlayview;
     CameraActivity mCameraActivity;
-    public static double latitude_plic ;
-    public static double longitude_plic ;
-    public static double des_latitude_plic ;
-    public static double des_longitude_plic ;
+    public static double latitude_plic;
+    public static double longitude_plic;
+    public static double des_latitude_plic;
+    public static double des_longitude_plic;
     public static double Temporary_la;
     public static double Temporary_lo;
-    public static int k=0;
+    public static int k = 0;
     public static TMapPoint point2;
-    public static  double Ddistance;
-    public static  double Geo_latitude;
-    public static  double Geo_longitude;
-    public static List<NodeData> nodeDatas=new ArrayList<NodeData>();
-    public static  ArrayList<String> GEO_list = new ArrayList<String>();
-    public  static int TYPE_WIFI = 1;
-    public  static int TYPE_MOBILE = 2;
-    public  static int TYPE_NOT_CONNECTED = 0;
+    public static double Ddistance;
+    public static double Geo_latitude;
+    public static double Geo_longitude;
+    public static List<NodeData> nodeDatas = new ArrayList<NodeData>();
+    public static ArrayList<String> GEO_list = new ArrayList<String>();
+    public static int TYPE_WIFI = 1;
+    public static int TYPE_MOBILE = 2;
+    public static int TYPE_NOT_CONNECTED = 0;
     GoogleApiClient mApiClient;
     public static boolean stopANDstart; // backgroundservice 를 control 하기 위해 사용
     IntentFilter filter;
@@ -87,16 +87,12 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
     PendingIntent pending;
     //LocationRequest req;
     RequestThread thread;
-    private boolean stopflag = false;
-    public static Location locations;
 
     class MyListenerClass implements View.OnClickListener {
         public void onClick(View v) {
             if (v.getId() == R.id.search) {
                 findAllPoi();
-            }
-            else if (v.getId() == R.id.VR)
-            {
+            } else if (v.getId() == R.id.VR) {
                 String end = my_destination.getText().toString();
 
                 if (end == null || end.length() == 0) {
@@ -106,11 +102,11 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
                 //Toast.makeText(getApplicationContext(), "도착지 : " + end, Toast.LENGTH_SHORT).show();
 
 
-                Intent intent = new Intent(MainActivity.this,CameraActivity.class);
-                intent.putExtra("latitude_id",String.valueOf(des_latitude_plic));  // CameraOverlayview 에 목적지값 전송 - cameraActivity 통해서 경유
-                intent.putExtra("longitude_id",String.valueOf(des_longitude_plic ));
-                intent.putExtra("distance",Ddistance);
-                intent.putExtra("node",(Serializable)nodeDatas);
+                Intent intent = new Intent(MainActivity.this, CameraActivity.class);
+                intent.putExtra("latitude_id", String.valueOf(des_latitude_plic));  // CameraOverlayview 에 목적지값 전송 - cameraActivity 통해서 경유
+                intent.putExtra("longitude_id", String.valueOf(des_longitude_plic));
+                intent.putExtra("distance", Ddistance);
+                intent.putExtra("node", (Serializable) nodeDatas);
                 startActivity(intent);
 
                   /*
@@ -126,24 +122,20 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
                 des_latitude_plic = des_location.get(0).getLatitude();
                 des_longitude_plic = des_location.get(0).getLongitude();*/
 
-            }
-            else if (v.getId() == R.id.road)
-            {
+            } else if (v.getId() == R.id.road) {
                 String query = my_destination.getText().toString();
                 if (query == null || query.length() == 0) {
                     showToast("검색어가 입력되지 않았습니다.");
                     return;
                 }
-                if(nodeDatas!=null)
-                {
+                if (nodeDatas != null) {
                     nodeDatas.clear();
                 }
 
                 VR.setEnabled(true);
                 drawPedestrianPath();
                 naviGuide();
-            }
-            else if (v.getId() == R.id.update) {
+            } else if (v.getId() == R.id.update) {
                 if (point2 != null) {
                     drawPedestrianPath();
                     naviGuide();
@@ -182,7 +174,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
         roadservice = (Button) findViewById(R.id.road); // 길찾기버튼
         VR = (Button) findViewById(R.id.VR);  // VR버튼
         VR.setEnabled(false);
-        update = (ImageView)findViewById(R.id.update);
+        update = (ImageView) findViewById(R.id.update);
         mContext = this;  // 타 액티비티에서 접근 가능하게 함.
         Intent intent = getIntent();
         my_destination.setText(intent.getStringExtra("des_info")); // listview 에서 돌아온 도착지 name
@@ -198,7 +190,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
         mCameraActivity = new CameraActivity();
 
         filter = new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION);
-        mContext.registerReceiver(receiver,filter);
+        mContext.registerReceiver(receiver, filter);
 
         /*Handler mHandler = new Handler();
         mHandler.postDelayed(new Runnable() {
@@ -223,10 +215,10 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
             return;
         }
 
-        locations = LocationServices.FusedLocationApi.getLastLocation(mApiClient);
-        if (locations != null) {
-            latitude_plic = locations.getLatitude();
-            longitude_plic = locations.getLongitude();
+        Location location = LocationServices.FusedLocationApi.getLastLocation(mApiClient);
+        if (location != null) {
+            latitude_plic = location.getLatitude();
+            longitude_plic = location.getLongitude();
 
             //mOverlayview.setCurrentPoint(latitude_plic,longitude_plic,Ddistance);  // 현재위치 업데이트를 위해 mOverlayview에 값 전송
             //mCameraActivity.setCurrent(latitude_plic,longitude_plic);
@@ -239,23 +231,30 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
 
         }
 
-        LocationRequest req = LocationRequest.create();
-        req.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
-        req.setInterval(4000);
-        req.setFastestInterval(2000);
+        LocationRequest mLocationRequest = new LocationRequest();
+        mLocationRequest.setInterval(0);
+        mLocationRequest.setFastestInterval(0);
+        mLocationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
+
 
         //req.setSmallestDisplacement(5);
         //req.setMaxWaitTime(2000);
+        LocationServices.FusedLocationApi.requestLocationUpdates(mApiClient, mLocationRequest, mListener);
 
+
+        LocationRequest mRequest = new LocationRequest();
+        mRequest.setInterval(0);
+        mRequest.setFastestInterval(0);
+        mRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
+
+
+        LocationServices.FusedLocationApi.requestLocationUpdates(mApiClient, mRequest, mListener2);
 
         /*LocationRequest request = new LocationRequest();
         request.setInterval(5000);
         request.setFastestInterval(1000);
         */
 
-        thread = new RequestThread();
-        thread.start();
-        //LocationServices.FusedLocationApi.requestLocationUpdates(mApiClient, req, mListener);
 
         BackConnect();
 
@@ -266,65 +265,113 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
         update.setOnClickListener(buttonListener);
     }
 
-   public void mListener(Location location)
-   {
+    com.google.android.gms.location.LocationListener mListener = new com.google.android.gms.location.LocationListener() {
+        @Override
+        public void onLocationChanged(Location location) { //변경 될때 호출 될 리스너
+            Log.e("TEST", "Listener ");
 
-                Log.e(TAG, "getLocation:sss ");
-                double change_la;
-                double change_lo;
-                if (Temporary_la == 0 || k == 0)
-                {
-                    change_la = latitude_plic;
-                    change_lo = longitude_plic;
-                } else {
-                    change_la = Temporary_la;
-                    change_lo = Temporary_lo;
-                    k = 0;
-                }
-                Log.e("TEST", "1-> " + change_la);
-                Log.e("TEST", "1~-> " + change_lo);
+            Log.e(TAG, "getLocation:sss ");
+            double change_la;
+            double change_lo;
+            if (Temporary_la == 0 || k == 0) {
+                change_la = latitude_plic;
+                change_lo = longitude_plic;
+            } else {
+                change_la = Temporary_la;
+                change_lo = Temporary_lo;
+                k = 0;
+            }
+            Log.e("TEST", "1-> " + change_la);
+            Log.e("TEST", "1~-> " + change_lo);
 
-                latitude_plic = location.getLatitude();
-                longitude_plic = location.getLongitude();
-                Log.e("TEST", "2-> " + latitude_plic);
-                Log.e("TEST", "2~-> " + longitude_plic);
+            latitude_plic = location.getLatitude();
+            longitude_plic = location.getLongitude();
+            Log.e("TEST", "2-> " + latitude_plic);
+            Log.e("TEST", "2~-> " + longitude_plic);
 
-                latitude_plic = (change_la + latitude_plic) / 2;
-                longitude_plic = (change_lo + longitude_plic) / 2;
-                Log.e("TEST", "3-> " + latitude_plic);
-                Log.e("TEST", "3~-> " + longitude_plic);
-                // Log.e("TEST","l2="+longitude_plic);
+            latitude_plic = (change_la + latitude_plic) / 2;
+            longitude_plic = (change_lo + longitude_plic) / 2;
+            Log.e("TEST", "3-> " + latitude_plic);
+            Log.e("TEST", "3~-> " + longitude_plic);
+            // Log.e("TEST","l2="+longitude_plic);
 
 
-                //mOverlayview.setCurrentPoint(latitude_plic,longitude_plic,Ddistance);  // 현재위치 업데이트를 위해 mOverlayview에 값 전송
-                //mCameraActivity.setCurrent(latitude_plic,longitude_plic);
-                mMapView.setLocationPoint(longitude_plic, latitude_plic);
-                //updateDisplay(location);
-       thread = new RequestThread();
-       thread.start();
+            //mOverlayview.setCurrentPoint(latitude_plic,longitude_plic,Ddistance);  // 현재위치 업데이트를 위해 mOverlayview에 값 전송
+            //mCameraActivity.setCurrent(latitude_plic,longitude_plic);
+            mMapView.setLocationPoint(longitude_plic, latitude_plic);
+            //updateDisplay(location);
+            //thread = new RequestThread();
+            //thread.start();
 
-    }
+
+        }
+
+    };
+
+
+    com.google.android.gms.location.LocationListener mListener2 = new com.google.android.gms.location.LocationListener() {
+        @Override
+
+        public void onLocationChanged(Location location) { //변경 될때 호출 될 리스너
+            Log.e("TEST", "Listener2 ");
+            thread = new RequestThread();
+            thread.start();
+
+            Log.e(TAG, "getLocation:sss ");
+            double change_la;
+            double change_lo;
+            if (Temporary_la == 0 || k == 0) {
+                change_la = latitude_plic;
+                change_lo = longitude_plic;
+            } else {
+                change_la = Temporary_la;
+                change_lo = Temporary_lo;
+                k = 0;
+            }
+            Log.e("TEST", "1-> " + change_la);
+            Log.e("TEST", "1~-> " + change_lo);
+
+            latitude_plic = location.getLatitude();
+            longitude_plic = location.getLongitude();
+            Log.e("TEST", "2-> " + latitude_plic);
+            Log.e("TEST", "2~-> " + longitude_plic);
+
+            latitude_plic = (change_la + latitude_plic) / 2;
+            longitude_plic = (change_lo + longitude_plic) / 2;
+            Log.e("TEST", "3-> " + latitude_plic);
+            Log.e("TEST", "3~-> " + longitude_plic);
+            // Log.e("TEST","l2="+longitude_plic);
+
+
+            //mOverlayview.setCurrentPoint(latitude_plic,longitude_plic,Ddistance);  // 현재위치 업데이트를 위해 mOverlayview에 값 전송
+            //mCameraActivity.setCurrent(latitude_plic,longitude_plic);
+            mMapView.setLocationPoint(longitude_plic, latitude_plic);
+            //updateDisplay(location);
+            //thread = new RequestThread();
+            //thread.start();
+
+        }
+    };
 
     class RequestThread extends Thread {
         public void run() {
-            while (!stopflag) {
                 try {
+                    Log.e("TEST", "thread1 ");
                     Thread.sleep(3000);   // 3초 뒤에 실행
-                    Log.d(TAG, "yahoo");
-                    mListener(locations);
-                    break;  // 중복적 호출을 방지하기 위해 break;
+                    Log.e("TEST", "thread2 ");
+
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
-            }
         }
     }
+
 
     public void BackConnect()
     {
         LocationRequest requests = new LocationRequest();
         //requests.setFastestInterval(2500);
-        requests.setInterval(3000);  // 호출되는 간격
+        requests.setInterval(2000);  // 호출되는 간격
         bintent = new Intent(this, BackgroundService.class);
 
         pending = PendingIntent.getService(this, 0, bintent, 0);
@@ -611,7 +658,6 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
         point2 = null;
         mContext.unregisterReceiver(receiver);
         stop = true;
-        stopflag = true;
 
         //LocationServices.FusedLocationApi.removeLocationUpdates(mApiClient,pending);
 
