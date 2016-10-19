@@ -82,11 +82,8 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
     GoogleApiClient mApiClient;
     public static boolean stopANDstart; // backgroundservice 를 control 하기 위해 사용
     IntentFilter filter;
-    boolean stop = false;
-    public static Intent bintent;
-    PendingIntent pending;
+    // boolean stop = false;
     //LocationRequest req;
-    RequestThread thread;
 
     class MyListenerClass implements View.OnClickListener {
         public void onClick(View v) {
@@ -232,8 +229,8 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
         }
 
         LocationRequest mLocationRequest = new LocationRequest();
-        mLocationRequest.setInterval(0);
-        mLocationRequest.setFastestInterval(0);
+        mLocationRequest.setInterval(5000);
+        mLocationRequest.setFastestInterval(2500);
         mLocationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
 
 
@@ -242,19 +239,10 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
         LocationServices.FusedLocationApi.requestLocationUpdates(mApiClient, mLocationRequest, mListener);
 
 
-        LocationRequest mRequest = new LocationRequest();
-        mRequest.setInterval(0);
-        mRequest.setFastestInterval(0);
-        mRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
-
-
-        LocationServices.FusedLocationApi.requestLocationUpdates(mApiClient, mRequest, mListener2);
-
         /*LocationRequest request = new LocationRequest();
         request.setInterval(5000);
         request.setFastestInterval(1000);
         */
-
 
         BackConnect();
 
@@ -268,9 +256,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
     com.google.android.gms.location.LocationListener mListener = new com.google.android.gms.location.LocationListener() {
         @Override
         public void onLocationChanged(Location location) { //변경 될때 호출 될 리스너
-            Log.e("TEST", "Listener ");
 
-            Log.e(TAG, "getLocation:sss ");
             double change_la;
             double change_lo;
             if (Temporary_la == 0 || k == 0) {
@@ -307,74 +293,15 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
         }
 
     };
-
-
-    com.google.android.gms.location.LocationListener mListener2 = new com.google.android.gms.location.LocationListener() {
-        @Override
-
-        public void onLocationChanged(Location location) { //변경 될때 호출 될 리스너
-            Log.e("TEST", "Listener2 ");
-            thread = new RequestThread();
-            thread.start();
-
-            Log.e(TAG, "getLocation:sss ");
-            double change_la;
-            double change_lo;
-            if (Temporary_la == 0 || k == 0) {
-                change_la = latitude_plic;
-                change_lo = longitude_plic;
-            } else {
-                change_la = Temporary_la;
-                change_lo = Temporary_lo;
-                k = 0;
-            }
-            Log.e("TEST", "1-> " + change_la);
-            Log.e("TEST", "1~-> " + change_lo);
-
-            latitude_plic = location.getLatitude();
-            longitude_plic = location.getLongitude();
-            Log.e("TEST", "2-> " + latitude_plic);
-            Log.e("TEST", "2~-> " + longitude_plic);
-
-            latitude_plic = (change_la + latitude_plic) / 2;
-            longitude_plic = (change_lo + longitude_plic) / 2;
-            Log.e("TEST", "3-> " + latitude_plic);
-            Log.e("TEST", "3~-> " + longitude_plic);
-            // Log.e("TEST","l2="+longitude_plic);
-
-
-            //mOverlayview.setCurrentPoint(latitude_plic,longitude_plic,Ddistance);  // 현재위치 업데이트를 위해 mOverlayview에 값 전송
-            //mCameraActivity.setCurrent(latitude_plic,longitude_plic);
-            mMapView.setLocationPoint(longitude_plic, latitude_plic);
-            //updateDisplay(location);
-            //thread = new RequestThread();
-            //thread.start();
-
-        }
-    };
-
-    class RequestThread extends Thread {
-        public void run() {
-                try {
-                    Log.e("TEST", "thread1 ");
-                    Thread.sleep(3000);   // 3초 뒤에 실행
-                    Log.e("TEST", "thread2 ");
-
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-        }
-    }
-
 
     public void BackConnect()
     {
         LocationRequest requests = new LocationRequest();
-        //requests.setFastestInterval(2500);
-        requests.setInterval(2000);  // 호출되는 간격
-        bintent = new Intent(this, BackgroundService.class);
+        requests.setFastestInterval(3000);
+        requests.setInterval(4000);  // 호출되는 간격
+        Intent bintent = new Intent(this, BackgroundService.class);
 
-        pending = PendingIntent.getService(this, 0, bintent, 0);
+        PendingIntent pending = PendingIntent.getService(this, 0, bintent, 0);
 
         LocationServices.FusedLocationApi.requestLocationUpdates(mApiClient,requests,pending);
     }
@@ -657,7 +584,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
         super.onDestroy();
         point2 = null;
         mContext.unregisterReceiver(receiver);
-        stop = true;
+        //stop = true;
 
         //LocationServices.FusedLocationApi.removeLocationUpdates(mApiClient,pending);
 
