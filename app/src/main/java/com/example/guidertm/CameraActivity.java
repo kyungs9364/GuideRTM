@@ -38,15 +38,18 @@ public class CameraActivity extends Activity {
     public static int fix_nodedistance;
     public static double Ddistance;
     public static Context mContext;
+    public static int cok=0;
 
     public static Double nodelon;
     public static Double nodelan;
 
     ArrayList<NodeData> node;
     RequestThread thread;
+
     private boolean stopflag = false;
     int i = 0;
     int j = 0;
+    int k =0;
     Location location;
     LocationManager locationManager;
     LocationListener locationListener;
@@ -55,6 +58,7 @@ public class CameraActivity extends Activity {
 
 
     BroadcastReceiver mReceiver;
+
 
 
 
@@ -121,6 +125,7 @@ public class CameraActivity extends Activity {
             return;
         else {
             if (node.get(a).nodeType.equals("POINT")) {
+                Log.e("ccchk","2");
                 String[] data = node.get(a).coordinate.split(",");
                 /*Double*/
                 nodelon = Double.parseDouble(data[0]);
@@ -131,6 +136,7 @@ public class CameraActivity extends Activity {
                 Log.e("NODE", "lon=" + Slongitude);
                 //.e("NODE", "nodelan="+ nodelan);
                 // Log.e("NODE","lan="+Slatitude);
+
 
                 if (Slatitude != 0) {
                     Location locationA = new Location("Point A");
@@ -164,22 +170,26 @@ public class CameraActivity extends Activity {
 
                 count = a;
 
-                if(nodelan!=null)
+                if(k == 0)
                 {
-                    locationManager.addProximityAlert(nodelan, nodelon, 10f, -1, proximityIntent_10);
-                    locationManager.addProximityAlert(nodelan,nodelon,3f,-1,proximityIntent_3);
+                    locationManager.addProximityAlert(nodelan, nodelon, 80f, -1, proximityIntent_10);
+                    k++;
                 }
+                locationManager.addProximityAlert(nodelan,nodelon,70f,-1,proximityIntent_3);
                 //((MainActivity) MainActivity.mContext).Geofence_re(nodelan, nodelon);
+
 
                 thread = new RequestThread();
                 thread.start(); //check 함수를 일정시간마다 불러옴
+
 
                 /*if (nodelan - 0.0001 < Slatitude && Slatitude < nodelan + 0.0001 && nodelon - 0.0001 < Slongitude && Slongitude < nodelon + 0.0001) {
                     mOverlayview.setdata(node.get(a).index, node.get(a).nodeType, Double.parseDouble(data[1]), Double.parseDouble(data[0]), node.get(a).turntype);
                     //Toast.makeText(getApplicationContext(), node.get(a).turntype , Toast.LENGTH_LONG).show();
                     check(a + 1);
                 }*/
-            } else if (node.get(a).nodeType.equals("LINE")) {
+            } else if (node.get(a).nodeType.equals("LINE")){
+                Log.e("ccchk","1");
                 check(a + 1);
             }
         }
@@ -210,7 +220,7 @@ public class CameraActivity extends Activity {
         public void run() {
             while (!stopflag) {
                 try {
-                    Thread.sleep(3000);   // 3초 뒤에 실행
+                    Thread.sleep(2000);   // 3초 뒤에 실행
                     check(count);
                     mOverlayview.setAtoB(distance);  // 노드까지의 실시간 거리 변경을 위해 선언
                     break;  // 중복적 호출을 방지하기 위해 break;
@@ -221,14 +231,22 @@ public class CameraActivity extends Activity {
         }
     }
 
+
     public void setpush() {
         mOverlayview.setdata(node.get(count).index, node.get(count).nodeType, node.get(count).turntype, distance);
+        Log.d(TAG, "pupush");
+
     }
 
     public void check_ch() {
         i = 0;
         j = 0;
+        k = 0;
+
+        nodelan =null;
         check(count + 1);
+        Log.e("ccchk","3");
+        Log.d(TAG, "pupush2");
     }
 
     public BroadcastReceiver receiver_proxi_10 = new BroadcastReceiver() {
