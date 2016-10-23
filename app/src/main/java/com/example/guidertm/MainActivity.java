@@ -275,10 +275,10 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
             Log.e("TEST", "2-> " + latitude_plic);
             Log.e("TEST", "2~-> " + longitude_plic);
 
-            latitude_plic = (change_la + latitude_plic) / 2;
-            longitude_plic = (change_lo + longitude_plic) / 2;
-            Log.e("TEST", "3-> " + latitude_plic);
-            Log.e("TEST", "3~-> " + longitude_plic);
+            //latitude_plic = (change_la + latitude_plic) / 2;
+           // longitude_plic = (change_lo + longitude_plic) / 2;
+            //Log.e("TEST", "3-> " + latitude_plic);
+           // Log.e("TEST", "3~-> " + longitude_plic);
             // Log.e("TEST","l2="+longitude_plic);
 
 

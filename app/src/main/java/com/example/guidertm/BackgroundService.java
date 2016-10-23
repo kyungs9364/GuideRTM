@@ -36,19 +36,19 @@ public class BackgroundService  extends Service {
             {
                 if(((MainActivity) MainActivity.mContext).stopANDstart == true) {
 
-                    change_la = Temporary_la;
-                    change_lo = Temporary_lo;
-                    Log.e("TEST", "3.3~-> " + change_la );
+                    //change_la = Temporary_la;
+                    //change_lo = Temporary_lo;
+                    //Log.e("TEST", "3.3~-> " + change_la );
 
                     Temporary_la = location.getLatitude();
                     Temporary_lo = location.getLongitude();
-                    Log.e("TEST", "3.6~-> " + Temporary_la);
+                    //Log.e("TEST", "3.6~-> " + Temporary_la);
 
 
                     sendpush();
 
-                    thread = new RequestThread();
-                    thread.start();
+                    //thread = new RequestThread();
+                    //thread.start();
                 }
                 else {
                     Temporary_la = ((MainActivity) MainActivity.mContext).latitude_plic;
