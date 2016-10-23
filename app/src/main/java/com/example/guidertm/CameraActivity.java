@@ -38,7 +38,6 @@ public class CameraActivity extends Activity {
     public static int fix_nodedistance;
     public static double Ddistance;
     public static Context mContext;
-    public static int cok=0;
 
     public static Double nodelon;
     public static Double nodelan;
@@ -49,7 +48,6 @@ public class CameraActivity extends Activity {
     private boolean stopflag = false;
     int i = 0;
     int j = 0;
-    int k =0;
     Location location;
     LocationManager locationManager;
     LocationListener locationListener;
@@ -102,7 +100,7 @@ public class CameraActivity extends Activity {
 
 
 
-        Intent Pintent_10 = new Intent("com.example.guidertmcom.proximityalert_10");
+        /*Intent Pintent_10 = new Intent("com.example.guidertmcom.proximityalert_10");
         proximityIntent_10 = PendingIntent.getBroadcast(this, 0, Pintent_10, 0);
         IntentFilter Pfilter_10 = new IntentFilter("com.example.guidertmcom.proximityalert_10");
         registerReceiver(receiver_proxi_10, Pfilter_10);
@@ -110,7 +108,7 @@ public class CameraActivity extends Activity {
         Intent Pintent_3 = new Intent("com.example.guidertmcom.proximityalert_3");
         proximityIntent_3 = PendingIntent.getBroadcast(this, 0, Pintent_3, 0);
         IntentFilter Pfilter_3 = new IntentFilter("com.example.guidertmcom.proximityalert_3");
-        registerReceiver(receiver_proxi_3, Pfilter_3);
+        registerReceiver(receiver_proxi_3, Pfilter_3);*/
 
 
         check(1);  // 출발지의 정보는 보내지 않아도 됨으로 check(1)로 설정
@@ -153,6 +151,13 @@ public class CameraActivity extends Activity {
                         //Log.e("distan","3 = "+fix_nodedistance );
                         //Log.e("distan","2 = "+Ddistance );
                         j++;
+
+                        if(distance < 10) // 10m(오차범위) 이내가 되면 노드정보를 overlayview에 전송
+                        {
+                            setpush();
+                            if (distance < 3)
+                                check_ch();
+                        }
                     }
                 } else {
                     Toast tMsg = Toast.makeText(getApplicationContext(), "다음노드 까지 거리 계산 중... ", Toast.LENGTH_LONG);
@@ -170,12 +175,9 @@ public class CameraActivity extends Activity {
 
                 count = a;
 
-                if(k == 0)
-                {
-                    locationManager.addProximityAlert(nodelan, nodelon, 80f, -1, proximityIntent_10);
-                    k++;
-                }
-                locationManager.addProximityAlert(nodelan,nodelon,70f,-1,proximityIntent_3);
+
+                //locationManager.addProximityAlert(nodelan, nodelon, 80f, -1, proximityIntent_10);
+                //locationManager.addProximityAlert(nodelan,nodelon,70f,-1,proximityIntent_3);
                 //((MainActivity) MainActivity.mContext).Geofence_re(nodelan, nodelon);
 
 
@@ -241,7 +243,6 @@ public class CameraActivity extends Activity {
     public void check_ch() {
         i = 0;
         j = 0;
-        k = 0;
 
         nodelan =null;
         check(count + 1);
@@ -249,7 +250,7 @@ public class CameraActivity extends Activity {
         Log.d(TAG, "pupush2");
     }
 
-    public BroadcastReceiver receiver_proxi_10 = new BroadcastReceiver() {
+    /*public BroadcastReceiver receiver_proxi_10 = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
 
@@ -259,7 +260,7 @@ public class CameraActivity extends Activity {
                 setpush();
             } /*else {
                 Toast.makeText(context, "목표 지점에서 벗어납니다.", Toast.LENGTH_LONG).show();
-            }*/
+            }
         }
     };
 
@@ -273,9 +274,9 @@ public class CameraActivity extends Activity {
                 check_ch();
             } /*else {
                 Toast.makeText(context, "목표 지점에서 벗어납니다.", Toast.LENGTH_LONG).show();
-            }*/
+            }
         }
-    };
+    };*/
 
 
 
@@ -300,9 +301,9 @@ public class CameraActivity extends Activity {
         mOverlayview.viewDestory();
         unregisterReceiver(mReceiver);
         mContext.unregisterReceiver(((MainActivity) MainActivity.mContext).receiver);
-        unregisterReceiver(receiver_proxi_10);
-        unregisterReceiver(receiver_proxi_3);
-        locationManager.removeProximityAlert(proximityIntent_10);
-        locationManager.removeProximityAlert(proximityIntent_3);
+        //unregisterReceiver(receiver_proxi_10);
+        //unregisterReceiver(receiver_proxi_3);
+        //locationManager.removeProximityAlert(proximityIntent_10);
+        //locationManager.removeProximityAlert(proximityIntent_3);
     }
 }

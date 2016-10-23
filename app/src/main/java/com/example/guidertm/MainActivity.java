@@ -55,7 +55,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
     RelativeLayout mapContainer = null;
     EditText my_location;
     EditText my_destination;
-    Button VR;
+    Button AR;
     Button Search;
     Button roadservice;
     ImageView update;
@@ -89,7 +89,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
         public void onClick(View v) {
             if (v.getId() == R.id.search) {
                 findAllPoi();
-            } else if (v.getId() == R.id.VR) {
+            } else if (v.getId() == R.id.AR) {
                 String end = my_destination.getText().toString();
 
                 if (end == null || end.length() == 0) {
@@ -129,7 +129,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
                     nodeDatas.clear();
                 }
 
-                VR.setEnabled(true);
+                AR.setEnabled(true);
                 drawPedestrianPath();
                 naviGuide();
             } else if (v.getId() == R.id.update) {
@@ -169,8 +169,8 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
         my_destination.setEnabled(false);
         Search = (Button) findViewById(R.id.search); // 검색버튼
         roadservice = (Button) findViewById(R.id.road); // 길찾기버튼
-        VR = (Button) findViewById(R.id.VR);  // VR버튼
-        VR.setEnabled(false);
+        AR = (Button) findViewById(R.id.AR);  // AR버튼
+        AR.setEnabled(false);
         update = (ImageView) findViewById(R.id.update);
         mContext = this;  // 타 액티비티에서 접근 가능하게 함.
         Intent intent = getIntent();
@@ -229,8 +229,8 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
         }
 
         LocationRequest mLocationRequest = new LocationRequest();
-        mLocationRequest.setInterval(5000);
-        mLocationRequest.setFastestInterval(2500);
+        mLocationRequest.setInterval(3000);
+        mLocationRequest.setFastestInterval(1500);
         mLocationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
 
 
@@ -249,7 +249,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
         MyListenerClass buttonListener = new MyListenerClass();
         Search.setOnClickListener(buttonListener);
         roadservice.setOnClickListener(buttonListener);
-        VR.setOnClickListener(buttonListener);
+        AR.setOnClickListener(buttonListener);
         update.setOnClickListener(buttonListener);
     }
 
@@ -257,7 +257,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
         @Override
         public void onLocationChanged(Location location) { //변경 될때 호출 될 리스너
 
-            double change_la;
+            /*double change_la;
             double change_lo;
             if (Temporary_la == 0 || k == 0) {
                 change_la = latitude_plic;
@@ -268,7 +268,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
                 k = 0;
             }
             Log.e("TEST", "1-> " + change_la);
-            Log.e("TEST", "1~-> " + change_lo);
+            Log.e("TEST", "1~-> " + change_lo);*/
 
             latitude_plic = location.getLatitude();
             longitude_plic = location.getLongitude();
@@ -297,8 +297,8 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
     public void BackConnect()
     {
         LocationRequest requests = new LocationRequest();
-        requests.setFastestInterval(3000);
-        requests.setInterval(4000);  // 호출되는 간격
+        requests.setFastestInterval(1500);
+        requests.setInterval(3000);  // 호출되는 간격
         Intent bintent = new Intent(this, BackgroundService.class);
 
         PendingIntent pending = PendingIntent.getService(this, 0, bintent, 0);
@@ -565,9 +565,9 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
     protected void onResume() {
         super.onResume();
         stopANDstart = false;
-        k=1;
-        Temporary_la =  ((CameraActivity) CameraActivity.mContext).Slatitude;
-        Temporary_lo =  ((CameraActivity) CameraActivity.mContext).Slongitude;
+        //k=1;
+        //Temporary_la =  ((CameraActivity) CameraActivity.mContext).Slatitude;
+        //Temporary_lo =  ((CameraActivity) CameraActivity.mContext).Slongitude;
         mMapView.setCenterPoint(longitude_plic, latitude_plic);
         filter = new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION);
         //nodeDatas.clear();

@@ -18,8 +18,8 @@ public class BackgroundService  extends Service {
     }
     public static double Temporary_la;
     public static double Temporary_lo;
-    public static double change_la;
-    public static double change_lo;
+    //public static double change_la;
+    //public static double change_lo;
     RequestThread thread;
 
 
@@ -42,17 +42,20 @@ public class BackgroundService  extends Service {
 
                     Temporary_la = location.getLatitude();
                     Temporary_lo = location.getLongitude();
-                    //Log.e("TEST", "3.6~-> " + Temporary_la);
+                    Log.e("TEST", "3.6~-> " + Temporary_la);
 
 
                     sendpush();
 
-                    //thread = new RequestThread();
-                    //thread.start();
+                    thread = new RequestThread();
+                    thread.start();
+
+                    //sendCmAt(location);
+
                 }
                 else {
-                    Temporary_la = ((MainActivity) MainActivity.mContext).latitude_plic;
-                    Temporary_lo = ((MainActivity) MainActivity.mContext).longitude_plic;
+                 //   Temporary_la = ((MainActivity) MainActivity.mContext).latitude_plic;
+                  //  Temporary_lo = ((MainActivity) MainActivity.mContext).longitude_plic;
                 }
             }
             //Log.e("TEST", "6");
@@ -67,19 +70,19 @@ public class BackgroundService  extends Service {
         sendBroadcast(sendIntent);
     }
 
-    class RequestThread extends Thread {
+    public void sendCmAt(Location location)
+    {
+        Temporary_la = location.getLatitude();
+        Temporary_lo = location.getLongitude();
+
+        Log.e("TEST", "3.9~-> " + Temporary_la);
+
+        sendpush();
+    }
+    class RequestThread extends Thread{
         public void run() {
             try {
                 Thread.sleep(2000);   // 3초 뒤에 실행
-
-
-                Temporary_la = (change_la + Temporary_la) / 2;
-                Temporary_lo = (change_lo + Temporary_lo) / 2;
-
-                Log.e("TEST", "4~-> " + Temporary_la);
-                Log.e("TEST", "4~-> " + Temporary_lo);
-
-                sendpush();
 
             } catch (Exception e) {
                 e.printStackTrace();
