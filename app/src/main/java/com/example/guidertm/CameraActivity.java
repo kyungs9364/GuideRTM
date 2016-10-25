@@ -1,14 +1,11 @@
 package com.example.guidertm;
 
 import android.app.Activity;
-import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.location.Location;
-import android.location.LocationListener;
-import android.location.LocationManager;
 import android.net.ConnectivityManager;
 import android.os.Bundle;
 import android.util.Log;
@@ -38,24 +35,19 @@ public class CameraActivity extends Activity {
     public static int fix_nodedistance;
     public static double Ddistance;
     public static Context mContext;
+    public static int cok=0;
 
     public static Double nodelon;
     public static Double nodelan;
 
+    private static int j =0;
+    private static int i=0;
     ArrayList<NodeData> node;
     RequestThread thread;
 
     private boolean stopflag = false;
-    int i = 0;
-    int j = 0;
-    Location location;
-    LocationManager locationManager;
-    LocationListener locationListener;
-    PendingIntent proximityIntent_10;
-    PendingIntent proximityIntent_3;
-
-
     BroadcastReceiver mReceiver;
+    private static boolean flag=false;
 
 
 
@@ -73,42 +65,9 @@ public class CameraActivity extends Activity {
 
         node = (ArrayList<NodeData>) intent.getSerializableExtra("node");
 
-        locationManager=(LocationManager) getSystemService(Context.LOCATION_SERVICE);
-
-
-        IntentFilter intentfilter = new IntentFilter();
-        intentfilter.addAction("com.example.guidertm.SEND_BROAD_CAST");
-
-        //동적 리시버 구현
-        mReceiver = new BroadcastReceiver() {
-            public void onReceive(Context context, Intent intent) {
-                Slatitude = intent.getDoubleExtra("sendlat", 0);
-                Slongitude = intent.getDoubleExtra("sendlon", 0);
-
-                Log.d(TAG, "sta_현위치 위도=" + Slatitude);
-                Log.d(TAG, "sta_현위치 경도=" + Slongitude);
-
-                mOverlayview.setCurrentPoint(Slatitude, Slongitude, (Ddistance + distance));
-
-            }
-        };
-        registerReceiver(mReceiver, intentfilter);
-
 
         IntentFilter filter = new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION);
         mContext.registerReceiver(((MainActivity) MainActivity.mContext).receiver, filter);
-
-
-
-        /*Intent Pintent_10 = new Intent("com.example.guidertmcom.proximityalert_10");
-        proximityIntent_10 = PendingIntent.getBroadcast(this, 0, Pintent_10, 0);
-        IntentFilter Pfilter_10 = new IntentFilter("com.example.guidertmcom.proximityalert_10");
-        registerReceiver(receiver_proxi_10, Pfilter_10);
-
-        Intent Pintent_3 = new Intent("com.example.guidertmcom.proximityalert_3");
-        proximityIntent_3 = PendingIntent.getBroadcast(this, 0, Pintent_3, 0);
-        IntentFilter Pfilter_3 = new IntentFilter("com.example.guidertmcom.proximityalert_3");
-        registerReceiver(receiver_proxi_3, Pfilter_3);*/
 
 
         check(1);  // 출발지의 정보는 보내지 않아도 됨으로 check(1)로 설정
@@ -151,13 +110,6 @@ public class CameraActivity extends Activity {
                         //Log.e("distan","3 = "+fix_nodedistance );
                         //Log.e("distan","2 = "+Ddistance );
                         j++;
-
-                        if(distance < 10) // 10m(오차범위) 이내가 되면 노드정보를 overlayview에 전송
-                        {
-                            setpush();
-                            if (distance < 3)
-                                check_ch();
-                        }
                     }
                 } else {
                     Toast tMsg = Toast.makeText(getApplicationContext(), "다음노드 까지 거리 계산 중... ", Toast.LENGTH_LONG);
@@ -169,15 +121,22 @@ public class CameraActivity extends Activity {
                 if (i == 0) {
                     mOverlayview.setnode(nodelan, nodelon);
                     //((MainActivity) MainActivity.mContext).Geofence(nodelan, nodelon);
-
                     i++;
                 }
 
+                if(distance<=20&&flag==false)
+                {
+                    setpush();
+                    flag=true;
+
+                    if(distance<=14)
+                    {
+                        Toast.makeText(this,"다음 경유지를 알려드리겠습니다.",Toast.LENGTH_SHORT).show();
+                        check_ch();
+                    }
+                }
                 count = a;
 
-
-                //locationManager.addProximityAlert(nodelan, nodelon, 80f, -1, proximityIntent_10);
-                //locationManager.addProximityAlert(nodelan,nodelon,70f,-1,proximityIntent_3);
                 //((MainActivity) MainActivity.mContext).Geofence_re(nodelan, nodelon);
 
 
@@ -233,6 +192,22 @@ public class CameraActivity extends Activity {
         }
     }
 
+    public void check_ch()
+    {
+        i=0;
+        j=0;
+        check(count+1);
+        flag=false;
+    }
+
+
+    public void setCurrent(double lan,double lon)
+    {
+        this.Slatitude=lan;
+        this.Slongitude=lon;
+
+        Log.d("cameraactivity",String.valueOf(Slatitude)+","+String.valueOf(Slongitude));
+    }
 
     public void setpush() {
         mOverlayview.setdata(node.get(count).index, node.get(count).nodeType, node.get(count).turntype, distance);
@@ -240,52 +215,12 @@ public class CameraActivity extends Activity {
 
     }
 
-    public void check_ch() {
-        i = 0;
-        j = 0;
-
-        nodelan =null;
-        check(count + 1);
-        Log.e("ccchk","3");
-        Log.d(TAG, "pupush2");
-    }
-
-    /*public BroadcastReceiver receiver_proxi_10 = new BroadcastReceiver() {
-        @Override
-        public void onReceive(Context context, Intent intent) {
-
-            boolean isEntering = intent.getBooleanExtra(LocationManager.KEY_PROXIMITY_ENTERING, false);
-            if (isEntering) {
-                Toast.makeText(context, "10m 후에"+node.get(count).turntype+"입니다.", Toast.LENGTH_LONG).show();
-                setpush();
-            } /*else {
-                Toast.makeText(context, "목표 지점에서 벗어납니다.", Toast.LENGTH_LONG).show();
-            }
-        }
-    };
-
-    public BroadcastReceiver receiver_proxi_3 = new BroadcastReceiver() {
-        @Override
-        public void onReceive(Context context, Intent intent) {
-
-            boolean isEntering = intent.getBooleanExtra(LocationManager.KEY_PROXIMITY_ENTERING, false);
-            if (isEntering) {
-                Toast.makeText(context, "다음 경유지를 알려드리겠습니다", Toast.LENGTH_LONG).show();
-                check_ch();
-            } /*else {
-                Toast.makeText(context, "목표 지점에서 벗어납니다.", Toast.LENGTH_LONG).show();
-            }
-        }
-    };*/
-
-
 
     public void onPause() {
         if (mCameraPreview.inPreview) {
             mCameraPreview.camera.startPreview();
         }
         super.onPause();
-        ((MainActivity) MainActivity.mContext).stopANDstart = false;
     }
 
     public void onStop() {
@@ -299,11 +234,7 @@ public class CameraActivity extends Activity {
         longitude_ds = null;
         stopflag = true;
         mOverlayview.viewDestory();
-        unregisterReceiver(mReceiver);
+        // unregisterReceiver(mReceiver);
         mContext.unregisterReceiver(((MainActivity) MainActivity.mContext).receiver);
-        //unregisterReceiver(receiver_proxi_10);
-        //unregisterReceiver(receiver_proxi_3);
-        //locationManager.removeProximityAlert(proximityIntent_10);
-        //locationManager.removeProximityAlert(proximityIntent_3);
     }
 }
