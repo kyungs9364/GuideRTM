@@ -487,7 +487,7 @@ public class MainActivity extends FragmentActivity {
             case "13" : c="우회전"; break;
             case "14" : c="U-turn"; break;
             case "16" : c="8시 방향 좌회전"; break;
-            case "17" : c="10방향 좌회전"; break;
+            case "17" : c="10시 방향 좌회전"; break;
             case "18" : c="2시 방향 우회전"; break;
             case "19" : c="4시 방향 우회전"; break;
             case "184" : c="첫번째 경유지"; break;

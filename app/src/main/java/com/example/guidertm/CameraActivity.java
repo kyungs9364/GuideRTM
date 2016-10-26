@@ -124,12 +124,12 @@ public class CameraActivity extends Activity {
                     i++;
                 }
 
-                if(distance<=20&&flag==false)
+                if(distance<=10&&flag==false)
                 {
                     setpush();
                     flag=true;
 
-                    if(distance<=14)
+                    if(distance<=4)
                     {
                         Toast.makeText(this,"다음 경유지를 알려드리겠습니다.",Toast.LENGTH_SHORT).show();
                         check_ch();
