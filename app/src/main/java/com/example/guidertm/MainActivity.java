@@ -96,7 +96,6 @@ public class MainActivity extends FragmentActivity {
                 Intent intent = new Intent(MainActivity.this, CameraActivity.class);
                 intent.putExtra("latitude_id", String.valueOf(des_latitude_plic));  // CameraOverlayview 에 목적지값 전송 - cameraActivity 통해서 경유
                 intent.putExtra("longitude_id", String.valueOf(des_longitude_plic));
-                intent.putExtra("distance", Ddistance);
                 intent.putExtra("node", (Serializable) nodeDatas);
                 startActivity(intent);
 
@@ -126,7 +125,8 @@ public class MainActivity extends FragmentActivity {
                 AR.setEnabled(true);
                 drawPedestrianPath();
                 naviGuide();
-            } else if (v.getId() == R.id.update) {
+            }
+            else if (v.getId() == R.id.update) {
                 if (point2 != null) {
                     drawPedestrianPath();
                     naviGuide();
@@ -151,7 +151,7 @@ public class MainActivity extends FragmentActivity {
 
         mMapView = new TMapView(this);
         mapContainer.addView(mMapView);
-        mMapView.setSKPMapApiKey("ad15017d-7001-3dc4-98f9-908bddb21fd8");
+        mMapView.setSKPMapApiKey("a9125b4b-89ae-37f1-9eb1-21dfdc5fb1d7");
         mMapView.setLanguage(TMapView.LANGUAGE_KOREAN);  // 지도 언어 설정
         mMapView.setMapType(TMapView.MAPTYPE_STANDARD);  // 지도 타입 표준
         mMapView.setIconVisibility(true);    // 현재위치 아이콘을 나타낼 것인지 표시
@@ -182,6 +182,8 @@ public class MainActivity extends FragmentActivity {
 
         filter = new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION);
         mContext.registerReceiver(receiver, filter);
+
+
 
         locationManager = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
         /*String locationprovider = "";
@@ -245,6 +247,7 @@ public class MainActivity extends FragmentActivity {
         Search.setOnClickListener(buttonListener);
         roadservice.setOnClickListener(buttonListener);
         AR.setOnClickListener(buttonListener);
+        update.setOnClickListener(buttonListener);
 
         locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 2000, 2, locationListener);
         locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 2000, 2, locationListener);

@@ -1,8 +1,10 @@
 package com.example.guidertm;
 
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.content.BroadcastReceiver;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.location.Location;
@@ -32,16 +34,12 @@ public class CameraActivity extends Activity {
     public static double Slongitude;
     public static int count;
     public static int distance;
-    public static int fix_nodedistance;
-    public static double Ddistance;
     public static Context mContext;
-    public static int cok=0;
 
     public static Double nodelon;
     public static Double nodelan;
 
-    private static int j =0;
-    private static int i=0;
+    int i=0;
     ArrayList<NodeData> node;
     RequestThread thread;
 
@@ -60,99 +58,87 @@ public class CameraActivity extends Activity {
         Intent intent = getIntent();
         latitude_ds = intent.getStringExtra("latitude_id");
         longitude_ds = intent.getStringExtra("longitude_id");
-        Ddistance = intent.getDoubleExtra("distance", 0);
-        //Log.e("distan","1 = "+Ddistance );
 
         node = (ArrayList<NodeData>) intent.getSerializableExtra("node");
 
+        mOverlayview.setDestinationPoint(Double.parseDouble(latitude_ds), Double.parseDouble(longitude_ds));  // 목적지 값 overlayview 전송
 
         IntentFilter filter = new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION);
         mContext.registerReceiver(((MainActivity) MainActivity.mContext).receiver, filter);
 
 
+        //destination_complete();
         check(1);  // 출발지의 정보는 보내지 않아도 됨으로 check(1)로 설정
-
-        mOverlayview.setDestinationPoint(Double.parseDouble(latitude_ds), Double.parseDouble(longitude_ds));  // 목적지 값 overlayview 전송
 
     }
 
 
     public void check(int a) {
-        if (a > node.size())
-            return;
-        else {
-            if (node.get(a).nodeType.equals("POINT")) {
-                Log.e("ccchk","2");
-                String[] data = node.get(a).coordinate.split(",");
+        if (node.get(a).nodeType.equals("POINT")) {
+
+            Log.e("ccchk","2");
+            String[] data = node.get(a).coordinate.split(",");
                 /*Double*/
-                nodelon = Double.parseDouble(data[0]);
+            nodelon = Double.parseDouble(data[0]);
                 /*Double*/
-                nodelan = Double.parseDouble(data[1]);
-                Log.e("NODE", "a=" + a);
-                Log.e("NODE", "nodelon=" + nodelon);
-                Log.e("NODE", "lon=" + Slongitude);
-                //.e("NODE", "nodelan="+ nodelan);
-                // Log.e("NODE","lan="+Slatitude);
+            nodelan = Double.parseDouble(data[1]);
+            Log.e("NODE", "a=" + a);
+            Log.e("NODE", "nodelon=" + nodelon);
+            Log.e("NODE", "lon=" + Slongitude);
+            //.e("NODE", "nodelan="+ nodelan);
+            // Log.e("NODE","lan="+Slatitude);
 
 
-                if (Slatitude != 0) {
-                    Location locationA = new Location("Point A");
-                    Location locationB = new Location("Point B");
-                    locationA.setLongitude(Slongitude);
-                    locationA.setLatitude(Slatitude);
-                    locationB.setLongitude(nodelon);
-                    locationB.setLatitude(nodelan);
-                    distance = (int) locationA.distanceTo(locationB);
-                    Log.d(TAG, "AtoB =  " + distance);
-                    if (j == 0) {
-                        fix_nodedistance = distance;
-                        Ddistance = (Ddistance - fix_nodedistance);
-                        //Log.e("distan","3 = "+fix_nodedistance );
-                        //Log.e("distan","2 = "+Ddistance );
-                        j++;
-                    }
-                } else {
-                    Toast tMsg = Toast.makeText(getApplicationContext(), "다음노드 까지 거리 계산 중... ", Toast.LENGTH_LONG);
-                    tMsg.setGravity(Gravity.CENTER, 0, 0);
-                    tMsg.show();
-                }
+            if (Slatitude != 0) {
+                Location locationA = new Location("Point A");
+                Location locationB = new Location("Point B");
+                locationA.setLongitude(Slongitude);
+                locationA.setLatitude(Slatitude);
+                locationB.setLongitude(nodelon);
+                locationB.setLatitude(nodelan);
+                distance = (int) locationA.distanceTo(locationB);
+                Log.d(TAG, "AtoB =  " + distance);
+
+            } else {
+                Toast tMsg = Toast.makeText(getApplicationContext(), "다음노드 까지 거리 계산 중... ", Toast.LENGTH_LONG);
+                tMsg.setGravity(Gravity.CENTER, 0, 0);
+                tMsg.show();
+            }
+
+            if (i == 0) {
+                mOverlayview.setnode(nodelan, nodelon);
+                i++;
+            }
+
+            count=a;
 
 
-                if (i == 0) {
-                    mOverlayview.setnode(nodelan, nodelon);
-                    //((MainActivity) MainActivity.mContext).Geofence(nodelan, nodelon);
-                    i++;
-                }
-
-                if(distance<=10&&flag==false)
+            if(distance<=18)
+            {
+                mOverlayview.setdata(node.get(a).index, node.get(a).nodeType, node.get(a).turntype, distance);
+                Log.d(TAG, "pupush");
+                if(distance<=12)
                 {
-                    setpush();
-                    flag=true;
-
-                    if(distance<=4)
-                    {
-                        Toast.makeText(this,"다음 경유지를 알려드리겠습니다.",Toast.LENGTH_SHORT).show();
-                        check_ch();
-                    }
+                        i=0;
+                        check(a+1);
+                        //Toast.makeText(this,"다음 경유지를 알려드리겠습니다.",Toast.LENGTH_SHORT).show();
                 }
-                count = a;
-
-                //((MainActivity) MainActivity.mContext).Geofence_re(nodelan, nodelon);
-
-
+                else
+                {
+                    thread = new RequestThread();
+                    thread.start(); //check 함수를 일정시간마다 불러옴
+                }
+            }
+            else
+            {
                 thread = new RequestThread();
                 thread.start(); //check 함수를 일정시간마다 불러옴
-
-
-                /*if (nodelan - 0.0001 < Slatitude && Slatitude < nodelan + 0.0001 && nodelon - 0.0001 < Slongitude && Slongitude < nodelon + 0.0001) {
-                    mOverlayview.setdata(node.get(a).index, node.get(a).nodeType, Double.parseDouble(data[1]), Double.parseDouble(data[0]), node.get(a).turntype);
-                    //Toast.makeText(getApplicationContext(), node.get(a).turntype , Toast.LENGTH_LONG).show();
-                    check(a + 1);
-                }*/
-            } else if (node.get(a).nodeType.equals("LINE")){
-                Log.e("ccchk","1");
-                check(a + 1);
             }
+
+
+        } else if (node.get(a).nodeType.equals("LINE")){
+            Log.e("ccchk","1");
+            check(a + 1);
         }
     }
 
@@ -192,13 +178,6 @@ public class CameraActivity extends Activity {
         }
     }
 
-    public void check_ch()
-    {
-        i=0;
-        j=0;
-        check(count+1);
-        flag=false;
-    }
 
 
     public void setCurrent(double lan,double lon)
@@ -209,10 +188,17 @@ public class CameraActivity extends Activity {
         Log.d("cameraactivity",String.valueOf(Slatitude)+","+String.valueOf(Slongitude));
     }
 
-    public void setpush() {
-        mOverlayview.setdata(node.get(count).index, node.get(count).nodeType, node.get(count).turntype, distance);
-        Log.d(TAG, "pupush");
-
+    public void destination_complete()
+    {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);  // 팝업창을 띄워주기 위해 생성
+        builder.setTitle("목적지에 도착하셨습니다.");
+        builder.setPositiveButton("확인", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                finish();
+            }
+        });
+        builder.show();
     }
 
 

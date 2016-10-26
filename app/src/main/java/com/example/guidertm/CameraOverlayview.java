@@ -175,15 +175,11 @@ public class CameraOverlayview extends View implements SensorEventListener {
 
 
 
-
-        pCanvas.drawText("Point 까지 " + nodeAtoB + " m ", (mWidth * 2 / 7), (mHeight * 2 / 6), mTextPaint);
-        pCanvas.drawText("Point 까지 " + nodeAtoB + " m ", (mWidth * 5 / 7), (mHeight * 2 / 6), mTextPaint);
-
-
-
         if(turntype == null || arrowchange==turntype) {
+            pCanvas.drawText("Point 까지 " + nodeAtoB + " m ", (mWidth * 2 / 10), (mHeight * 2 / 6), mTextPaint);
+            pCanvas.drawText("Point 까지 " + nodeAtoB + " m ", (mWidth * 5 / 8), (mHeight * 2 / 6), mTextPaint);
+
             if (degree >=340 || degree <=20) {
-                //pCanvas.drawText("Point 까지 " + nodeAtoB + " m ", (mWidth * 5 / 12), (mHeight * 2 / 5), mTextPaint);
                 pCanvas.drawBitmap(mBitmap, (mWidth * 2 / 9), (mHeight * 4 / 6), null);
                 pCanvas.drawBitmap(mBitmap, (mWidth * 5 / 8), (mHeight * 4 / 6), null);
                 //pCanvas.drawBitmap(mBitmap2, 1720, 820, null);
@@ -233,10 +229,12 @@ public class CameraOverlayview extends View implements SensorEventListener {
             if(turntype.equals("좌회전") || turntype.equals("8시 방향 좌회전") || turntype.equals("10시 방향 좌회전")) {
                 mBitmap = BitmapFactory.decodeResource(getResources(), R.drawable.left);
                 mBitmap = Bitmap.createScaledBitmap(mBitmap, mWidth / 8, mHeight / 4, true);
-                pCanvas.drawBitmap(mBitmap, (mWidth * 3 / 7), (mHeight * 3 / 5), null);
+                pCanvas.drawBitmap(mBitmap, (mWidth * 2 / 9), (mHeight * 4 / 6), null);
+                pCanvas.drawBitmap(mBitmap, (mWidth * 5 / 8), (mHeight * 4 / 6), null);
                 //pCanvas.drawBitmap(LeftIcon, (mWidth * 3 / 7), (mHeight * 3 / 5), null);
-                pCanvas.drawText(nodeDistace + "m 후에 " + turntype, (mWidth * 5 / 12), (mHeight * 2 / 5), mTextPaint);
 
+                pCanvas.drawText(nodeAtoB + "m 후에 " + turntype, (mWidth * 2 / 10), (mHeight * 2 / 6), mTextPaint);
+                pCanvas.drawText(nodeAtoB + "m 후에 " + turntype, (mWidth * 5 / 8), (mHeight * 2 / 6), mTextPaint);
                 if (thread == null) // thread 가 null 일 경우만 실행
                 {
                     thread = new RequestThread();
@@ -246,9 +244,11 @@ public class CameraOverlayview extends View implements SensorEventListener {
             else if(turntype.equals("우회전") || turntype.equals("2시 방향 우회전") || turntype.equals("4시 방향 우회전")) {
                 mBitmap = BitmapFactory.decodeResource(getResources(), R.drawable.right);
                 mBitmap = Bitmap.createScaledBitmap(mBitmap, mWidth / 8, mHeight / 4, true);
-                pCanvas.drawBitmap(mBitmap, (mWidth * 3 / 7), (mHeight * 3 / 5), null);
+                pCanvas.drawBitmap(mBitmap, (mWidth * 2 / 9), (mHeight * 4 / 6), null);
+                pCanvas.drawBitmap(mBitmap, (mWidth * 5 / 8), (mHeight * 4 / 6), null);
                 //pCanvas.drawBitmap(RigftIcon, (mWidth * 3 / 7), (mHeight * 3 / 5), null);
-                pCanvas.drawText(nodeDistace+"m 후에 " +turntype, (mWidth * 5 / 12), (mHeight * 2 / 5), mTextPaint);
+                pCanvas.drawText(nodeAtoB + "m 후에 " + turntype, (mWidth * 2 / 10), (mHeight * 2 / 6), mTextPaint);
+                pCanvas.drawText(nodeAtoB + "m 후에 " + turntype, (mWidth * 5 / 8), (mHeight * 2 / 6), mTextPaint);
 
                 if (thread == null) // thread 가 null 일 경우만 실행
                 {
@@ -259,9 +259,11 @@ public class CameraOverlayview extends View implements SensorEventListener {
             else if(turntype.equals("U-turn")) {
                 mBitmap = BitmapFactory.decodeResource(getResources(), R.drawable.uturn);
                 mBitmap = Bitmap.createScaledBitmap(mBitmap, mWidth / 8, mHeight / 4, true);
-                pCanvas.drawBitmap(mBitmap, (mWidth * 3 / 7), (mHeight * 3 / 5), null);
+                pCanvas.drawBitmap(mBitmap, (mWidth * 2 / 9), (mHeight * 4 / 6), null);
+                pCanvas.drawBitmap(mBitmap, (mWidth * 5 / 8), (mHeight * 4 / 6), null);
                 //pCanvas.drawBitmap(RigftIcon, (mWidth * 3 / 7), (mHeight * 3 / 5), null);
-                pCanvas.drawText(nodeDistace + "m 후에 " + turntype, (mWidth * 5 / 12), (mHeight * 2 / 5), mTextPaint);
+                pCanvas.drawText(nodeAtoB + "m 후에 " + turntype, (mWidth * 2 / 10), (mHeight * 2 / 6), mTextPaint);
+                pCanvas.drawText(nodeAtoB + "m 후에 " + turntype, (mWidth * 5 / 8), (mHeight * 2 / 6), mTextPaint);
 
                 if (thread == null) // thread 가 null 일 경우만 실행
                 {
@@ -272,9 +274,11 @@ public class CameraOverlayview extends View implements SensorEventListener {
             else if(turntype.equals("육교")) {
                 mBitmap = BitmapFactory.decodeResource(getResources(), R.drawable.crossover);
                 mBitmap = Bitmap.createScaledBitmap(mBitmap, mWidth / 8, mHeight / 4, true);
-                pCanvas.drawBitmap(mBitmap, (mWidth * 3 / 7), (mHeight * 3 / 5), null);
+                pCanvas.drawBitmap(mBitmap, (mWidth * 2 / 9), (mHeight * 4 / 6), null);
+                pCanvas.drawBitmap(mBitmap, (mWidth * 5 / 8), (mHeight * 4 / 6), null);
                 //pCanvas.drawBitmap(RigftIcon, (mWidth * 3 / 7), (mHeight * 3 / 5), null);
-                pCanvas.drawText(nodeDistace + "m 후에 " + turntype, (mWidth * 5 / 12), (mHeight * 2 / 5), mTextPaint);
+                pCanvas.drawText(nodeAtoB + "m 후에 " + turntype, (mWidth * 2 / 10), (mHeight * 2 / 6), mTextPaint);
+                pCanvas.drawText(nodeAtoB + "m 후에 " + turntype, (mWidth * 5 / 8), (mHeight * 2 / 6), mTextPaint);
 
                 if (thread == null) // thread 가 null 일 경우만 실행
                 {
@@ -285,9 +289,11 @@ public class CameraOverlayview extends View implements SensorEventListener {
             else if(turntype.equals("계단 진입") || turntype.equals("계단 + 경사로 진입")) {
                 mBitmap = BitmapFactory.decodeResource(getResources(), R.drawable.stair);
                 mBitmap = Bitmap.createScaledBitmap(mBitmap, mWidth / 8, mHeight / 4, true);
-                pCanvas.drawBitmap(mBitmap, (mWidth * 3 / 7), (mHeight * 3 / 5), null);
+                pCanvas.drawBitmap(mBitmap, (mWidth * 2 / 9), (mHeight * 4 / 6), null);
+                pCanvas.drawBitmap(mBitmap, (mWidth * 5 / 8), (mHeight * 4 / 6), null);
                 //pCanvas.drawBitmap(RigftIcon, (mWidth * 3 / 7), (mHeight * 3 / 5), null);
-                pCanvas.drawText(nodeDistace + "m 후에 " + turntype, (mWidth * 5 / 12), (mHeight * 2 / 5), mTextPaint);
+                pCanvas.drawText(nodeAtoB + "m 후에 " + turntype, (mWidth * 2 / 10), (mHeight * 2 / 6), mTextPaint);
+                pCanvas.drawText(nodeAtoB + "m 후에 " + turntype, (mWidth * 5 / 8), (mHeight * 2 / 6), mTextPaint);
 
                 if (thread == null) // thread 가 null 일 경우만 실행
                 {
@@ -300,9 +306,11 @@ public class CameraOverlayview extends View implements SensorEventListener {
                     || turntype.equals("2시 방향 횡단보도") || turntype.equals("4시 방향 횡단보도")) {
                 mBitmap = BitmapFactory.decodeResource(getResources(), R.drawable.crosswalk);
                 mBitmap = Bitmap.createScaledBitmap(mBitmap, mWidth / 8, mHeight / 4, true);
-                pCanvas.drawBitmap(mBitmap, (mWidth * 3 / 7), (mHeight * 3 / 5), null);
+                pCanvas.drawBitmap(mBitmap, (mWidth * 2 / 9), (mHeight * 4 / 6), null);
+                pCanvas.drawBitmap(mBitmap, (mWidth * 5 / 8), (mHeight * 4 / 6), null);
                 //pCanvas.drawBitmap(RigftIcon, (mWidth * 3 / 7), (mHeight * 3 / 5), null);
-                pCanvas.drawText(nodeDistace + "m 후에 " + turntype, (mWidth * 5 / 12), (mHeight * 2 / 5), mTextPaint);
+                pCanvas.drawText(nodeAtoB + "m 후에 " + turntype, (mWidth * 2 / 10), (mHeight * 2 / 6), mTextPaint);
+                pCanvas.drawText(nodeAtoB + "m 후에 " + turntype, (mWidth * 5 / 8), (mHeight * 2 / 6), mTextPaint);
 
                 if (thread == null) // thread 가 null 일 경우만 실행
                 {
@@ -313,9 +321,11 @@ public class CameraOverlayview extends View implements SensorEventListener {
             else if(turntype.equals("엘리베이터")) {
                 mBitmap = BitmapFactory.decodeResource(getResources(), R.drawable.elevator);
                 mBitmap = Bitmap.createScaledBitmap(mBitmap, mWidth / 8, mHeight / 4, true);
-                pCanvas.drawBitmap(mBitmap, (mWidth * 3 / 7), (mHeight * 3 / 5), null);
+                pCanvas.drawBitmap(mBitmap, (mWidth * 2 / 9), (mHeight * 4 / 6), null);
+                pCanvas.drawBitmap(mBitmap, (mWidth * 5 / 8), (mHeight * 4 / 6), null);
                 //pCanvas.drawBitmap(RigftIcon, (mWidth * 3 / 7), (mHeight * 3 / 5), null);
-                pCanvas.drawText(nodeDistace + "m 후에 " + turntype, (mWidth * 5 / 12), (mHeight * 2 / 5), mTextPaint);
+                pCanvas.drawText(nodeAtoB + "m 후에 " + turntype, (mWidth * 2 / 10), (mHeight * 2 / 6), mTextPaint);
+                pCanvas.drawText(nodeAtoB + "m 후에 " + turntype, (mWidth * 5 / 8), (mHeight * 2 / 6), mTextPaint);
 
                 if (thread == null) // thread 가 null 일 경우만 실행
                 {
@@ -325,7 +335,8 @@ public class CameraOverlayview extends View implements SensorEventListener {
             }
             else
             {
-                pCanvas.drawText(nodeDistace+"m 후에" +turntype,(mWidth * 5 / 12), (mHeight * 2 / 5),mTextPaint);
+                pCanvas.drawText(nodeAtoB + "m 후에 " + turntype, (mWidth * 2 / 10), (mHeight * 2 / 6), mTextPaint);
+                pCanvas.drawText(nodeAtoB + "m 후에 " + turntype, (mWidth * 5 / 8), (mHeight * 2 / 6), mTextPaint);
                 if (thread == null) // thread 가 null 일 경우만 실행
                 {
                     thread = new RequestThread();
