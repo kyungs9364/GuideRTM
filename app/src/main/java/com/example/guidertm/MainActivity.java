@@ -172,6 +172,7 @@ public class MainActivity extends FragmentActivity {
         my_destination.setText(intent.getStringExtra("des_info")); // listview 에서 돌아온 도착지 name
         Double la_point = intent.getDoubleExtra("point_la", 0);       // listview 에서 돌아온 위도, 경도
         Double lo_point = intent.getDoubleExtra("point_lo", 0);
+        //String Notsh = intent.getStringExtra("not_search");
         des_latitude_plic = la_point;
         des_longitude_plic = lo_point;
         Log.d(TAG, "des=" + String.valueOf(des_latitude_plic));
@@ -182,6 +183,11 @@ public class MainActivity extends FragmentActivity {
 
         filter = new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION);
         mContext.registerReceiver(receiver, filter);
+
+        /*if(Notsh != null) {
+            showToast(Notsh);
+            Notsh = null;
+        }*/
 
 
 
@@ -210,9 +216,6 @@ public class MainActivity extends FragmentActivity {
                     //Log.d(TAG, "qwe2 = " + String.valueOf(point2));
                     Log.d("main", String.valueOf(latitude_plic) + "," + String.valueOf(longitude_plic));
 
-                    if (point2 != null) {
-                        drawPedestrianPath();
-                    }
                     mOverlayview.setCurrentPoint(latitude_plic, longitude_plic, Ddistance);  // 현재위치 업데이트를 위해 mOverlayview에 값 전송
                     mCameraActivity.setCurrent(latitude_plic, longitude_plic);
 
@@ -361,7 +364,6 @@ public class MainActivity extends FragmentActivity {
 
         String gps = android.provider.Settings.Secure.getString(getContentResolver(), android.provider.Settings.Secure.LOCATION_PROVIDERS_ALLOWED);
 
-
         if (!(gps.matches(".*gps.*") && gps.matches(".*network.*"))) {
 
             // GPS OFF 일때 Dialog 표시
@@ -430,6 +432,7 @@ public class MainActivity extends FragmentActivity {
         }
         return provider1.equals(provider2);
     }*/
+
 
     public BroadcastReceiver receiver = new BroadcastReceiver() {
         @Override

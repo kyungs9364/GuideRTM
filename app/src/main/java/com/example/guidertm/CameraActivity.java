@@ -2,7 +2,6 @@ package com.example.guidertm;
 
 import android.app.Activity;
 import android.app.AlertDialog;
-import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -44,10 +43,6 @@ public class CameraActivity extends Activity {
     RequestThread thread;
 
     private boolean stopflag = false;
-    BroadcastReceiver mReceiver;
-    private static boolean flag=false;
-
-
 
 
     protected void onCreate(Bundle savedInstanceState) {
@@ -113,15 +108,26 @@ public class CameraActivity extends Activity {
             count=a;
 
 
-            if(distance<=18)
+            if(distance<=70)
             {
                 mOverlayview.setdata(node.get(a).index, node.get(a).nodeType, node.get(a).turntype, distance);
-                Log.d(TAG, "pupush");
-                if(distance<=12)
+                Log.d(TAG, "찍히나 확인 = " + node.get(a).turntype );
+
+                if(distance<=50)
                 {
+                    Log.d(TAG, "찍히나 확인2 = " + node.get(a).turntype );
+                    if(node.get(a).turntype.equals("좌회전"))//현 노드가 전체 노드 사이즈보다 작거나 같을때는 다음 노드 알려줌
+                    {
+                        Log.d(TAG, "찍히나 확인3");
+                        endguide();//도착 알림 alertdialog
+
+                    }
+                    else//현 노드가 전체 노드 사이즈보다 클경우
+                    {
                         i=0;
                         check(a+1);
                         //Toast.makeText(this,"다음 경유지를 알려드리겠습니다.",Toast.LENGTH_SHORT).show();
+                    }
                 }
                 else
                 {
@@ -140,6 +146,31 @@ public class CameraActivity extends Activity {
             Log.e("ccchk","1");
             check(a + 1);
         }
+    }
+
+    public void endguide()
+    {
+        AlertDialog.Builder dlg = new AlertDialog.Builder(this);
+        dlg.setTitle("도착 알림");
+        dlg.setMessage("목적지에 도착하였습니다. 새로운 길 안내를 원하십니까?");
+
+        dlg.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int which) {
+                // MainActivity 로 이동
+                Intent intent = new Intent(getApplicationContext(),MainActivity.class);
+                startActivity(intent);
+                finish();
+            }
+        })
+                .setNegativeButton("No", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+                        //moveTaskToBack(true);
+                       finish();
+                        //dialog.cancel();
+
+                    }
+                }).create().show();
+
     }
 
     public void onResume() {
@@ -179,7 +210,6 @@ public class CameraActivity extends Activity {
     }
 
 
-
     public void setCurrent(double lan,double lon)
     {
         this.Slatitude=lan;
@@ -187,20 +217,6 @@ public class CameraActivity extends Activity {
 
         Log.d("cameraactivity",String.valueOf(Slatitude)+","+String.valueOf(Slongitude));
     }
-
-    public void destination_complete()
-    {
-        AlertDialog.Builder builder = new AlertDialog.Builder(this);  // 팝업창을 띄워주기 위해 생성
-        builder.setTitle("목적지에 도착하셨습니다.");
-        builder.setPositiveButton("확인", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                finish();
-            }
-        });
-        builder.show();
-    }
-
 
     public void onPause() {
         if (mCameraPreview.inPreview) {
