@@ -45,7 +45,7 @@ public class Listview extends Activity {
             address.add("검색 결과가 존재하지 않습니다.\n\t 돌아가려면 클릭해주세요.");
             //String not_search = "검색 결과가 존재하지 않습니다.";
             //Intent back = new Intent(Listview.this,MainActivity.class);
-           // back.putExtra("not_search",not_search);
+            // back.putExtra("not_search",not_search);
             //startActivity(back);
             //finish();
         }

@@ -129,19 +129,15 @@ public class CameraOverlayview extends View implements SensorEventListener {
 
 
         // 4/4분면을 고려하여 0~360도가 나오게 설정
-        /*if (nodelon_arrow > tAx && nodelan_arrow > tAy) {
-            ;
-            Log.e("4/4", " = 1");
-        } else if (nodelon_arrow < tAx && nodelan_arrow > tAy) {
-            degree += 180;
-            Log.e("4/4", " = 2");
-        } else if (nodelon_arrow  < tAx && nodelan_arrow < tAy) {
-            degree += 180;
-            Log.e("4/4", " = 3");
-        } else if (nodelon_arrow  > tAx && nodelan_arrow < tAy) {
-            degree += 360;
-            Log.e("4/4", " = 4");
-        }*/
+        if (tBx > tAx && tBy > tAy) {
+            Log.e("111", String.valueOf(mXDegree));
+        } else if (tBx < tAx && tBy > tAy) {
+            Log.e("222", String.valueOf(mXDegree));
+        } else if (tBx  < tAx && tBy < tAy) {
+            Log.e("333", String.valueOf(mXDegree));
+        } else if (tBx  > tAx && tBy < tAy) {
+            Log.e("444", String.valueOf(mXDegree));
+        }
 
         if (degree + mXCompassDegree < 360) {
             degree += mXCompassDegree;
