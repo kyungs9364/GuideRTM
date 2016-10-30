@@ -96,6 +96,7 @@ public class MainActivity extends FragmentActivity {
                 Intent intent = new Intent(MainActivity.this, CameraActivity.class);
                 intent.putExtra("latitude_id", String.valueOf(des_latitude_plic));  // CameraOverlayview 에 목적지값 전송 - cameraActivity 통해서 경유
                 intent.putExtra("longitude_id", String.valueOf(des_longitude_plic));
+                intent.putExtra("distance", Ddistance);
                 intent.putExtra("node", (Serializable) nodeDatas);
                 startActivity(intent);
 
@@ -216,8 +217,7 @@ public class MainActivity extends FragmentActivity {
                     //Log.d(TAG, "qwe2 = " + String.valueOf(point2));
                     Log.d("main", String.valueOf(latitude_plic) + "," + String.valueOf(longitude_plic));
 
-                    mOverlayview.setCurrentPoint(latitude_plic, longitude_plic, Ddistance);  // 현재위치 업데이트를 위해 mOverlayview에 값 전송
-                    mCameraActivity.setCurrent(latitude_plic, longitude_plic);
+                    mCameraActivity.setCurrent(latitude_plic, longitude_plic); // 현재위치 업데이트를 위해 mCamaraActivity -> mOverlayview까지 값 전송
 
                     my_location.setText("현 위치");
                     mMapView.setCenterPoint(longitude_plic, latitude_plic);

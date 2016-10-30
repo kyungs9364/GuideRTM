@@ -34,16 +34,17 @@ public class CameraActivity extends Activity {
     public static int count;
     public static int distance;
     public static Context mContext;
-
+    public static double Ddistance;
+    public static int fix_nodedistance;
     public static Double nodelon;
     public static Double nodelan;
 
     int i=0;
+    int j = 0;
     ArrayList<NodeData> node;
     RequestThread thread;
 
     private boolean stopflag = false;
-
 
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -53,6 +54,7 @@ public class CameraActivity extends Activity {
         Intent intent = getIntent();
         latitude_ds = intent.getStringExtra("latitude_id");
         longitude_ds = intent.getStringExtra("longitude_id");
+        Ddistance = intent.getDoubleExtra("distance", 0);
 
         node = (ArrayList<NodeData>) intent.getSerializableExtra("node");
 
@@ -60,6 +62,7 @@ public class CameraActivity extends Activity {
 
         IntentFilter filter = new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION);
         mContext.registerReceiver(((MainActivity) MainActivity.mContext).receiver, filter);
+
 
 
         //destination_complete();
@@ -94,6 +97,14 @@ public class CameraActivity extends Activity {
                 distance = (int) locationA.distanceTo(locationB);
                 Log.d(TAG, "AtoB =  " + distance);
 
+                if (j == 0) {
+                    fix_nodedistance = distance;
+                    Ddistance = (Ddistance - fix_nodedistance);
+                    //Log.e("distan","3 = "+fix_nodedistance );
+                    Log.e("distan","2 = "+Ddistance );
+                    j++;
+                }
+
             } else {
                 Toast tMsg = Toast.makeText(getApplicationContext(), "다음노드 까지 거리 계산 중... ", Toast.LENGTH_LONG);
                 tMsg.setGravity(Gravity.CENTER, 0, 0);
@@ -106,6 +117,7 @@ public class CameraActivity extends Activity {
             }
 
             count=a;
+            mOverlayview.setCurrentPoint(Slatitude, Slongitude, (Ddistance + distance));  // overlayview로 현위치 와 총거리값 전송
 
 
             if(distance<=70)
@@ -113,18 +125,20 @@ public class CameraActivity extends Activity {
                 mOverlayview.setdata(node.get(a).index, node.get(a).nodeType, node.get(a).turntype, distance);
                 Log.d(TAG, "찍히나 확인 = " + node.get(a).turntype );
 
-                if(distance<=50)
+                if(distance<=59)
                 {
                     Log.d(TAG, "찍히나 확인2 = " + node.get(a).turntype );
                     if(node.get(a).turntype.equals("좌회전"))//현 노드가 전체 노드 사이즈보다 작거나 같을때는 다음 노드 알려줌
                     {
                         Log.d(TAG, "찍히나 확인3");
-                        endguide();//도착 알림 alertdialog
+                        endguide(node.get(a).turntype);//도착 알림 alertdialog
+                        //Toast.makeText(getApplicationContext(), "목적지에 도착하였습니다. 경로를 종료합니다", Toast.LENGTH_LONG);
 
                     }
                     else//현 노드가 전체 노드 사이즈보다 클경우
                     {
                         i=0;
+                        j=0;
                         check(a+1);
                         //Toast.makeText(this,"다음 경유지를 알려드리겠습니다.",Toast.LENGTH_SHORT).show();
                     }
@@ -148,10 +162,10 @@ public class CameraActivity extends Activity {
         }
     }
 
-    public void endguide()
+    public void endguide(String s)
     {
         AlertDialog.Builder dlg = new AlertDialog.Builder(this);
-        dlg.setTitle("도착 알림");
+        dlg.setTitle(s+ " 도착 알림");
         dlg.setMessage("목적지에 도착하였습니다. 새로운 길 안내를 원하십니까?");
 
         dlg.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
