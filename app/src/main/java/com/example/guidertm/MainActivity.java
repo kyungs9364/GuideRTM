@@ -1,25 +1,21 @@
 package com.example.guidertm;
 
-import android.Manifest;
-import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.location.Geocoder;
 import android.location.Location;
+import android.location.LocationListener;
+import android.location.LocationManager;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.provider.Settings;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
-import android.support.v4.app.ActivityCompat;
+import android.support.v4.app.FragmentActivity;
 import android.support.v7.app.AlertDialog;
-import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -28,12 +24,6 @@ import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.Toast;
 
-import com.google.android.gms.common.ConnectionResult;
-import com.google.android.gms.common.api.GoogleApiClient;
-import com.google.android.gms.location.Geofence;
-import com.google.android.gms.location.GeofencingRequest;
-import com.google.android.gms.location.LocationRequest;
-import com.google.android.gms.location.LocationServices;
 import com.skp.Tmap.TMapData;
 import com.skp.Tmap.TMapPOIItem;
 import com.skp.Tmap.TMapPoint;
@@ -48,16 +38,14 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-public class MainActivity extends AppCompatActivity implements GoogleApiClient.OnConnectionFailedListener,
-        GoogleApiClient.ConnectionCallbacks {
+public class MainActivity extends FragmentActivity {
 
-    String TAG="PAAR";
-    String Distance;
+    String TAG = "PAAR";
     TMapView mMapView = null;
     RelativeLayout mapContainer = null;
     EditText my_location;
     EditText my_destination;
-    Button VR;
+    Button AR;
     Button Search;
     Button roadservice;
     ImageView update;
@@ -65,34 +53,37 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
     Geocoder coder;
     CameraOverlayview mOverlayview;
     CameraActivity mCameraActivity;
-    public static double latitude_plic ;
-    public static double longitude_plic ;
-    public static double des_latitude_plic ;
-    public static double des_longitude_plic ;
+    public static double latitude_plic;
+    public static double longitude_plic;
+    public static double des_latitude_plic;
+    public static double des_longitude_plic;
     public static double Temporary_la;
     public static double Temporary_lo;
-    public static int k=0;
+    public static int k = 0;
     public static TMapPoint point2;
-    public static  double Ddistance;
-    public static  double Geo_latitude;
-    public static  double Geo_longitude;
-    public static List<NodeData> nodeDatas=new ArrayList<NodeData>();
-    public static  ArrayList<String> GEO_list = new ArrayList<String>();
-    public  static int TYPE_WIFI = 1;
-    public  static int TYPE_MOBILE = 2;
-    public  static int TYPE_NOT_CONNECTED = 0;
-    GoogleApiClient mApiClient;
+    public static double Ddistance;
+    public static double Geo_latitude;
+    public static double Geo_longitude;
+    public static List<NodeData> nodeDatas = new ArrayList<NodeData>();
+    public static ArrayList<String> GEO_list = new ArrayList<String>();
+    public static int TYPE_WIFI = 1;
+    public static int TYPE_MOBILE = 2;
+    public static int TYPE_NOT_CONNECTED = 0;
+    LocationManager locationManager;
     public static boolean stopANDstart; // backgroundservice 를 control 하기 위해 사용
     IntentFilter filter;
-    PendingIntent pending;
+    boolean isGpsEnabled = false;
+    boolean isNetworkEnabled = false;
+    boolean isGetLocation = false;
+    LocationListener locationListener;
+    String best = "";
+    Location lastlocation;
 
     class MyListenerClass implements View.OnClickListener {
         public void onClick(View v) {
             if (v.getId() == R.id.search) {
                 findAllPoi();
-            }
-            else if (v.getId() == R.id.VR)
-            {
+            } else if (v.getId() == R.id.AR) {
                 String end = my_destination.getText().toString();
 
                 if (end == null || end.length() == 0) {
@@ -102,11 +93,11 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
                 //Toast.makeText(getApplicationContext(), "도착지 : " + end, Toast.LENGTH_SHORT).show();
 
 
-                Intent intent = new Intent(MainActivity.this,CameraActivity.class);
-                intent.putExtra("latitude_id",String.valueOf(des_latitude_plic));  // CameraOverlayview 에 목적지값 전송 - cameraActivity 통해서 경유
-                intent.putExtra("longitude_id",String.valueOf(des_longitude_plic ));
-                intent.putExtra("distance",Ddistance);
-                intent.putExtra("node",(Serializable)nodeDatas);
+                Intent intent = new Intent(MainActivity.this, CameraActivity.class);
+                intent.putExtra("latitude_id", String.valueOf(des_latitude_plic));  // CameraOverlayview 에 목적지값 전송 - cameraActivity 통해서 경유
+                intent.putExtra("longitude_id", String.valueOf(des_longitude_plic));
+                intent.putExtra("distance", Ddistance);
+                intent.putExtra("node", (Serializable) nodeDatas);
                 startActivity(intent);
 
                   /*
@@ -122,20 +113,17 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
                 des_latitude_plic = des_location.get(0).getLatitude();
                 des_longitude_plic = des_location.get(0).getLongitude();*/
 
-            }
-            else if (v.getId() == R.id.road)
-            {
+            } else if (v.getId() == R.id.road) {
                 String query = my_destination.getText().toString();
                 if (query == null || query.length() == 0) {
                     showToast("검색어가 입력되지 않았습니다.");
                     return;
                 }
-                if(nodeDatas!=null)
-                {
+                if (nodeDatas != null) {
                     nodeDatas.clear();
                 }
 
-                VR.setEnabled(true);
+                AR.setEnabled(true);
                 drawPedestrianPath();
                 naviGuide();
             }
@@ -155,15 +143,16 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         mapContainer = (RelativeLayout) findViewById(R.id.Tmap);
-        mApiClient = new GoogleApiClient.Builder(this)
+       /* mApiClient = new GoogleApiClient.Builder(this)
                 .addApi(LocationServices.API)
                 .addConnectionCallbacks(this)
                 .enableAutoManage(this, this)
-                .build();
+                .addOnConnectionFailedListener(this)
+                .build();*/
 
         mMapView = new TMapView(this);
         mapContainer.addView(mMapView);
-        mMapView.setSKPMapApiKey("ad15017d-7001-3dc4-98f9-908bddb21fd8");
+        mMapView.setSKPMapApiKey("a9125b4b-89ae-37f1-9eb1-21dfdc5fb1d7");
         mMapView.setLanguage(TMapView.LANGUAGE_KOREAN);  // 지도 언어 설정
         mMapView.setMapType(TMapView.MAPTYPE_STANDARD);  // 지도 타입 표준
         mMapView.setIconVisibility(true);    // 현재위치 아이콘을 나타낼 것인지 표시
@@ -176,133 +165,99 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
         my_destination.setEnabled(false);
         Search = (Button) findViewById(R.id.search); // 검색버튼
         roadservice = (Button) findViewById(R.id.road); // 길찾기버튼
-        VR = (Button) findViewById(R.id.VR);  // VR버튼
-        VR.setEnabled(false);
-        update = (ImageView)findViewById(R.id.update);
+        AR = (Button) findViewById(R.id.AR);  // AR버튼
+        AR.setEnabled(false);
+        update = (ImageView) findViewById(R.id.update);
         mContext = this;  // 타 액티비티에서 접근 가능하게 함.
         Intent intent = getIntent();
         my_destination.setText(intent.getStringExtra("des_info")); // listview 에서 돌아온 도착지 name
         Double la_point = intent.getDoubleExtra("point_la", 0);       // listview 에서 돌아온 위도, 경도
         Double lo_point = intent.getDoubleExtra("point_lo", 0);
+        //String Notsh = intent.getStringExtra("not_search");
         des_latitude_plic = la_point;
         des_longitude_plic = lo_point;
         Log.d(TAG, "des=" + String.valueOf(des_latitude_plic));
         Log.d(TAG, "des=" + String.valueOf(des_longitude_plic));
-
         chkGpsService();
         mOverlayview = new CameraOverlayview(this);
         mCameraActivity = new CameraActivity();
 
         filter = new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION);
-        mContext.registerReceiver(receiver,filter);
-    }
+        mContext.registerReceiver(receiver, filter);
 
-    boolean isConnected = false;
-
-    @Override
-    public void onConnected(@Nullable Bundle bundle) {
-        isConnected = true;
-        getLocation();
-    }
-
-    public void getLocation() {
-        //if (!isConnected) return;
-        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            return;
-        }
-
-        Location location = LocationServices.FusedLocationApi.getLastLocation(mApiClient);
-        if (location != null) {
-            latitude_plic = location.getLatitude();
-            longitude_plic = location.getLongitude();
-
-            //mOverlayview.setCurrentPoint(latitude_plic,longitude_plic,Ddistance);  // 현재위치 업데이트를 위해 mOverlayview에 값 전송
-            //mCameraActivity.setCurrent(latitude_plic,longitude_plic);
-
-            my_location.setText("현 위치");
-            mMapView.setCenterPoint(longitude_plic, latitude_plic);
-            mMapView.setLocationPoint(longitude_plic, latitude_plic);
-            mMapView.setTrackingMode(true);
-        }
-
-        LocationRequest request = new LocationRequest();
-        request.setFastestInterval(1000); // 호출정보가 전달될 간격
-        request.setInterval(3000);  // 호출되는 간격
-        request.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY); // GPS 정확도를 우선으로 한다.
-
-        Intent intent= new Intent(this, BackgroundService.class);
-        pending = PendingIntent.getService(this, 0, intent, 0);
-
-        LocationServices.FusedLocationApi.requestLocationUpdates(mApiClient, request, mListener);
-
-        /*if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            return;
+        /*if(Notsh != null) {
+            showToast(Notsh);
+            Notsh = null;
         }*/
-        LocationServices.FusedLocationApi.requestLocationUpdates(mApiClient,request,pending);
 
 
+
+        locationManager = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
+        /*String locationprovider = "";
+        if (locationManager.isProviderEnabled(locationManager.GPS_PROVIDER) == true) {
+            locationprovider = locationManager.GPS_PROVIDER;
+        } else
+        {
+            locationprovider = locationManager.NETWORK_PROVIDER;
+        }*/
+
+
+        locationListener = new LocationListener() {
+
+            public void onLocationChanged(Location location) {
+
+                if (Betterlocation(location, lastlocation)) {
+                    lastlocation = location;
+                    String provider = location.getProvider();
+
+                    latitude_plic = location.getLatitude();
+                    longitude_plic = location.getLongitude();
+                    //Log.d(TAG, "qwe2 = " + String.valueOf(point2));
+                    Log.d("main", String.valueOf(latitude_plic) + "," + String.valueOf(longitude_plic));
+
+                    mCameraActivity.setCurrent(latitude_plic, longitude_plic); // 현재위치 업데이트를 위해 mCamaraActivity -> mOverlayview까지 값 전송
+
+                    my_location.setText("현 위치");
+                    mMapView.setCenterPoint(longitude_plic, latitude_plic);
+                    mMapView.setLocationPoint(longitude_plic, latitude_plic);
+                    mMapView.setTrackingMode(true);
+
+                    Log.e("PROVIDER"," = " + provider + " -> "+locationManager.isProviderEnabled(provider));
+                }
+
+            }
+
+            @Override
+            public void onStatusChanged(String provider, int status, Bundle extras) {
+            }
+
+            @Override
+            public void onProviderEnabled(String provider) {
+            }
+
+            @Override
+            public void onProviderDisabled(String provider) {
+            }
+        };
+
+
+        //Log.d("locationpprovider", locationprovider);
+        //locationManager.requestLocationUpdates(locationprovider, 2000, 0, locationListener);
 
         MyListenerClass buttonListener = new MyListenerClass();
         Search.setOnClickListener(buttonListener);
         roadservice.setOnClickListener(buttonListener);
-        VR.setOnClickListener(buttonListener);
+        AR.setOnClickListener(buttonListener);
         update.setOnClickListener(buttonListener);
-    }
 
-    com.google.android.gms.location.LocationListener mListener = new com.google.android.gms.location.LocationListener() {
-        @Override
-        public void onLocationChanged(Location location) { //변경 될때 호출 될 리스너
-
-            double change_la;
-            double change_lo;
-            if (Temporary_la == 0 || k==0 ) {
-                change_la = latitude_plic;
-                change_lo = longitude_plic;
-            }
-            else
-            {
-                change_la = Temporary_la;
-                change_lo = Temporary_lo;
-                k = 0;
-            }
-            Log.e("TEST","1-> "+ change_la);
-            Log.e("TEST","1~-> "+ change_lo);
-
-            latitude_plic = location.getLatitude();
-            longitude_plic = location.getLongitude();
-            Log.e("TEST","2-> "+latitude_plic);
-            Log.e("TEST","2~-> "+ longitude_plic);
-
-            latitude_plic = (change_la + latitude_plic)/2;
-            longitude_plic = (change_lo + longitude_plic)/2;
-            Log.e("TEST","3-> "+latitude_plic);
-            Log.e("TEST","3~-> "+ longitude_plic);
-            // Log.e("TEST","l2="+longitude_plic);
-
-
-            //mOverlayview.setCurrentPoint(latitude_plic,longitude_plic,Ddistance);  // 현재위치 업데이트를 위해 mOverlayview에 값 전송
-            //mCameraActivity.setCurrent(latitude_plic,longitude_plic);
-            mMapView.setLocationPoint(longitude_plic, latitude_plic);
-            //updateDisplay(location);
-            //Geo_test();
-        }
-
-    };
-
-    @Override
-    public void onConnectionSuspended(int i) {
-        isConnected = false;
-    }
-
-    @Override
-    public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
-
+        locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 2000, 2, locationListener);
+        locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 2000, 2, locationListener);
     }
 
     public void findAllPoi() {  // 검색 함수
 
         AlertDialog.Builder builder = new AlertDialog.Builder(this);  // 팝업창을 띄워주기 위해 생성
-        builder.setTitle("Guide road Search part,,");
+        builder.setTitle("목적지를 검색하세요.");
 
         final EditText input = new EditText(this);
         builder.setView(input);
@@ -361,21 +316,6 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
                 polyLine.setLineWidth(10);
                 Ddistance = polyLine.getDistance();
                 Log.d(TAG, " main_distance " + Ddistance);
-
-               /* if (Ddistance < 1000.0)
-                {
-                    String distance = longDouble2String(0,Ddistance);
-                    Distance = distance + "m";
-                    Log.d(TAG, "m = " + Distance);
-                }
-                else if(Ddistance >= 1000.0)
-                {
-                    float fDistance = (float) Ddistance / 1000;
-                    String fdistance = longDouble2String(1,fDistance);
-                    Distance = fdistance + "km";
-                    Log.d(TAG, "km = " + Distance);
-                }*/
-
                 mMapView.addTMapPath(polyLine);
 
             }
@@ -422,7 +362,6 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
 
         String gps = android.provider.Settings.Secure.getString(getContentResolver(), android.provider.Settings.Secure.LOCATION_PROVIDERS_ALLOWED);
 
-
         if (!(gps.matches(".*gps.*") && gps.matches(".*network.*"))) {
 
             // GPS OFF 일때 Dialog 표시
@@ -451,6 +390,47 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
             return true;
         }
     }
+
+
+    public boolean Betterlocation(Location newlocation, Location currentbestlocation)
+    {
+        if (currentbestlocation == null) {// 기존의 위치 정보가 없으면 새로운것 받기
+            Log.v("currenlocation","null");
+            return true;
+        }
+        int accuracy = (int) (newlocation.getAccuracy() - currentbestlocation.getAccuracy());
+        Log.d("locationaccuarcy",String.valueOf(newlocation.getAccuracy())+","+currentbestlocation.getAccuracy());
+        boolean isMoreAccurate = accuracy < 0;
+        if(isMoreAccurate) {
+            Log.v("accuracydata",String.valueOf(accuracy));
+            return true;
+        }
+
+        /*boolean isFromSameProvider = isSameProvider(newlocation.getProvider(), currentbestlocation.getProvider());
+        Log.v("provider",String.valueOf(newlocation.getProvider())+ String.valueOf(currentbestlocation.getProvider()));
+        if (isFromSameProvider)
+            return true;*/
+
+        long time = newlocation.getTime() - currentbestlocation.getTime();
+        Log.v("timetime",String.valueOf(time));
+        boolean isSignificantlyNewer = time >= 5000;
+        if(isSignificantlyNewer)
+        {
+            return  true;
+        }
+
+
+        Log.d("호출 초","ㅇㅇㅇ");
+        return false;
+    }
+
+    /*private boolean isSameProvider(String provider1, String provider2) {
+        if (provider1 == null) {
+            return provider2 == null;
+        }
+        return provider1.equals(provider2);
+    }*/
+
 
     public BroadcastReceiver receiver = new BroadcastReceiver() {
         @Override
@@ -511,7 +491,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
             case "13" : c="우회전"; break;
             case "14" : c="U-turn"; break;
             case "16" : c="8시 방향 좌회전"; break;
-            case "17" : c="10방향 좌회전"; break;
+            case "17" : c="10시 방향 좌회전"; break;
             case "18" : c="2시 방향 우회전"; break;
             case "19" : c="4시 방향 우회전"; break;
             case "184" : c="첫번째 경유지"; break;
@@ -546,28 +526,29 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
     @Override
     protected void onResume() {
         super.onResume();
-        stopANDstart = false;
-        k=1;
-        Temporary_la =  ((CameraActivity) CameraActivity.mContext).Slatitude;
-        Temporary_lo =  ((CameraActivity) CameraActivity.mContext).Slongitude;
         mMapView.setCenterPoint(longitude_plic, latitude_plic);
-        filter = new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION);
         //nodeDatas.clear();
     }
-
-    @Override
     protected void onPause() {
         super.onPause();
+
     }
+    protected void onStart() {
+        super.onStart();
+        // Connect the client.
+//        mApiClient.connect();
+    }
+
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
         point2 = null;
         mContext.unregisterReceiver(receiver);
+        locationManager.removeUpdates(locationListener);
         //LocationServices.FusedLocationApi.removeLocationUpdates(mApiClient,pending);
-
         //locationManager.removeUpdates(locationListener);
+
     }
 
 }
