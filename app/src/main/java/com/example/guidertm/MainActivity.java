@@ -194,10 +194,8 @@ public class MainActivity extends FragmentActivity {
 
         locationManager = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
         /*String locationprovider = "";
-
         if (locationManager.isProviderEnabled(locationManager.GPS_PROVIDER) == true) {
             locationprovider = locationManager.GPS_PROVIDER;
-
         } else
         {
             locationprovider = locationManager.NETWORK_PROVIDER;
@@ -547,6 +545,7 @@ public class MainActivity extends FragmentActivity {
         super.onDestroy();
         point2 = null;
         mContext.unregisterReceiver(receiver);
+        locationManager.removeUpdates(locationListener);
         //LocationServices.FusedLocationApi.removeLocationUpdates(mApiClient,pending);
         //locationManager.removeUpdates(locationListener);
 

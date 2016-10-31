@@ -12,7 +12,7 @@ public class NodeData implements Serializable {
     String nodeType;
     String coordinate;
     String turntype;
-    public static Context context;
+
 
     public NodeData(String index,String nodeType,String coordinate,String turntype){ //Turntype = Point 일떄
         this.index=index;
