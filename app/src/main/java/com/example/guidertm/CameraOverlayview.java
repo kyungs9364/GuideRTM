@@ -128,21 +128,6 @@ public class CameraOverlayview extends View implements SensorEventListener {
                 , (double) (nodelon_arrow - tAx)) * 180.0 / Math.PI);
 
 
-        // 4/4분면을 고려하여 0~360도가 나오게 설정
-        /*if (nodelon_arrow > tAx && nodelan_arrow > tAy) {
-            ;
-            Log.e("4/4", " = 1");
-        } else if (nodelon_arrow < tAx && nodelan_arrow > tAy) {
-            degree += 180;
-            Log.e("4/4", " = 2");
-        } else if (nodelon_arrow  < tAx && nodelan_arrow < tAy) {
-            degree += 180;
-            Log.e("4/4", " = 3");
-        } else if (nodelon_arrow  > tAx && nodelan_arrow < tAy) {
-            degree += 360;
-            Log.e("4/4", " = 4");
-        }*/
-
         if (degree + mXCompassDegree < 360) {
             degree += mXCompassDegree;
         } else if (degree + mXCompassDegree >= 360) {
@@ -153,8 +138,6 @@ public class CameraOverlayview extends View implements SensorEventListener {
         {
             degree+=360;
         }
-
-        Log.d(TAG, "rrrrraaasa=" + String.valueOf(degree));
 
         mBitmap = BitmapFactory.decodeResource(getResources(), R.drawable.direct);
         mBitmap = Bitmap.createScaledBitmap(mBitmap, mWidth / 7, mHeight / 6, true);
@@ -172,7 +155,6 @@ public class CameraOverlayview extends View implements SensorEventListener {
         RigftIcon2 = Bitmap.createScaledBitmap(RigftIcon2, mWidth / 7, mHeight / 6, true);
         RigftIcon3 = BitmapFactory.decodeResource(getResources(), R.drawable.right_arrow3);
         RigftIcon3 = Bitmap.createScaledBitmap(RigftIcon3, mWidth / 8, mHeight / 6, true);
-
 
 
         if(turntype == null || arrowchange==turntype) {
