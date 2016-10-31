@@ -127,12 +127,12 @@ public class CameraActivity extends Activity {
             mOverlayview.setCurrentPoint(Slatitude, Slongitude, (Ddistance + distance));  // overlayview로 현위치 와 총거리값 전송
 
 
-            if(distance<=70)
+            if(distance<=18)
             {
                 mOverlayview.setdata(node.get(a).index, node.get(a).nodeType, node.get(a).turntype, distance);
-                if(distance<=59)
+                if(distance<=12)
                 {
-                    if(node.get(a).turntype.equals("좌회전"))//현 노드가 전체 노드 사이즈보다 작거나 같을때는 다음 노드 알려줌
+                    if(node.get(a).turntype.equals("목적지"))//현 노드가 전체 노드 사이즈보다 작거나 같을때는 다음 노드 알려줌
                     {
                         flag = true;
                         Intent intent = new Intent(BROADCAST_MESSAGE);
