@@ -22,7 +22,7 @@ import java.util.ArrayList;
 /**
  * Created by 경석 on 2016-09-08.
  */
-//ㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇ
+
 public class CameraActivity extends Activity {
 
     String TAG = "PAAR";
@@ -41,7 +41,7 @@ public class CameraActivity extends Activity {
     public static Double nodelan;
 
     int i=0;
-    int j = 0;
+    int j=0;
     ArrayList<NodeData> node;
     RequestThread thread;
 
@@ -74,7 +74,6 @@ public class CameraActivity extends Activity {
         registerReceiver(receiver, filterr);
 
         check(1);  // 출발지의 정보는 보내지 않아도 됨으로 check(1)로 설정
-
     }
 
 
@@ -126,11 +125,10 @@ public class CameraActivity extends Activity {
             count=a;
             mOverlayview.setCurrentPoint(Slatitude, Slongitude, (Ddistance + distance));  // overlayview로 현위치 와 총거리값 전송
 
-
-            if(distance<=18)
+            if(distance<=15)
             {
                 mOverlayview.setdata(node.get(a).index, node.get(a).nodeType, node.get(a).turntype, distance);
-                if(distance<=12)
+                if(distance<=8)
                 {
                     if(node.get(a).turntype.equals("목적지"))//현 노드가 전체 노드 사이즈보다 작거나 같을때는 다음 노드 알려줌
                     {
@@ -138,7 +136,6 @@ public class CameraActivity extends Activity {
                         Intent intent = new Intent(BROADCAST_MESSAGE);
                         intent.putExtra("value", flag);
                         sendBroadcast(intent);
-
                     }
                     else//현 노드가 전체 노드 사이즈보다 클경우
                     {
@@ -167,7 +164,6 @@ public class CameraActivity extends Activity {
         }
     }
 
-
     public BroadcastReceiver receiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
@@ -184,7 +180,6 @@ public class CameraActivity extends Activity {
                         finish();
                         //Intent intent = new Intent(getApplicationContext(), MainActivity.class);
                         //startActivity(intent);
-
                     }
                 })
                         .setNegativeButton("No", new DialogInterface.OnClickListener() {
@@ -193,20 +188,16 @@ public class CameraActivity extends Activity {
                                 //finish();
                                 //android.os.Process.killProcess(android.os.Process.myPid());
                                 dialog.cancel();
-
                             }
                         }).create().show();
             }
         }
     };
 
-
-
     public void onResume() {
         super.onResume();
         mCameraPreview = new CameraPreview(this);
         mOverlayview = new CameraOverlayview(this);
-
 
         Display display = ((WindowManager) this
                 .getSystemService(Context.WINDOW_SERVICE)).getDefaultDisplay();
@@ -237,7 +228,6 @@ public class CameraActivity extends Activity {
             }
         }
     }
-
 
     public void setCurrent(double lan,double lon)
     {

@@ -157,175 +157,163 @@ public class CameraOverlayview extends View implements SensorEventListener {
         RigftIcon3 = Bitmap.createScaledBitmap(RigftIcon3, mWidth / 8, mHeight / 6, true);
 
 
-        if(turntype == null || arrowchange==turntype) {
-            pCanvas.drawText("Point 까지 " + nodeAtoB + " m ", (mWidth * 2 / 10), (mHeight * 2 / 6), mTextPaint);
-            pCanvas.drawText("Point 까지 " + nodeAtoB + " m ", (mWidth * 5 / 8), (mHeight * 2 / 6), mTextPaint);
+            if (turntype == null || arrowchange == turntype) {
+                pCanvas.drawText("Point 까지 " + nodeAtoB + " m ", (mWidth * 2 / 10), (mHeight * 2 / 6), mTextPaint);
+                pCanvas.drawText("Point 까지 " + nodeAtoB + " m ", (mWidth * 5 / 8), (mHeight * 2 / 6), mTextPaint);
 
-            if (degree >=340 || degree <=20) {
-                pCanvas.drawBitmap(mBitmap, (mWidth * 2 / 9), (mHeight * 4 / 6), null);
-                pCanvas.drawBitmap(mBitmap, (mWidth * 5 / 8), (mHeight * 4 / 6), null);
-                //pCanvas.drawBitmap(mBitmap2, 1720, 820, null);
-                //오른쪽 이미지
-                //pCanvas.drawBitmap(mBitmap, (mWidth * 3 / 7), (mHeight * 3 / 5), null);
-            }
-            else if(degree>=300&&degree<340)
-            {
-                pCanvas.drawBitmap(RigftIcon1, (mWidth * 2 / 9), (mHeight * 4 / 6), null);
-                pCanvas.drawBitmap(RigftIcon1, (mWidth * 5 / 8), (mHeight * 4 / 6), null);
-            }
-            else if(degree>=260&&degree<300)
-            {
-                pCanvas.drawBitmap(RigftIcon2, (mWidth * 2 / 9), (mHeight * 4 / 6), null);
-                pCanvas.drawBitmap(RigftIcon2, (mWidth * 5 / 8), (mHeight * 4 / 6), null);
-            }
-            else if(degree>=220&&degree<260)
-            {
-                pCanvas.drawBitmap(RigftIcon3, (mWidth * 2 / 9), (mHeight * 4 / 6), null);
-                pCanvas.drawBitmap(RigftIcon3, (mWidth * 5 / 8), (mHeight * 4 / 6), null);
-            }
-            else if(degree>140&&degree<220)
-            {
-                pCanvas.drawBitmap(BackIcon, (mWidth * 2 / 9), (mHeight * 4 / 6), null);
-                pCanvas.drawBitmap(BackIcon, (mWidth * 5 / 8), (mHeight * 4 / 6), null);
-            }
-            else if(degree>20&&degree<=60)
-            {
-                pCanvas.drawBitmap(LeftIcon1, (mWidth * 2 / 9), (mHeight * 4 / 6), null);
-                pCanvas.drawBitmap(LeftIcon1, (mWidth * 5 / 8), (mHeight * 4 / 6), null);
-            }
-            else if(degree>60&&degree<=100)
-            {
-                pCanvas.drawBitmap(LeftIcon2, (mWidth * 2 / 9), (mHeight * 4 / 6), null);
-                pCanvas.drawBitmap(LeftIcon2, (mWidth * 5 / 8), (mHeight * 4 / 6), null);
-            }
-            else if(degree>100&&degree<=140)
-            {
-                pCanvas.drawBitmap(LeftIcon3, (mWidth * 2 / 9), (mHeight * 4 / 6), null);
-                pCanvas.drawBitmap(LeftIcon3, (mWidth * 5 / 8), (mHeight * 4 / 6), null);
-            }
-        }
+                if (degree >= 350 || degree <= 40) {
 
+                    pCanvas.drawBitmap(mBitmap, (mWidth * 2 / 9), (mHeight * 4 / 6), null);
+                    pCanvas.drawBitmap(mBitmap, (mWidth * 5 / 8), (mHeight * 4 / 6), null);
+                    //pCanvas.drawBitmap(mBitmap2, 1720, 820, null);
+                    //오른쪽 이미지
+                    //pCanvas.drawBitmap(mBitmap, (mWidth * 3 / 7), (mHeight * 3 / 5), null);
+                } else if (degree >= 310 && degree < 350) {
+                    pCanvas.drawBitmap(RigftIcon1, (mWidth * 2 / 9), (mHeight * 4 / 6), null);
+                    pCanvas.drawBitmap(RigftIcon1, (mWidth * 5 / 8), (mHeight * 4 / 6), null);
+                } else if (degree >= 270 && degree < 310) {
+                    pCanvas.drawBitmap(RigftIcon2, (mWidth * 2 / 9), (mHeight * 4 / 6), null);
+                    pCanvas.drawBitmap(RigftIcon2, (mWidth * 5 / 8), (mHeight * 4 / 6), null);
+                } else if (degree >= 230 && degree < 270) {
+                    pCanvas.drawBitmap(RigftIcon3, (mWidth * 2 / 9), (mHeight * 4 / 6), null);
+                    pCanvas.drawBitmap(RigftIcon3, (mWidth * 5 / 8), (mHeight * 4 / 6), null);
+                } else if (degree > 160 && degree < 230) {
+                    pCanvas.drawBitmap(BackIcon, (mWidth * 2 / 9), (mHeight * 4 / 6), null);
+                    pCanvas.drawBitmap(BackIcon, (mWidth * 5 / 8), (mHeight * 4 / 6), null);
+                } else if (degree > 40 && degree <= 80) {
+                    pCanvas.drawBitmap(LeftIcon1, (mWidth * 2 / 9), (mHeight * 4 / 6), null);
+                    pCanvas.drawBitmap(LeftIcon1, (mWidth * 5 / 8), (mHeight * 4 / 6), null);
+                } else if (degree > 80 && degree <= 120) {
+                    pCanvas.drawBitmap(LeftIcon2, (mWidth * 2 / 9), (mHeight * 4 / 6), null);
+                    pCanvas.drawBitmap(LeftIcon2, (mWidth * 5 / 8), (mHeight * 4 / 6), null);
+                } else if (degree > 120 && degree <= 160) {
+                    pCanvas.drawBitmap(LeftIcon3, (mWidth * 2 / 9), (mHeight * 4 / 6), null);
+                    pCanvas.drawBitmap(LeftIcon3, (mWidth * 5 / 8), (mHeight * 4 / 6), null);
+                }
+            } else if (turntype != null && arrowchange != turntype) {
+                if (turntype.equals("좌회전") || turntype.equals("8시 방향 좌회전") || turntype.equals("10시 방향 좌회전")) {
+                    mBitmap = BitmapFactory.decodeResource(getResources(), R.drawable.left);
+                    mBitmap = Bitmap.createScaledBitmap(mBitmap, mWidth / 8, mHeight / 4, true);
+                    pCanvas.drawBitmap(mBitmap, (mWidth * 2 / 9), (mHeight * 4 / 6), null);
+                    pCanvas.drawBitmap(mBitmap, (mWidth * 5 / 8), (mHeight * 4 / 6), null);
+                    //pCanvas.drawBitmap(LeftIcon, (mWidth * 3 / 7), (mHeight * 3 / 5), null);
 
-        else if(turntype != null && arrowchange!=turntype)
-        {
-            if(turntype.equals("좌회전") || turntype.equals("8시 방향 좌회전") || turntype.equals("10시 방향 좌회전")) {
-                mBitmap = BitmapFactory.decodeResource(getResources(), R.drawable.left);
-                mBitmap = Bitmap.createScaledBitmap(mBitmap, mWidth / 8, mHeight / 4, true);
-                pCanvas.drawBitmap(mBitmap, (mWidth * 2 / 9), (mHeight * 4 / 6), null);
-                pCanvas.drawBitmap(mBitmap, (mWidth * 5 / 8), (mHeight * 4 / 6), null);
-                //pCanvas.drawBitmap(LeftIcon, (mWidth * 3 / 7), (mHeight * 3 / 5), null);
+                    pCanvas.drawText(nodeAtoB + "m 후에 " + turntype, (mWidth * 2 / 10), (mHeight * 2 / 6), mTextPaint);
+                    pCanvas.drawText(nodeAtoB + "m 후에 " + turntype, (mWidth * 5 / 8), (mHeight * 2 / 6), mTextPaint);
+                    if (thread == null) // thread 가 null 일 경우만 실행
+                    {
+                        thread = new RequestThread();
+                        thread.start();
+                    }
+                } else if (turntype.equals("우회전") || turntype.equals("2시 방향 우회전") || turntype.equals("4시 방향 우회전")) {
+                    mBitmap = BitmapFactory.decodeResource(getResources(), R.drawable.right);
+                    mBitmap = Bitmap.createScaledBitmap(mBitmap, mWidth / 8, mHeight / 4, true);
+                    pCanvas.drawBitmap(mBitmap, (mWidth * 2 / 9), (mHeight * 4 / 6), null);
+                    pCanvas.drawBitmap(mBitmap, (mWidth * 5 / 8), (mHeight * 4 / 6), null);
+                    //pCanvas.drawBitmap(RigftIcon, (mWidth * 3 / 7), (mHeight * 3 / 5), null);
+                    pCanvas.drawText(nodeAtoB + "m 후에 " + turntype, (mWidth * 2 / 10), (mHeight * 2 / 6), mTextPaint);
+                    pCanvas.drawText(nodeAtoB + "m 후에 " + turntype, (mWidth * 5 / 8), (mHeight * 2 / 6), mTextPaint);
 
-                pCanvas.drawText(nodeAtoB + "m 후에 " + turntype, (mWidth * 2 / 10), (mHeight * 2 / 6), mTextPaint);
-                pCanvas.drawText(nodeAtoB + "m 후에 " + turntype, (mWidth * 5 / 8), (mHeight * 2 / 6), mTextPaint);
-                if (thread == null) // thread 가 null 일 경우만 실행
-                {
-                    thread = new RequestThread();
-                    thread.start();
+                    if (thread == null) // thread 가 null 일 경우만 실행
+                    {
+                        thread = new RequestThread();
+                        thread.start();
+                    }
+                } else if (turntype.equals("U-turn")) {
+                    mBitmap = BitmapFactory.decodeResource(getResources(), R.drawable.uturn);
+                    mBitmap = Bitmap.createScaledBitmap(mBitmap, mWidth / 8, mHeight / 4, true);
+                    pCanvas.drawBitmap(mBitmap, (mWidth * 2 / 9), (mHeight * 4 / 6), null);
+                    pCanvas.drawBitmap(mBitmap, (mWidth * 5 / 8), (mHeight * 4 / 6), null);
+                    //pCanvas.drawBitmap(RigftIcon, (mWidth * 3 / 7), (mHeight * 3 / 5), null);
+                    pCanvas.drawText(nodeAtoB + "m 후에 " + turntype, (mWidth * 2 / 10), (mHeight * 2 / 6), mTextPaint);
+                    pCanvas.drawText(nodeAtoB + "m 후에 " + turntype, (mWidth * 5 / 8), (mHeight * 2 / 6), mTextPaint);
+
+                    if (thread == null) // thread 가 null 일 경우만 실행
+                    {
+                        thread = new RequestThread();
+                        thread.start();
+                    }
+                } else if (turntype.equals("육교")) {
+                    mBitmap = BitmapFactory.decodeResource(getResources(), R.drawable.crossover);
+                    mBitmap = Bitmap.createScaledBitmap(mBitmap, mWidth / 8, mHeight / 4, true);
+                    pCanvas.drawBitmap(mBitmap, (mWidth * 2 / 9), (mHeight * 4 / 6), null);
+                    pCanvas.drawBitmap(mBitmap, (mWidth * 5 / 8), (mHeight * 4 / 6), null);
+                    //pCanvas.drawBitmap(RigftIcon, (mWidth * 3 / 7), (mHeight * 3 / 5), null);
+                    pCanvas.drawText(nodeAtoB + "m 후에 " + turntype, (mWidth * 2 / 10), (mHeight * 2 / 6), mTextPaint);
+                    pCanvas.drawText(nodeAtoB + "m 후에 " + turntype, (mWidth * 5 / 8), (mHeight * 2 / 6), mTextPaint);
+
+                    if (thread == null) // thread 가 null 일 경우만 실행
+                    {
+                        thread = new RequestThread();
+                        thread.start();
+                    }
+                } else if (turntype.equals("계단 진입") || turntype.equals("계단 + 경사로 진입")) {
+                    mBitmap = BitmapFactory.decodeResource(getResources(), R.drawable.stair);
+                    mBitmap = Bitmap.createScaledBitmap(mBitmap, mWidth / 8, mHeight / 4, true);
+                    pCanvas.drawBitmap(mBitmap, (mWidth * 2 / 9), (mHeight * 4 / 6), null);
+                    pCanvas.drawBitmap(mBitmap, (mWidth * 5 / 8), (mHeight * 4 / 6), null);
+                    //pCanvas.drawBitmap(RigftIcon, (mWidth * 3 / 7), (mHeight * 3 / 5), null);
+                    pCanvas.drawText(nodeAtoB + "m 후에 " + turntype, (mWidth * 2 / 10), (mHeight * 2 / 6), mTextPaint);
+                    pCanvas.drawText(nodeAtoB + "m 후에 " + turntype, (mWidth * 5 / 8), (mHeight * 2 / 6), mTextPaint);
+
+                    if (thread == null) // thread 가 null 일 경우만 실행
+                    {
+                        thread = new RequestThread();
+                        thread.start();
+                    }
+                } else if (turntype.equals("횡단보도") || turntype.equals("좌측 횡단보도") || turntype.equals("우측 횡단보도")
+                        || turntype.equals("8시 방향 횡단보도") || turntype.equals("10시 방향 횡단보도")
+                        || turntype.equals("2시 방향 횡단보도") || turntype.equals("4시 방향 횡단보도")) {
+                    mBitmap = BitmapFactory.decodeResource(getResources(), R.drawable.crosswalk);
+                    mBitmap = Bitmap.createScaledBitmap(mBitmap, mWidth / 8, mHeight / 4, true);
+                    pCanvas.drawBitmap(mBitmap, (mWidth * 2 / 9), (mHeight * 4 / 6), null);
+                    pCanvas.drawBitmap(mBitmap, (mWidth * 5 / 8), (mHeight * 4 / 6), null);
+                    //pCanvas.drawBitmap(RigftIcon, (mWidth * 3 / 7), (mHeight * 3 / 5), null);
+                    pCanvas.drawText(nodeAtoB + "m 후에 " + turntype, (mWidth * 2 / 10), (mHeight * 2 / 6), mTextPaint);
+                    pCanvas.drawText(nodeAtoB + "m 후에 " + turntype, (mWidth * 5 / 8), (mHeight * 2 / 6), mTextPaint);
+
+                    if (thread == null) // thread 가 null 일 경우만 실행
+                    {
+                        thread = new RequestThread();
+                        thread.start();
+                    }
+                } else if (turntype.equals("엘리베이터")) {
+                    mBitmap = BitmapFactory.decodeResource(getResources(), R.drawable.elevator);
+                    mBitmap = Bitmap.createScaledBitmap(mBitmap, mWidth / 8, mHeight / 4, true);
+                    pCanvas.drawBitmap(mBitmap, (mWidth * 2 / 9), (mHeight * 4 / 6), null);
+                    pCanvas.drawBitmap(mBitmap, (mWidth * 5 / 8), (mHeight * 4 / 6), null);
+                    //pCanvas.drawBitmap(RigftIcon, (mWidth * 3 / 7), (mHeight * 3 / 5), null);
+                    pCanvas.drawText(nodeAtoB + "m 후에 " + turntype, (mWidth * 2 / 10), (mHeight * 2 / 6), mTextPaint);
+                    pCanvas.drawText(nodeAtoB + "m 후에 " + turntype, (mWidth * 5 / 8), (mHeight * 2 / 6), mTextPaint);
+
+                    if (thread == null) // thread 가 null 일 경우만 실행
+                    {
+                        thread = new RequestThread();
+                        thread.start();
+                    }
+                } else if (turntype.equals("목적지")) {
+                    mBitmap = BitmapFactory.decodeResource(getResources(), R.drawable.arrival);
+                    mBitmap = Bitmap.createScaledBitmap(mBitmap, mWidth / 6, mHeight / 4, true);
+                    pCanvas.drawBitmap(mBitmap, (mWidth * 2 / 9), (mHeight * 3 / 6), null);
+                    pCanvas.drawBitmap(mBitmap, (mWidth * 5 / 8), (mHeight * 3 / 6), null);
+
+                    pCanvas.drawText(nodeAtoB + "m 후에 " + turntype, (mWidth * 2 / 10), (mHeight * 2 / 6), mTextPaint);
+                    pCanvas.drawText(nodeAtoB + "m 후에 " + turntype, (mWidth * 5 / 8), (mHeight * 2 / 6), mTextPaint);
+                    if (thread == null) // thread 가 null 일 경우만 실행
+                    {
+                        thread = new RequestThread();
+                        thread.start();
+                    }
+                } else {
+                    pCanvas.drawText(nodeAtoB + "m 후에 " + turntype, (mWidth * 2 / 10), (mHeight * 2 / 6), mTextPaint);
+                    pCanvas.drawText(nodeAtoB + "m 후에 " + turntype, (mWidth * 5 / 8), (mHeight * 2 / 6), mTextPaint);
+                    if (thread == null) // thread 가 null 일 경우만 실행
+                    {
+                        thread = new RequestThread();
+                        thread.start();
+                    }
                 }
             }
-            else if(turntype.equals("우회전") || turntype.equals("2시 방향 우회전") || turntype.equals("4시 방향 우회전")) {
-                mBitmap = BitmapFactory.decodeResource(getResources(), R.drawable.right);
-                mBitmap = Bitmap.createScaledBitmap(mBitmap, mWidth / 8, mHeight / 4, true);
-                pCanvas.drawBitmap(mBitmap, (mWidth * 2 / 9), (mHeight * 4 / 6), null);
-                pCanvas.drawBitmap(mBitmap, (mWidth * 5 / 8), (mHeight * 4 / 6), null);
-                //pCanvas.drawBitmap(RigftIcon, (mWidth * 3 / 7), (mHeight * 3 / 5), null);
-                pCanvas.drawText(nodeAtoB + "m 후에 " + turntype, (mWidth * 2 / 10), (mHeight * 2 / 6), mTextPaint);
-                pCanvas.drawText(nodeAtoB + "m 후에 " + turntype, (mWidth * 5 / 8), (mHeight * 2 / 6), mTextPaint);
-
-                if (thread == null) // thread 가 null 일 경우만 실행
-                {
-                    thread = new RequestThread();
-                    thread.start();
-                }
-            }
-            else if(turntype.equals("U-turn")) {
-                mBitmap = BitmapFactory.decodeResource(getResources(), R.drawable.uturn);
-                mBitmap = Bitmap.createScaledBitmap(mBitmap, mWidth / 8, mHeight / 4, true);
-                pCanvas.drawBitmap(mBitmap, (mWidth * 2 / 9), (mHeight * 4 / 6), null);
-                pCanvas.drawBitmap(mBitmap, (mWidth * 5 / 8), (mHeight * 4 / 6), null);
-                //pCanvas.drawBitmap(RigftIcon, (mWidth * 3 / 7), (mHeight * 3 / 5), null);
-                pCanvas.drawText(nodeAtoB + "m 후에 " + turntype, (mWidth * 2 / 10), (mHeight * 2 / 6), mTextPaint);
-                pCanvas.drawText(nodeAtoB + "m 후에 " + turntype, (mWidth * 5 / 8), (mHeight * 2 / 6), mTextPaint);
-
-                if (thread == null) // thread 가 null 일 경우만 실행
-                {
-                    thread = new RequestThread();
-                    thread.start();
-                }
-            }
-            else if(turntype.equals("육교")) {
-                mBitmap = BitmapFactory.decodeResource(getResources(), R.drawable.crossover);
-                mBitmap = Bitmap.createScaledBitmap(mBitmap, mWidth / 8, mHeight / 4, true);
-                pCanvas.drawBitmap(mBitmap, (mWidth * 2 / 9), (mHeight * 4 / 6), null);
-                pCanvas.drawBitmap(mBitmap, (mWidth * 5 / 8), (mHeight * 4 / 6), null);
-                //pCanvas.drawBitmap(RigftIcon, (mWidth * 3 / 7), (mHeight * 3 / 5), null);
-                pCanvas.drawText(nodeAtoB + "m 후에 " + turntype, (mWidth * 2 / 10), (mHeight * 2 / 6), mTextPaint);
-                pCanvas.drawText(nodeAtoB + "m 후에 " + turntype, (mWidth * 5 / 8), (mHeight * 2 / 6), mTextPaint);
-
-                if (thread == null) // thread 가 null 일 경우만 실행
-                {
-                    thread = new RequestThread();
-                    thread.start();
-                }
-            }
-            else if(turntype.equals("계단 진입") || turntype.equals("계단 + 경사로 진입")) {
-                mBitmap = BitmapFactory.decodeResource(getResources(), R.drawable.stair);
-                mBitmap = Bitmap.createScaledBitmap(mBitmap, mWidth / 8, mHeight / 4, true);
-                pCanvas.drawBitmap(mBitmap, (mWidth * 2 / 9), (mHeight * 4 / 6), null);
-                pCanvas.drawBitmap(mBitmap, (mWidth * 5 / 8), (mHeight * 4 / 6), null);
-                //pCanvas.drawBitmap(RigftIcon, (mWidth * 3 / 7), (mHeight * 3 / 5), null);
-                pCanvas.drawText(nodeAtoB + "m 후에 " + turntype, (mWidth * 2 / 10), (mHeight * 2 / 6), mTextPaint);
-                pCanvas.drawText(nodeAtoB + "m 후에 " + turntype, (mWidth * 5 / 8), (mHeight * 2 / 6), mTextPaint);
-
-                if (thread == null) // thread 가 null 일 경우만 실행
-                {
-                    thread = new RequestThread();
-                    thread.start();
-                }
-            }
-            else if(turntype.equals("횡단보도") || turntype.equals("좌측 횡단보도") || turntype.equals("우측 횡단보도")
-                    || turntype.equals("8시 방향 횡단보도") || turntype.equals("10시 방향 횡단보도")
-                    || turntype.equals("2시 방향 횡단보도") || turntype.equals("4시 방향 횡단보도")) {
-                mBitmap = BitmapFactory.decodeResource(getResources(), R.drawable.crosswalk);
-                mBitmap = Bitmap.createScaledBitmap(mBitmap, mWidth / 8, mHeight / 4, true);
-                pCanvas.drawBitmap(mBitmap, (mWidth * 2 / 9), (mHeight * 4 / 6), null);
-                pCanvas.drawBitmap(mBitmap, (mWidth * 5 / 8), (mHeight * 4 / 6), null);
-                //pCanvas.drawBitmap(RigftIcon, (mWidth * 3 / 7), (mHeight * 3 / 5), null);
-                pCanvas.drawText(nodeAtoB + "m 후에 " + turntype, (mWidth * 2 / 10), (mHeight * 2 / 6), mTextPaint);
-                pCanvas.drawText(nodeAtoB + "m 후에 " + turntype, (mWidth * 5 / 8), (mHeight * 2 / 6), mTextPaint);
-
-                if (thread == null) // thread 가 null 일 경우만 실행
-                {
-                    thread = new RequestThread();
-                    thread.start();
-                }
-            }
-            else if(turntype.equals("엘리베이터")) {
-                mBitmap = BitmapFactory.decodeResource(getResources(), R.drawable.elevator);
-                mBitmap = Bitmap.createScaledBitmap(mBitmap, mWidth / 8, mHeight / 4, true);
-                pCanvas.drawBitmap(mBitmap, (mWidth * 2 / 9), (mHeight * 4 / 6), null);
-                pCanvas.drawBitmap(mBitmap, (mWidth * 5 / 8), (mHeight * 4 / 6), null);
-                //pCanvas.drawBitmap(RigftIcon, (mWidth * 3 / 7), (mHeight * 3 / 5), null);
-                pCanvas.drawText(nodeAtoB + "m 후에 " + turntype, (mWidth * 2 / 10), (mHeight * 2 / 6), mTextPaint);
-                pCanvas.drawText(nodeAtoB + "m 후에 " + turntype, (mWidth * 5 / 8), (mHeight * 2 / 6), mTextPaint);
-
-                if (thread == null) // thread 가 null 일 경우만 실행
-                {
-                    thread = new RequestThread();
-                    thread.start();
-                }
-            }
-            else
-            {
-                pCanvas.drawText(nodeAtoB + "m 후에 " + turntype, (mWidth * 2 / 10), (mHeight * 2 / 6), mTextPaint);
-                pCanvas.drawText(nodeAtoB + "m 후에 " + turntype, (mWidth * 5 / 8), (mHeight * 2 / 6), mTextPaint);
-                if (thread == null) // thread 가 null 일 경우만 실행
-                {
-                    thread = new RequestThread();
-                    thread.start();
-                }
-            }
-        }
 
 
         // 4/4분면을 고려하여 0~360도가 나오게 설정
@@ -488,6 +476,7 @@ public class CameraOverlayview extends View implements SensorEventListener {
 
             Log.d(TAG, "mXDegree=" + String.valueOf(mXCompassDegree));
             Log.d(TAG, "mYD=" + String.valueOf(mYCompassDegree));
+            Log.d(TAG, "mRD=" + String.valueOf(mRCompassDegree));
 
             mHandler.sendEmptyMessage(0);
         } /*else if (sensorEvent.sensor.getType() == Sensor.TYPE_ACCELEROMETER) {
