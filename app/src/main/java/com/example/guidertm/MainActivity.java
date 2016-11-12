@@ -107,7 +107,7 @@ public class MainActivity extends FragmentActivity {
         public void onClick(View v) {
             if (v.getId() == R.id.search) {
                 findAllPoi();
-                }
+            }
             else if (v.getId() == R.id.AR) {
                 String end = my_destination.getText().toString();
 
@@ -268,35 +268,35 @@ public class MainActivity extends FragmentActivity {
         builder.setView(input);
 
         builder.setPositiveButton("검색", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        final String strData = input.getText().toString();
-                        TMapData tmapdata = new TMapData();
-                        tmapdata.findAllPOI(strData, new TMapData.FindAllPOIListenerCallback() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                final String strData = input.getText().toString();
+                TMapData tmapdata = new TMapData();
+                tmapdata.findAllPOI(strData, new TMapData.FindAllPOIListenerCallback() {
 
-                            public void onFindAllPOI(ArrayList<TMapPOIItem> poiItem) {
-                                for (int i = 0; i < poiItem.size(); i++) {
-                                    TMapPOIItem item = poiItem.get(i);
-                                    String[] address = new String[poiItem.size()];
-                                    String[] point = new String[poiItem.size()];
-                                    address[i] = String.valueOf(item.getPOIName().toString());
-                                    point[i] = String.valueOf(item.getPOIPoint().toString());
-                                    search_list.add(address[i]);
-                                    point_list.add(point[i]);
-                                }
-                            }
-                        });
-                        aa(search_list, point_list);
+                    public void onFindAllPOI(ArrayList<TMapPOIItem> poiItem) {
+                        for (int i = 0; i < poiItem.size(); i++) {
+                            TMapPOIItem item = poiItem.get(i);
+                            String[] address = new String[poiItem.size()];
+                            String[] point = new String[poiItem.size()];
+                            address[i] = String.valueOf(item.getPOIName().toString());
+                            point[i] = String.valueOf(item.getPOIPoint().toString());
+                            search_list.add(address[i]);
+                            point_list.add(point[i]);
+                        }
                     }
                 });
-                builder.setNegativeButton("취소", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        dialog.cancel();  // 취소시 팝업창 닫기
-                    }
-                });
-                builder.show();
+                aa(search_list, point_list);
             }
+        });
+        builder.setNegativeButton("취소", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.cancel();  // 취소시 팝업창 닫기
+            }
+        });
+        builder.show();
+    }
     public void drawPedestrianPath()   // 길찾기 함수
     {
         final TMapPoint point1 = new TMapPoint(latitude_plic,longitude_plic);
@@ -536,28 +536,28 @@ public class MainActivity extends FragmentActivity {
 
 
     public void aa(ArrayList<String> search_list,ArrayList<String> point_list){
-                addss =search_list; // 도착지 주소이름
-                ArrayList<String> poi =point_list;  // 도착지 위도,경도
-                if(addss != null)
-                {
-                    for(int i=0; i < addss.size(); i++)  // 리스트 안에 전달 받은 주소이름과 위도경도를 추가한다.
-                    {
-                        address.add(addss.get(i));
-                        point.add(poi.get(i));
-                    }
-                }
-                else
-                {
-                    address.add("검색 결과가 존재하지 않습니다.\n\t 돌아가려면 클릭해주세요.");
-                    //String not_search = "검색 결과가 존재하지 않습니다.";
-                    //Intent back = new Intent(Listview.this,MainActivity.class);
-                    // back.putExtra("not_search",not_search);
-                    //startActivity(back);
-                    //finish();
-                }
+        addss =search_list; // 도착지 주소이름
+        ArrayList<String> poi =point_list;  // 도착지 위도,경도
+        if(addss != null)
+        {
+            for(int i=0; i < addss.size(); i++)  // 리스트 안에 전달 받은 주소이름과 위도경도를 추가한다.
+            {
+                address.add(addss.get(i));
+                point.add(poi.get(i));
+            }
+        }
+        else
+        {
+            address.add("검색 결과가 존재하지 않습니다.\n\t 돌아가려면 클릭해주세요.");
+            //String not_search = "검색 결과가 존재하지 않습니다.";
+            //Intent back = new Intent(Listview.this,MainActivity.class);
+            // back.putExtra("not_search",not_search);
+            //startActivity(back);
+            //finish();
+        }
 
-                Adapter = new ArrayAdapter<String>(this, android.R.layout.simple_expandable_list_item_1, address);
-                list.setAdapter(Adapter);
+        Adapter = new ArrayAdapter<String>(this, android.R.layout.simple_expandable_list_item_1, address);
+        list.setAdapter(Adapter);
 
         list.setOnItemClickListener(new AdapterView.OnItemClickListener()  // list 클릭이벤트
         {
@@ -582,14 +582,14 @@ public class MainActivity extends FragmentActivity {
                     Toast.makeText(getApplicationContext(), "도착지를 선택해주세요.", Toast.LENGTH_SHORT).show();
                 ;
 
-                   }
-                });
-
-
-                list.setChoiceMode(ListView.CHOICE_MODE_SINGLE);
-                list.setDivider(new ColorDrawable(Color.WHITE));
-                list.setDividerHeight(2);
             }
+        });
+
+
+        list.setChoiceMode(ListView.CHOICE_MODE_SINGLE);
+        list.setDivider(new ColorDrawable(Color.WHITE));
+        list.setDividerHeight(2);
+    }
 
 
     @Override
