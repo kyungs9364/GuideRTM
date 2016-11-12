@@ -8,4 +8,16 @@
         <item name="colorAccent">@color/colorAccent</item>
     </style>
 
+    <style name="CustomTitle" parent="android:Theme">
+        <item name="android:windowTitleSize">60dp</item>
+        <item name="windowActionBar">true</item>
+        <item name="android:windowTitleBackgroundStyle">@style/CustomWindowTitleBackground</item>
+    </style>
+
+    <style name="CustomWindowTitleBackground">
+        <item name="android:background">@drawable/bkupp</item>
+    </style>
+
+    <style name="MyDialogTheme" parent="Theme.AppCompat.Light.Dialog.Alert" />
+
 </resources>

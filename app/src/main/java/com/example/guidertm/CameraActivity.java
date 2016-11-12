@@ -2,6 +2,7 @@ package com.example.guidertm;
 
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -45,6 +46,9 @@ public class CameraActivity extends Activity {
     RequestThread thread;
 
     private boolean stopflag = false;
+    boolean flag = false;//추가
+    private final String BROADCAST_MESSAGE = "com.example.guidertm.broadcast";
+
 
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -60,12 +64,15 @@ public class CameraActivity extends Activity {
 
         mOverlayview.setDestinationPoint(Double.parseDouble(latitude_ds), Double.parseDouble(longitude_ds));  // 목적지 값 overlayview 전송
 
+        //네트워크 다이얼로그 브로드캐스트
         IntentFilter filter = new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION);
         mContext.registerReceiver(((MainActivity) MainActivity.mContext).receiver, filter);
 
+        //도착알림 다이얼로그 브로드캐스트
+        IntentFilter filterr = new IntentFilter();
+        filterr.addAction(BROADCAST_MESSAGE);
+        registerReceiver(receiver, filterr);
 
-
-        //destination_complete();
         check(1);  // 출발지의 정보는 보내지 않아도 됨으로 check(1)로 설정
 
     }
@@ -120,19 +127,17 @@ public class CameraActivity extends Activity {
             mOverlayview.setCurrentPoint(Slatitude, Slongitude, (Ddistance + distance));  // overlayview로 현위치 와 총거리값 전송
 
 
-            if(distance<=70)
+            if(distance<=18)
             {
                 mOverlayview.setdata(node.get(a).index, node.get(a).nodeType, node.get(a).turntype, distance);
-                Log.d(TAG, "찍히나 확인 = " + node.get(a).turntype );
-
-                if(distance<=59)
+                if(distance<=12)
                 {
-                    Log.d(TAG, "찍히나 확인2 = " + node.get(a).turntype );
-                    if(node.get(a).turntype.equals("좌회전"))//현 노드가 전체 노드 사이즈보다 작거나 같을때는 다음 노드 알려줌
+                    if(node.get(a).turntype.equals("목적지"))//현 노드가 전체 노드 사이즈보다 작거나 같을때는 다음 노드 알려줌
                     {
-                        Log.d(TAG, "찍히나 확인3");
-                        endguide(node.get(a).turntype);//도착 알림 alertdialog
-                        //Toast.makeText(getApplicationContext(), "목적지에 도착하였습니다. 경로를 종료합니다", Toast.LENGTH_LONG);
+                        flag = true;
+                        Intent intent = new Intent(BROADCAST_MESSAGE);
+                        intent.putExtra("value", flag);
+                        sendBroadcast(intent);
 
                     }
                     else//현 노드가 전체 노드 사이즈보다 클경우
@@ -162,30 +167,40 @@ public class CameraActivity extends Activity {
         }
     }
 
-    public void endguide(String s)
-    {
-        AlertDialog.Builder dlg = new AlertDialog.Builder(this);
-        dlg.setTitle(s+ " 도착 알림");
-        dlg.setMessage("목적지에 도착하였습니다. 새로운 길 안내를 원하십니까?");
 
-        dlg.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
-            public void onClick(DialogInterface dialog, int which) {
-                // MainActivity 로 이동
-                Intent intent = new Intent(getApplicationContext(),MainActivity.class);
-                startActivity(intent);
-                finish();
-            }
-        })
-                .setNegativeButton("No", new DialogInterface.OnClickListener() {
+    public BroadcastReceiver receiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            boolean flag = intent.getBooleanExtra("value", false);
+            if (flag==true)
+            {
+                AlertDialog.Builder dlg = new AlertDialog.Builder(context);
+                dlg.setTitle("도착 알림");
+                dlg.setMessage("목적지에 도착하였습니다. 새로운 길 안내를 원하십니까?");
+
+                dlg.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int which) {
-                        //moveTaskToBack(true);
-                       finish();
-                        //dialog.cancel();
+                        // MainActivity 로 이동
+                        finish();
+                        //Intent intent = new Intent(getApplicationContext(), MainActivity.class);
+                        //startActivity(intent);
 
                     }
-                }).create().show();
+                })
+                        .setNegativeButton("No", new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int which) {
+                                //moveTaskToBack(true);
+                                //finish();
+                                //android.os.Process.killProcess(android.os.Process.myPid());
+                                dialog.cancel();
 
-    }
+                            }
+                        }).create().show();
+            }
+        }
+    };
+
+
 
     public void onResume() {
         super.onResume();
@@ -251,6 +266,7 @@ public class CameraActivity extends Activity {
         stopflag = true;
         mOverlayview.viewDestory();
         // unregisterReceiver(mReceiver);
-        mContext.unregisterReceiver(((MainActivity) MainActivity.mContext).receiver);
+        //mContext.unregisterReceiver(((MainActivity) MainActivity.mContext).receiver);
+        unregisterReceiver(receiver);
     }
 }
