@@ -128,6 +128,17 @@ public class CameraOverlayview extends View implements SensorEventListener {
                 , (double) (nodelon_arrow - tAx)) * 180.0 / Math.PI);
 
 
+        // 4/4분면을 고려하여 0~360도가 나오게 설정
+        if (tBx > tAx && tBy > tAy) {
+            Log.e("111", String.valueOf(mXDegree));
+        } else if (tBx < tAx && tBy > tAy) {
+            Log.e("222", String.valueOf(mXDegree));
+        } else if (tBx  < tAx && tBy < tAy) {
+            Log.e("333", String.valueOf(mXDegree));
+        } else if (tBx  > tAx && tBy < tAy) {
+            Log.e("444", String.valueOf(mXDegree));
+        }
+
         if (degree + mXCompassDegree < 360) {
             degree += mXCompassDegree;
         } else if (degree + mXCompassDegree >= 360) {
@@ -138,6 +149,8 @@ public class CameraOverlayview extends View implements SensorEventListener {
         {
             degree+=360;
         }
+
+        Log.d(TAG, "rrrrraaasa=" + String.valueOf(degree));
 
         mBitmap = BitmapFactory.decodeResource(getResources(), R.drawable.direct);
         mBitmap = Bitmap.createScaledBitmap(mBitmap, mWidth / 7, mHeight / 6, true);
@@ -157,48 +170,49 @@ public class CameraOverlayview extends View implements SensorEventListener {
         RigftIcon3 = Bitmap.createScaledBitmap(RigftIcon3, mWidth / 8, mHeight / 6, true);
 
 
+
         if(turntype == null || arrowchange==turntype) {
             pCanvas.drawText("Point 까지 " + nodeAtoB + " m ", (mWidth * 2 / 10), (mHeight * 2 / 6), mTextPaint);
             pCanvas.drawText("Point 까지 " + nodeAtoB + " m ", (mWidth * 5 / 8), (mHeight * 2 / 6), mTextPaint);
 
-            if (degree >=350 || degree <=40) {
+            if (degree >=340 || degree <=20) {
                 pCanvas.drawBitmap(mBitmap, (mWidth * 2 / 9), (mHeight * 4 / 6), null);
                 pCanvas.drawBitmap(mBitmap, (mWidth * 5 / 8), (mHeight * 4 / 6), null);
                 //pCanvas.drawBitmap(mBitmap2, 1720, 820, null);
                 //오른쪽 이미지
                 //pCanvas.drawBitmap(mBitmap, (mWidth * 3 / 7), (mHeight * 3 / 5), null);
             }
-            else if(degree>=310&&degree<350)
+            else if(degree>=300&&degree<340)
             {
                 pCanvas.drawBitmap(RigftIcon1, (mWidth * 2 / 9), (mHeight * 4 / 6), null);
                 pCanvas.drawBitmap(RigftIcon1, (mWidth * 5 / 8), (mHeight * 4 / 6), null);
             }
-            else if(degree>=270&&degree<310)
+            else if(degree>=260&&degree<300)
             {
                 pCanvas.drawBitmap(RigftIcon2, (mWidth * 2 / 9), (mHeight * 4 / 6), null);
                 pCanvas.drawBitmap(RigftIcon2, (mWidth * 5 / 8), (mHeight * 4 / 6), null);
             }
-            else if(degree>=230&&degree<270)
+            else if(degree>=220&&degree<260)
             {
                 pCanvas.drawBitmap(RigftIcon3, (mWidth * 2 / 9), (mHeight * 4 / 6), null);
                 pCanvas.drawBitmap(RigftIcon3, (mWidth * 5 / 8), (mHeight * 4 / 6), null);
             }
-            else if(degree>160&&degree<230)
+            else if(degree>140&&degree<220)
             {
                 pCanvas.drawBitmap(BackIcon, (mWidth * 2 / 9), (mHeight * 4 / 6), null);
                 pCanvas.drawBitmap(BackIcon, (mWidth * 5 / 8), (mHeight * 4 / 6), null);
             }
-            else if(degree>40&&degree<=80)
+            else if(degree>20&&degree<=60)
             {
                 pCanvas.drawBitmap(LeftIcon1, (mWidth * 2 / 9), (mHeight * 4 / 6), null);
                 pCanvas.drawBitmap(LeftIcon1, (mWidth * 5 / 8), (mHeight * 4 / 6), null);
             }
-            else if(degree>80&&degree<=120)
+            else if(degree>60&&degree<=100)
             {
                 pCanvas.drawBitmap(LeftIcon2, (mWidth * 2 / 9), (mHeight * 4 / 6), null);
                 pCanvas.drawBitmap(LeftIcon2, (mWidth * 5 / 8), (mHeight * 4 / 6), null);
             }
-            else if(degree>120&&degree<=160)
+            else if(degree>100&&degree<=140)
             {
                 pCanvas.drawBitmap(LeftIcon3, (mWidth * 2 / 9), (mHeight * 4 / 6), null);
                 pCanvas.drawBitmap(LeftIcon3, (mWidth * 5 / 8), (mHeight * 4 / 6), null);
