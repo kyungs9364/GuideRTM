@@ -46,6 +46,7 @@
             android:padding="10dp"
             />
     </RelativeLayout>
+
     <SlidingDrawer
         android:id="@+id/slide"
         android:layout_width="match_parent"
@@ -55,7 +56,7 @@
         android:content="@+id/content"
         android:handle="@+id/searchh"
         android:orientation="vertical"
-        android:topOffset="100dp"
+        android:topOffset="220dp"
         >
         <ImageButton
             android:id="@+id/searchh"
@@ -68,6 +69,8 @@
             android:src="@drawable/icon_search_down"
 
             ></ImageButton>
+
+
 
         <LinearLayout
             android:id="@+id/content"
@@ -82,17 +85,19 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="right">
 
-                <Button
+                <ImageView
                     android:id="@+id/road"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="길찾기"
+                    android:layout_width="55dp"
+                    android:layout_height="55dp"
+                    android:layout_marginRight="20dp"
+                    android:src="@drawable/road_icon"
                     />
-                <Button
+                <ImageView
                     android:id="@+id/search"
-                    android:text="검색"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content" />
+                    android:layout_width="55dp"
+                    android:layout_height="55dp"
+                    android:layout_marginBottom="30dp"
+                    android:src="@drawable/search"/>
             </LinearLayout>
 
             <LinearLayout
@@ -107,13 +112,13 @@
                 <TextView
                     android:layout_width="85dp"
                     android:layout_height="wrap_content"
-                    android:text="Start"
+                    android:text="   Start"
                     android:id="@+id/start"
                     android:layout_alignParentLeft="true"
                     android:layout_alignParentStart="true" />
 
                 <EditText
-                    android:layout_width="312dp"
+                    android:layout_width="272dp"
                     android:layout_height="wrap_content"
                     android:id="@+id/start_edit"
                     android:layout_alignParentTop="true"
@@ -134,27 +139,20 @@
                 <TextView
                     android:layout_width="85dp"
                     android:layout_height="wrap_content"
-                    android:text="Destination"
+                    android:text="   Destination"
                     android:id="@+id/Destination"
                     android:layout_below="@+id/linearLayout2"
                     android:layout_alignParentLeft="true"
                     android:layout_alignParentStart="true" />
 
                 <EditText
-                    android:layout_width="312dp"
+                    android:layout_width="272dp"
                     android:layout_height="wrap_content"
                     android:id="@+id/destination_edit"
                     android:layout_below="@+id/linearLayout2"
                     android:layout_alignParentRight="true"
                     android:layout_alignParentEnd="true" />
             </LinearLayout>
-
-            <ListView
-                android:background="#666666"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:id="@+id/listt">
-            </ListView>
 
         </LinearLayout>
     </SlidingDrawer>

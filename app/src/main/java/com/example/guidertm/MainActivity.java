@@ -1,13 +1,11 @@
 package com.example.guidertm;
 
-import android.app.Activity;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.graphics.Color;
-import android.graphics.drawable.ColorDrawable;
 import android.location.Geocoder;
 import android.location.Location;
 import android.location.LocationListener;
@@ -18,16 +16,15 @@ import android.os.Bundle;
 import android.provider.Settings;
 import android.support.v4.app.FragmentActivity;
 import android.support.v7.app.AlertDialog;
-import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
 import android.view.Window;
-import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.RelativeLayout;
 import android.widget.SlidingDrawer;
@@ -52,12 +49,13 @@ public class MainActivity extends FragmentActivity {
     String TAG = "PAAR";
     TMapView mMapView = null;
     RelativeLayout mapContainer = null;
+    LinearLayout mapContainer2 = null;
     EditText my_location;
     EditText my_destination;
     Button close;
     ImageButton AR;
-    Button Search;
-    Button roadservice;
+    ImageView Search;
+    ImageView roadservice;
     ImageButton update;
     public static Context mContext;  // 타 액티비티에서 변수or함수를 사용가능하게함
     Geocoder coder;
@@ -92,15 +90,13 @@ public class MainActivity extends FragmentActivity {
     public static String la_po;
     public  static String lo_po;
     public SlidingDrawer slide;
-    public SlidingDrawer Listslide;
     ArrayList<String> search_list = new ArrayList<String>();
     ArrayList<String> point_list = new ArrayList<String>();
-    ArrayList<String> address = new ArrayList<String>();
-    ArrayList<String> point = new ArrayList<String>();
-    ArrayList<String> addss;
+    ArrayList<String> sub_address_list = new ArrayList<String>();
+
     ArrayAdapter<String> Adapter;  // 어텝터 연결
     ListView list;
-
+    public static boolean poplist = false;
 
 
     class MyListenerClass implements View.OnClickListener{
@@ -137,6 +133,7 @@ public class MainActivity extends FragmentActivity {
                 AR.setEnabled(true);
                 slide.close();
                 //slide.performClick();
+                poplist = false;
                 drawPedestrianPath();
                 naviGuide();
             }
@@ -153,7 +150,7 @@ public class MainActivity extends FragmentActivity {
 
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        //requestWindowFeature(Window.FEATURE_CUSTOM_TITLE);
+        requestWindowFeature(Window.FEATURE_CUSTOM_TITLE);
         setContentView(R.layout.activity_main);
 
         mapContainer = (RelativeLayout) findViewById(R.id.Tmap);
@@ -173,16 +170,20 @@ public class MainActivity extends FragmentActivity {
         my_destination = (EditText) findViewById(R.id.destination_edit); // 검색창
         my_destination.setEnabled(false);
         slide = (SlidingDrawer)findViewById(R.id.slide);
-        list=  (ListView) findViewById(R.id.listt);
+        //list=  (ListView) findViewById(R.id.list);
         //Listslide = (SlidingDrawer)findViewById(R.id.slide2);
-        Search = (Button) findViewById(R.id.search); // 검색버튼
-        roadservice = (Button) findViewById(R.id.road); // 길찾기버튼
+        Search = (ImageView) findViewById(R.id.search); // 검색버튼
+        roadservice = (ImageView) findViewById(R.id.road); // 길찾기버튼
         AR = (ImageButton) findViewById(R.id.AR);  // AR버튼
         AR.setEnabled(false);
         update = (ImageButton) findViewById(R.id.update);
         mContext = this;  // 타 액티비티에서 접근 가능하게 함.
         Intent intent=getIntent();
-        my_destination.setText(des_info); // listview 에서 돌아온 도착지 name
+        my_destination.setText(intent.getStringExtra("des_info")); // listview 에서 돌아온 도착지 name
+        Double la_point = intent.getDoubleExtra("point_la", 0);       // listview 에서 돌아온 위도, 경도
+        Double lo_point = intent.getDoubleExtra("point_lo", 0);
+        des_latitude_plic = la_point;
+        des_longitude_plic = lo_point;
         //String Notsh = intent.getStringExtra("not_search");
         Log.d(TAG, "des=" + String.valueOf(des_latitude_plic));
         Log.d(TAG, "des=" + String.valueOf(des_longitude_plic));
@@ -191,6 +192,9 @@ public class MainActivity extends FragmentActivity {
         mCameraActivity = new CameraActivity();
 
         slide.close();
+        if(poplist == true) {
+            slide.open();
+        }
 //        Listslide.close();
 
 
@@ -275,18 +279,35 @@ public class MainActivity extends FragmentActivity {
                 tmapdata.findAllPOI(strData, new TMapData.FindAllPOIListenerCallback() {
 
                     public void onFindAllPOI(ArrayList<TMapPOIItem> poiItem) {
+                        Intent intent = new Intent(MainActivity.this,Listview.class);
+
                         for (int i = 0; i < poiItem.size(); i++) {
                             TMapPOIItem item = poiItem.get(i);
+                            String[] sub_address = new String[poiItem.size()];
                             String[] address = new String[poiItem.size()];
                             String[] point = new String[poiItem.size()];
+                            sub_address[i] = String.valueOf(item.getPOIAddress().toString());
                             address[i] = String.valueOf(item.getPOIName().toString());
                             point[i] = String.valueOf(item.getPOIPoint().toString());
                             search_list.add(address[i]);
                             point_list.add(point[i]);
+                            sub_address_list.add(sub_address[i]);
+
+                            intent.putExtra("address",search_list);
+                            intent.putExtra("point",point_list);
+                            intent.putExtra("sub_address",sub_address_list);
                         }
+                        startActivity(intent);
+                        poplist = true;
+
                     }
                 });
-                aa(search_list, point_list);
+                //inflater = (LayoutInflater)getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+                // View layout =(View) inflater.inflate(R.layout.test,null);
+                //RelativeLayout.LayoutParams paramlinear = new RelativeLayout.LayoutParams(100,100);
+                //addContentView(layout, paramlinear);
+
+                //aa(search_list, point_list);
             }
         });
         builder.setNegativeButton("취소", new DialogInterface.OnClickListener() {
@@ -352,6 +373,7 @@ public class MainActivity extends FragmentActivity {
             }
         });
     }
+
 
     public boolean chkGpsService() {
 
@@ -523,9 +545,11 @@ public class MainActivity extends FragmentActivity {
         super.onResume();
         mMapView.setCenterPoint(longitude_plic, latitude_plic);
         //nodeDatas.clear();
+        Log.e("popck"," = 1" );
     }
     protected void onPause() {
         super.onPause();
+        Log.e("popck"," = 2" );
 
     }
     protected void onStart() {
@@ -535,69 +559,13 @@ public class MainActivity extends FragmentActivity {
     }
 
 
-    public void aa(ArrayList<String> search_list,ArrayList<String> point_list){
-        addss =search_list; // 도착지 주소이름
-        ArrayList<String> poi =point_list;  // 도착지 위도,경도
-        if(addss != null)
-        {
-            for(int i=0; i < addss.size(); i++)  // 리스트 안에 전달 받은 주소이름과 위도경도를 추가한다.
-            {
-                address.add(addss.get(i));
-                point.add(poi.get(i));
-            }
-        }
-        else
-        {
-            address.add("검색 결과가 존재하지 않습니다.\n\t 돌아가려면 클릭해주세요.");
-            //String not_search = "검색 결과가 존재하지 않습니다.";
-            //Intent back = new Intent(Listview.this,MainActivity.class);
-            // back.putExtra("not_search",not_search);
-            //startActivity(back);
-            //finish();
-        }
-
-        Adapter = new ArrayAdapter<String>(this, android.R.layout.simple_expandable_list_item_1, address);
-        list.setAdapter(Adapter);
-
-        list.setOnItemClickListener(new AdapterView.OnItemClickListener()  // list 클릭이벤트
-        {
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-
-                if (address.get(position) != null) // position은 우리가 선택한 list의 번수
-                {
-
-                    if (addss != null) {
-                        des_info = address.get(position);
-                        la_po = point.get(position).replace("Lat", "").replace("Lon", "").trim(); // 위도
-                        lo_po = point.get(position).replace("Lat", "").replace("Lon", "").trim(); // 경도
-                        la_po = la_po.substring(0, 10); // 0번부터 10번까지의 문자열 반환 (위도)
-                        lo_po = lo_po.substring(10);   // 10번 이후부터 끝까지 문자열 반환 (경도)
-                        des_latitude_plic = Double.parseDouble(la_po);
-                        des_longitude_plic = Double.parseDouble(lo_po);
-                        //Listslide.close();
-                    } else {
-                    }
-
-                } else
-                    Toast.makeText(getApplicationContext(), "도착지를 선택해주세요.", Toast.LENGTH_SHORT).show();
-                ;
-
-            }
-        });
-
-
-        list.setChoiceMode(ListView.CHOICE_MODE_SINGLE);
-        list.setDivider(new ColorDrawable(Color.WHITE));
-        list.setDividerHeight(2);
-    }
-
-
     @Override
     protected void onDestroy() {
         super.onDestroy();
         point2 = null;
         mContext.unregisterReceiver(receiver);
         locationManager.removeUpdates(locationListener);
+
         //LocationServices.FusedLocationApi.removeLocationUpdates(mApiClient,pending);
         //locationManager.removeUpdates(locationListener);
     }
