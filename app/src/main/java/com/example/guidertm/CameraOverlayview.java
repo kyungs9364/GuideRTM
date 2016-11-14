@@ -304,6 +304,7 @@ public class CameraOverlayview extends View implements SensorEventListener {
                         thread = new RequestThread();
                         thread.start();
                     }
+
                 } else {
                     pCanvas.drawText(nodeAtoB + "m 후에 " + turntype, (mWidth * 2 / 10), (mHeight * 2 / 6), mTextPaint);
                     pCanvas.drawText(nodeAtoB + "m 후에 " + turntype, (mWidth * 5 / 8), (mHeight * 2 / 6), mTextPaint);

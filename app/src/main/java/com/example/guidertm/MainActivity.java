@@ -18,10 +18,16 @@ import android.support.v4.app.FragmentActivity;
 import android.support.v7.app.AlertDialog;
 import android.util.Log;
 import android.view.View;
+import android.view.Window;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.ListView;
 import android.widget.RelativeLayout;
+import android.widget.SlidingDrawer;
 import android.widget.Toast;
 
 import com.skp.Tmap.TMapData;
@@ -43,12 +49,14 @@ public class MainActivity extends FragmentActivity {
     String TAG = "PAAR";
     TMapView mMapView = null;
     RelativeLayout mapContainer = null;
+    LinearLayout mapContainer2 = null;
     EditText my_location;
     EditText my_destination;
-    Button AR;
-    Button Search;
-    Button roadservice;
-    ImageView update;
+    Button close;
+    ImageButton AR;
+    ImageView Search;
+    ImageView roadservice;
+    ImageButton update;
     public static Context mContext;  // 타 액티비티에서 변수or함수를 사용가능하게함
     Geocoder coder;
     CameraOverlayview mOverlayview;
@@ -78,12 +86,25 @@ public class MainActivity extends FragmentActivity {
     LocationListener locationListener;
     String best = "";
     Location lastlocation;
+    public static String des_info;
+    public static String la_po;
+    public  static String lo_po;
+    public SlidingDrawer slide;
+    ArrayList<String> search_list = new ArrayList<String>();
+    ArrayList<String> point_list = new ArrayList<String>();
+    ArrayList<String> sub_address_list = new ArrayList<String>();
 
-    class MyListenerClass implements View.OnClickListener {
+    ArrayAdapter<String> Adapter;  // 어텝터 연결
+    ListView list;
+    public static boolean poplist = false;
+
+
+    class MyListenerClass implements View.OnClickListener{
         public void onClick(View v) {
             if (v.getId() == R.id.search) {
                 findAllPoi();
-            } else if (v.getId() == R.id.AR) {
+            }
+            else if (v.getId() == R.id.AR) {
                 String end = my_destination.getText().toString();
 
                 if (end == null || end.length() == 0) {
@@ -100,19 +121,6 @@ public class MainActivity extends FragmentActivity {
                 intent.putExtra("node", (Serializable) nodeDatas);
                 startActivity(intent);
 
-                  /*
-                List<Address> des_location = null;
-                try {    //  도착위치 값 지오코딩.
-                    des_location = coder.getFromLocationName(end, 5);
-                } catch (NumberFormatException e) {
-                    e.printStackTrace();
-                } catch (IOException e) {
-                    Toast.makeText(getApplicationContext(), "입출력오류 :" + e.getMessage() + "", Toast.LENGTH_SHORT).show();
-                    e.printStackTrace();
-                }
-                des_latitude_plic = des_location.get(0).getLatitude();
-                des_longitude_plic = des_location.get(0).getLongitude();*/
-
             } else if (v.getId() == R.id.road) {
                 String query = my_destination.getText().toString();
                 if (query == null || query.length() == 0) {
@@ -122,8 +130,10 @@ public class MainActivity extends FragmentActivity {
                 if (nodeDatas != null) {
                     nodeDatas.clear();
                 }
-
                 AR.setEnabled(true);
+                slide.close();
+                //slide.performClick();
+                poplist = false;
                 drawPedestrianPath();
                 naviGuide();
             }
@@ -135,20 +145,16 @@ public class MainActivity extends FragmentActivity {
                     showToast("길찾기를 진행해 주십시오.");
                 }
             }
-
         }
     }
 
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        requestWindowFeature(Window.FEATURE_CUSTOM_TITLE);
         setContentView(R.layout.activity_main);
+
         mapContainer = (RelativeLayout) findViewById(R.id.Tmap);
-       /* mApiClient = new GoogleApiClient.Builder(this)
-                .addApi(LocationServices.API)
-                .addConnectionCallbacks(this)
-                .enableAutoManage(this, this)
-                .addOnConnectionFailedListener(this)
-                .build();*/
+
 
         mMapView = new TMapView(this);
         mapContainer.addView(mMapView);
@@ -163,43 +169,39 @@ public class MainActivity extends FragmentActivity {
         my_location.setEnabled(false);  // 입력 불가.
         my_destination = (EditText) findViewById(R.id.destination_edit); // 검색창
         my_destination.setEnabled(false);
-        Search = (Button) findViewById(R.id.search); // 검색버튼
-        roadservice = (Button) findViewById(R.id.road); // 길찾기버튼
-        AR = (Button) findViewById(R.id.AR);  // AR버튼
+        slide = (SlidingDrawer)findViewById(R.id.slide);
+        //list=  (ListView) findViewById(R.id.list);
+        //Listslide = (SlidingDrawer)findViewById(R.id.slide2);
+        Search = (ImageView) findViewById(R.id.search); // 검색버튼
+        roadservice = (ImageView) findViewById(R.id.road); // 길찾기버튼
+        AR = (ImageButton) findViewById(R.id.AR);  // AR버튼
         AR.setEnabled(false);
-        update = (ImageView) findViewById(R.id.update);
+        update = (ImageButton) findViewById(R.id.update);
         mContext = this;  // 타 액티비티에서 접근 가능하게 함.
-        Intent intent = getIntent();
+        Intent intent=getIntent();
         my_destination.setText(intent.getStringExtra("des_info")); // listview 에서 돌아온 도착지 name
         Double la_point = intent.getDoubleExtra("point_la", 0);       // listview 에서 돌아온 위도, 경도
         Double lo_point = intent.getDoubleExtra("point_lo", 0);
-        //String Notsh = intent.getStringExtra("not_search");
         des_latitude_plic = la_point;
         des_longitude_plic = lo_point;
+        //String Notsh = intent.getStringExtra("not_search");
         Log.d(TAG, "des=" + String.valueOf(des_latitude_plic));
         Log.d(TAG, "des=" + String.valueOf(des_longitude_plic));
         chkGpsService();
         mOverlayview = new CameraOverlayview(this);
         mCameraActivity = new CameraActivity();
 
+        slide.close();
+        if(poplist == true) {
+            slide.open();
+        }
+//        Listslide.close();
+
+
         filter = new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION);
         mContext.registerReceiver(receiver, filter);
 
-        /*if(Notsh != null) {
-            showToast(Notsh);
-            Notsh = null;
-        }*/
-
-
-
         locationManager = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
-        /*String locationprovider = "";
-        if (locationManager.isProviderEnabled(locationManager.GPS_PROVIDER) == true) {
-            locationprovider = locationManager.GPS_PROVIDER;
-        } else
-        {
-            locationprovider = locationManager.NETWORK_PROVIDER;
-        }*/
 
 
         locationListener = new LocationListener() {
@@ -240,7 +242,6 @@ public class MainActivity extends FragmentActivity {
             }
         };
 
-
         //Log.d("locationpprovider", locationprovider);
         //locationManager.requestLocationUpdates(locationprovider, 2000, 0, locationListener);
 
@@ -252,11 +253,19 @@ public class MainActivity extends FragmentActivity {
 
         locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 2000, 2, locationListener);
         locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 2000, 2, locationListener);
+
+
+       /* Listslide.setOnDrawerCloseListener(new SlidingDrawer.OnDrawerCloseListener() {
+            @Override
+            public void onDrawerClosed() {
+                Adapter=null;
+            }
+        });*/
     }
 
     public void findAllPoi() {  // 검색 함수
 
-        AlertDialog.Builder builder = new AlertDialog.Builder(this);  // 팝업창을 띄워주기 위해 생성
+        AlertDialog.Builder builder = new AlertDialog.Builder(this, R.style.MyDialogTheme);  // 팝업창을 띄워주기 위해 생성
         builder.setTitle("목적지를 검색하세요.");
 
         final EditText input = new EditText(this);
@@ -267,31 +276,38 @@ public class MainActivity extends FragmentActivity {
             public void onClick(DialogInterface dialog, int which) {
                 final String strData = input.getText().toString();
                 TMapData tmapdata = new TMapData();
-
                 tmapdata.findAllPOI(strData, new TMapData.FindAllPOIListenerCallback() {
-                    @Override
 
                     public void onFindAllPOI(ArrayList<TMapPOIItem> poiItem) {
                         Intent intent = new Intent(MainActivity.this,Listview.class);
-                        ArrayList<String> search_list = new ArrayList<String>();
-                        ArrayList<String> point_list = new ArrayList<String>();
 
                         for (int i = 0; i < poiItem.size(); i++) {
-                            TMapPOIItem  item = poiItem.get(i);
+                            TMapPOIItem item = poiItem.get(i);
+                            String[] sub_address = new String[poiItem.size()];
                             String[] address = new String[poiItem.size()];
                             String[] point = new String[poiItem.size()];
+                            sub_address[i] = String.valueOf(item.getPOIAddress().toString());
                             address[i] = String.valueOf(item.getPOIName().toString());
-                            point[i] =  String.valueOf(item.getPOIPoint().toString());
+                            point[i] = String.valueOf(item.getPOIPoint().toString());
                             search_list.add(address[i]);
                             point_list.add(point[i]);
+                            sub_address_list.add(sub_address[i]);
 
                             intent.putExtra("address",search_list);
                             intent.putExtra("point",point_list);
+                            intent.putExtra("sub_address",sub_address_list);
                         }
                         startActivity(intent);
-                        finish();
+                        poplist = true;
+
                     }
                 });
+                //inflater = (LayoutInflater)getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+               // View layout =(View) inflater.inflate(R.layout.test,null);
+                //RelativeLayout.LayoutParams paramlinear = new RelativeLayout.LayoutParams(100,100);
+                //addContentView(layout, paramlinear);
+
+                //aa(search_list, point_list);
             }
         });
         builder.setNegativeButton("취소", new DialogInterface.OnClickListener() {
@@ -358,6 +374,7 @@ public class MainActivity extends FragmentActivity {
         });
     }
 
+
     public boolean chkGpsService() {
 
         String gps = android.provider.Settings.Secure.getString(getContentResolver(), android.provider.Settings.Secure.LOCATION_PROVIDERS_ALLOWED);
@@ -395,7 +412,7 @@ public class MainActivity extends FragmentActivity {
     public boolean Betterlocation(Location newlocation, Location currentbestlocation)
     {
         if (currentbestlocation == null) {// 기존의 위치 정보가 없으면 새로운것 받기
-            Log.v("currenlocation","null");
+            Log.v("currenlocation", "null");
             return true;
         }
         int accuracy = (int) (newlocation.getAccuracy() - currentbestlocation.getAccuracy());
@@ -528,9 +545,11 @@ public class MainActivity extends FragmentActivity {
         super.onResume();
         mMapView.setCenterPoint(longitude_plic, latitude_plic);
         //nodeDatas.clear();
+        Log.e("popck"," = 1" );
     }
     protected void onPause() {
         super.onPause();
+        Log.e("popck"," = 2" );
 
     }
     protected void onStart() {
@@ -546,9 +565,9 @@ public class MainActivity extends FragmentActivity {
         point2 = null;
         mContext.unregisterReceiver(receiver);
         locationManager.removeUpdates(locationListener);
+
         //LocationServices.FusedLocationApi.removeLocationUpdates(mApiClient,pending);
         //locationManager.removeUpdates(locationListener);
-
     }
 
 }

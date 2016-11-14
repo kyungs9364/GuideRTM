@@ -5,6 +5,8 @@ import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
+import android.util.DisplayMetrics;
+import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -18,17 +20,35 @@ import java.util.ArrayList;
  */
 public class Listview extends Activity {
 
+    ArrayAdapter<String> Adapter;
     ArrayList<String> address = new ArrayList<String>();
     ArrayList<String> point = new ArrayList<String>();
+    ArrayList<String> sub_address = new ArrayList<String>();
     ArrayList<String> addss;
+
+    private ArrayList<Custom_List_Data> Array_Data;
+    private Custom_List_Data data;
+    public static Custom_List_Adapter adapter;
+
 
     @Override
     protected  void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.list_main);
 
+        DisplayMetrics dm = new DisplayMetrics();
+        getWindowManager().getDefaultDisplay().getMetrics(dm);
+
+        int width = dm.widthPixels;
+        int height = dm.heightPixels;
+        getWindow().setLayout((int)(width*.8),(int) (height*.8));
+
+        Array_Data = new ArrayList<Custom_List_Data>();
+
         Intent intent = getIntent();
         addss = (ArrayList<String>) intent.getSerializableExtra("address"); // 도착지 주소이름
+        sub_address = (ArrayList<String>) intent.getSerializableExtra("sub_address");
+
         ArrayList<String> poi = (ArrayList<String>) intent.getSerializableExtra("point");  // 도착지 위도,경도
 
 
@@ -36,13 +56,17 @@ public class Listview extends Activity {
         {
             for(int i=0; i < addss.size(); i++)  // 리스트 안에 전달 받은 주소이름과 위도경도를 추가한다.
             {
+                data = new Custom_List_Data(R.drawable.list_icon,(addss.get(i)), sub_address.get(i).replace("null",""));
+                Array_Data.add(data);
                 address.add(addss.get(i));
                 point.add(poi.get(i));
             }
         }
         else
         {
-            address.add("검색 결과가 존재하지 않습니다.\n\t 돌아가려면 클릭해주세요.");
+            data = new Custom_List_Data(R.drawable.err,"결과값이 존재하지 않습니다.", "뒤로가려면 클릭해주세요." );
+            Array_Data.add(data);
+            address.add("결과값이 존재하지 않습니다.");
             //String not_search = "검색 결과가 존재하지 않습니다.";
             //Intent back = new Intent(Listview.this,MainActivity.class);
             // back.putExtra("not_search",not_search);
@@ -51,11 +75,12 @@ public class Listview extends Activity {
         }
 
 
-        ArrayAdapter<String> Adapter;  // 어텝터 연결
-        Adapter = new ArrayAdapter<String>(this, android.R.layout.simple_expandable_list_item_1, address);
+        // 어텝터 연결
+        adapter = new Custom_List_Adapter(this,
+                android.R.layout.simple_list_item_1, Array_Data);
 
         ListView list =  (ListView) findViewById(R.id.list);
-        list.setAdapter(Adapter);
+        list.setAdapter(adapter);
 
         list.setOnItemClickListener(new AdapterView.OnItemClickListener()  // list 클릭이벤트
         {
@@ -74,11 +99,13 @@ public class Listview extends Activity {
                         intent.putExtra("point_la", Double.valueOf(la_po));
                         intent.putExtra("point_lo", Double.valueOf(lo_po));
                         //moveTaskToBack(true);
+                        ((MainActivity)MainActivity.mContext).finish();
                         startActivity(intent);
                         finish();
                     }
                     else
                     {
+                        ((MainActivity)MainActivity.mContext).finish();
                         startActivity(intent);
                         finish();
                     }
@@ -91,11 +118,22 @@ public class Listview extends Activity {
         });
 
         list.setChoiceMode(ListView.CHOICE_MODE_SINGLE);
-        list.setDivider(new ColorDrawable(Color.WHITE));
+        list.setDivider(new ColorDrawable(Color.LTGRAY));
         list.setDividerHeight(2);
     }
 
+    protected void onPause() {
+        super.onPause();
+
+        Log.e("popck"," = 3" );
+    }
     protected void onDestroy() {
         super.onDestroy();
+        if(((MainActivity)MainActivity.mContext).search_list != null) {
+            ((MainActivity)MainActivity.mContext).search_list.clear();
+            ((MainActivity)MainActivity.mContext).point_list.clear();
+            ((MainActivity)MainActivity.mContext).sub_address_list.clear();
+        }
+        Log.e("popck"," = 4" );
     }
 }
